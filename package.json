@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "server": "yarn",
-    "server-start": "electron .",
+    "server-start": "tsc && electron .",
     "server-build": "tsc",
     "server-watch": "tsc -w",
     "client": "cd client && yarn",
@@ -18,11 +18,9 @@
   "build": {
     "appId": "protewine",
     "files": [
-      "app/**/*",
-      "build/**/*",
+      "cache/**/*",
       "node_modules/**/*",
-      "package.json",
-      "main.js"
+      "package.json"
     ],
     "publish": null,
     "linux": {
