@@ -1,0 +1,46 @@
+{
+  "name": "protewine",
+  "version": "1.0.0",
+  "main": "main.js",
+  "repository": "https://github.com/hitman249/protewine",
+  "author": "hitman249",
+  "description": "Portable Windows application with Wine technology.",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "protewine",
+    "files": [
+      "app/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "main.js"
+    ],
+    "publish": null,
+    "linux": {
+      "executableArgs": [
+        "--no-sandbox"
+      ],
+      "target": [
+        "AppImage"
+      ],
+      "icon": "build/icons/512.png",
+      "category": "Game",
+      "desktop": {
+        "X-AppImage-Integrate": "false"
+      }
+    }
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.4.1",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "electron": "^28.1.0",
+    "electron-builder": "24.9.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "yarn@4.0.2"
+}
