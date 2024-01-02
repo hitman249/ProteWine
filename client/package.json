@@ -1,0 +1,26 @@
+{
+  "name": "protewine",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.1",
+    "@tsconfig/svelte": "^5.0.2",
+    "eslint": "^8.56.0",
+    "helpful-decorators": "^2.1.0",
+    "lodash": "^4.17.21",
+    "svelte": "^4.2.8",
+    "svelte-check": "^3.6.2",
+    "svelte-tiny-virtual-list": "^2.0.5",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  },
+  "packageManager": "yarn@4.0.2"
+}

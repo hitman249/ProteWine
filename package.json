@@ -1,13 +1,17 @@
 {
   "name": "protewine",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "cache/server/index.js",
   "repository": "https://github.com/hitman249/protewine",
   "author": "hitman249",
   "description": "Portable Windows application with Wine technology.",
   "license": "MIT",
   "scripts": {
-    "start": "electron ."
+    "server-start": "electron .",
+    "server-build": "tsc",
+    "server-watch": "tsc -w",
+    "server": "yarn",
+    "client": "cd client && yarn"
   },
   "build": {
     "appId": "protewine",
@@ -35,11 +39,14 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^3.4.1",
+    "@types/electron": "^1.6.10",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "electron": "^28.1.0",
     "electron-builder": "24.9.1",
     "eslint": "^8.56.0",
+    "helpful-decorators": "^2.1.0",
+    "lodash": "^4.17.21",
     "typescript": "^5.3.3"
   },
   "packageManager": "yarn@4.0.2"

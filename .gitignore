@@ -2,3 +2,4 @@ node_modules
 .yarn
 .idea
 dist
+cache
