@@ -7,11 +7,13 @@
   "description": "Portable Windows application with Wine technology.",
   "license": "MIT",
   "scripts": {
+    "server": "yarn",
     "server-start": "electron .",
     "server-build": "tsc",
     "server-watch": "tsc -w",
-    "server": "yarn",
-    "client": "cd client && yarn"
+    "client": "cd client && yarn",
+    "client-build": "cd client && yarn build",
+    "client-watch": "cd client && yarn dev"
   },
   "build": {
     "appId": "protewine",
