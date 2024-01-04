@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "strict": false,
+    "allowJs": true,
+    "target": "ES6",
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "noImplicitAny": true,
-    "sourceMap": false,
-    "outDir": "cache/server",
+    "sourceMap": true,
     "baseUrl": ".",
+    "outDir": "cache/server",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
     }
   },
-  "include": [
-    "server/**/*.ts"
-  ]
+  "include": ["server/**/*"]
 }

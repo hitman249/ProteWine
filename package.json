@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "server": "yarn",
-    "server-start": "tsc && electron .",
+    "server-start": "electron .",
     "server-build": "tsc",
     "server-watch": "tsc -w",
     "client": "cd client && yarn",
@@ -37,17 +37,36 @@
       }
     }
   },
+  "dependencies": {
+    "fetch-blob": "^4.0.0",
+    "form-data": "^4.0.0",
+    "glob": "^10.3.10",
+    "helpful-decorators": "^2.1.0",
+    "iconv-lite": "^0.6.3",
+    "locutus": "^2.0.16",
+    "lodash": "^4.17.21",
+    "lzma": "^2.3.2",
+    "md5-file": "^5.0.0",
+    "node-fetch": "^3.3.2",
+    "simple-vdf": "^1.1.1",
+    "uuid": "^9.0.1"
+  },
   "devDependencies": {
     "@electron/rebuild": "^3.4.1",
     "@types/electron": "^1.6.10",
+    "@types/locutus": "^0.0.8",
+    "@types/lodash": "^4.14.202",
+    "@types/uuid": "^9",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "electron": "^28.1.0",
     "electron-builder": "24.9.1",
     "eslint": "^8.56.0",
-    "helpful-decorators": "^2.1.0",
-    "lodash": "^4.17.21",
-    "typescript": "^5.3.3"
+    "ts-loader": "^9.5.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "packageManager": "yarn@4.0.2"
 }
