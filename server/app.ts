@@ -31,6 +31,7 @@ class App {
       this.FILE_SYSTEM,
       this.CACHE,
       this.SYSTEM,
+      this.DRIVER,
     ];
   }
 

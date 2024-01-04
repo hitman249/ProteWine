@@ -8,17 +8,30 @@ import Memory from '../helpers/memory';
 type ArgumentsType = {[key: string]: string | string[]};
 
 export default class Command extends AbstractModule {
+  private static instance: Command;
   private memory: Memory = new Memory();
   private declare locale: string;
 
   constructor() {
     super();
 
+    Command.instance = this;
+
     this.memory
       .setContext(this)
       .declareVariables(
         'locale',
       );
+  }
+
+  public static create(): Command {
+    if (Command.instance) {
+      return Command.instance;
+    }
+
+    Command.instance = new Command();
+
+    return Command.instance;
   }
 
   public async init(): Promise<any> {

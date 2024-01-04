@@ -1,14 +1,13 @@
-import AppFolders from './app-folders';
-import Utils from '../helpers/utils';
 import _ from 'lodash';
-import child_process from 'child_process';
-import fs, {WriteFileOptions} from 'fs';
+import path from 'path';
 import {glob} from 'glob';
 import md5_file from 'md5-file';
-import path from 'path';
-import type {ExecException} from 'child_process';
-import type {Stats} from 'fs';
+import fs from 'fs';
+import type {WriteFileOptions, Stats} from 'fs';
 import {AbstractModule} from './abstract-module';
+import AppFolders from './app-folders';
+import Command from './command';
+import Utils from '../helpers/utils';
 
 type TypeFile = 'directory' | 'file';
 
@@ -37,9 +36,7 @@ export default class FileSystem extends AbstractModule {
   }
 
   public async exec(cmd: string): Promise<string> {
-    return await new Promise<string>((resolve: (value: string) => void): void => {
-      child_process.exec(cmd, (error: ExecException, stdout: string): void => resolve(String(stdout).trim()));
-    });
+    return await Command.create().exec(cmd);
   }
 
   public async exists(path: string): Promise<boolean> {
