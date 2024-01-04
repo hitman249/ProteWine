@@ -32,19 +32,19 @@ export default class FileSystem {
   }
 
   public async exec(cmd: string): Promise<string> {
-    return new Promise<string>((resolve: (value: string) => void): void => {
+    return await new Promise<string>((resolve: (value: string) => void): void => {
       child_process.exec(cmd, (error: ExecException, stdout: string): void => resolve(String(stdout).trim()));
     });
   }
 
   public async exists(path: string): Promise<boolean> {
-    return new Promise((resolve: (exists: boolean) => void): void => {
+    return await new Promise((resolve: (exists: boolean) => void): void => {
       fs.access(_.trimEnd(path, '/'), (err: NodeJS.ErrnoException): void => resolve(!err));
     });
   }
 
   public async isDirectory(path: string): Promise<boolean> {
-    return new Promise((resolve: (value: boolean) => void): void => {
+    return await new Promise((resolve: (value: boolean) => void): void => {
       fs.stat(_.trimEnd(path, '/'), (err: NodeJS.ErrnoException, stats: Stats): void => {
         if (err) {
           return resolve(false);
@@ -56,7 +56,7 @@ export default class FileSystem {
   }
 
   public async isFile(path: string): Promise<boolean> {
-    return new Promise((resolve: (value: boolean) => void): void => {
+    return await new Promise((resolve: (value: boolean) => void): void => {
       fs.lstat(_.trimEnd(path, '/'), (err: NodeJS.ErrnoException, stats: Stats): void => {
         if (err) {
           return resolve(false);
@@ -68,7 +68,7 @@ export default class FileSystem {
   }
 
   public async isSymbolicLink(path: string): Promise<boolean> {
-    return new Promise((resolve: (value: boolean) => void): void => {
+    return await new Promise((resolve: (value: boolean) => void): void => {
       fs.lstat(_.trimEnd(path, '/'), (err: NodeJS.ErrnoException, stats: Stats): void => {
         if (err) {
           return resolve(false);
@@ -80,7 +80,7 @@ export default class FileSystem {
   }
 
   public async getCreateDate(path: string): Promise<Date> {
-    return new Promise((resolve: (value: Date) => void, reject: (err: any) => void): void => {
+    return await new Promise((resolve: (value: Date) => void, reject: (err: any) => void): void => {
       fs.lstat(_.trimEnd(path, '/'), (err: NodeJS.ErrnoException, stats: Stats): void => {
         if (err) {
           return reject(err);
@@ -92,7 +92,7 @@ export default class FileSystem {
   }
 
   public async mkdir(path: string): Promise<boolean> {
-    return this.exists(path)
+    return await this.exists(path)
       .then((exists: boolean): Promise<boolean> => {
         if (exists) {
           return;
@@ -125,7 +125,7 @@ export default class FileSystem {
   }
 
   private async getSize(path: string): Promise<number> {
-    return new Promise((resolve: (size: number) => void) => {
+    return await new Promise((resolve: (size: number) => void) => {
       fs.lstat(_.trimEnd(path, '/'), (err: NodeJS.ErrnoException, stats: Stats) => {
         if (err) {
           resolve(0);
@@ -153,7 +153,7 @@ export default class FileSystem {
   }
 
   public async getAllFiles(dirPath: string, arrayOfFiles: string[] = []): Promise<string[]> {
-    return new Promise<string[]>((resolve: (files: string[]) => void, reject: (err: any) => void) => {
+    return await new Promise<string[]>((resolve: (files: string[]) => void, reject: (err: any) => void) => {
       dirPath = _.trimEnd(dirPath, '/');
 
       fs.readdir(dirPath, (err: NodeJS.ErrnoException, files: string[]) => {
@@ -209,7 +209,7 @@ export default class FileSystem {
     path = _.trimEnd(path, '/');
 
     if (await this.isFile(path) || await this.isSymbolicLink(path)) {
-      return new Promise((resolve: (value: boolean) => void) => {
+      return await new Promise((resolve: (value: boolean) => void) => {
         fs.unlink(path, (err: NodeJS.ErrnoException) => {
           if (err) {
             resolve(false);
@@ -220,7 +220,7 @@ export default class FileSystem {
       });
     }
 
-    return new Promise((resolve: (value: boolean) => void) => {
+    return await new Promise((resolve: (value: boolean) => void) => {
       fs.rm(path, {recursive: true, force: true}, (err: NodeJS.ErrnoException) => {
         if (err) {
           resolve(false);
@@ -341,7 +341,7 @@ export default class FileSystem {
 
     const copyDirSync0 = async (srcPath: string, destPath: string, settings: CopyMoveOptions): Promise<boolean> => {
       const readdir: (dirPath: string) => Promise<string[]> = async (dirPath: string): Promise<string[]> => {
-        return new Promise<string[]>((resolve: (files: string[]) => void, reject: (err: any) => void) => {
+        return await new Promise<string[]>((resolve: (files: string[]) => void, reject: (err: any) => void) => {
           fs.readdir(dirPath, (err: NodeJS.ErrnoException, files: string[]) => {
             if (err) {
               return reject(err);
@@ -423,7 +423,7 @@ export default class FileSystem {
   }
 
   public async fileGetContents(filepath: string, autoEncoding: boolean = false): Promise<string> {
-    return new Promise((resolve: (value: string) => void, reject: (err: any) => void) => {
+    return await new Promise((resolve: (value: string) => void, reject: (err: any) => void) => {
       fs.readFile(filepath, (err: NodeJS.ErrnoException, buffer: Buffer) => {
         if (err) {
           reject(err);
@@ -439,7 +439,7 @@ export default class FileSystem {
   }
 
   public async fileGetContentsByEncoding(filepath: string, encoding: BufferEncoding = 'utf-8'): Promise<string> {
-    return new Promise((resolve: (value: string) => void, reject: (err: any) => void) => {
+    return await new Promise((resolve: (value: string) => void, reject: (err: any) => void) => {
       fs.readFile(filepath, {encoding}, (err: NodeJS.ErrnoException, buffer: Buffer) => {
         if (err) {
           return reject(err);
