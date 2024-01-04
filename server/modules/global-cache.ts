@@ -4,7 +4,7 @@ import type AppFolders from './app-folders';
 import {AbstractModule} from './abstract-module';
 import Memory from '../helpers/memory';
 
-export default class Cache extends AbstractModule {
+export default class GlobalCache extends AbstractModule {
   private memory: Memory = new Memory();
   private path: string;
 
@@ -46,9 +46,11 @@ export default class Cache extends AbstractModule {
     return this.memory.get(key);
   }
 
-  public async set(key: string, value: string | number | boolean): Promise<void> {
+  public async set(key: string, value: any): Promise<any> {
     this.memory.set(key, value);
     await this.save();
+
+    return value;
   }
 
   public async has(key: string): Promise<boolean> {

@@ -1,7 +1,9 @@
+import type {AbstractModule} from './modules/abstract-module';
 import AppFolders from './modules/app-folders';
 import Command from './modules/command';
 import FileSystem from './modules/file-system';
-import type {AbstractModule} from './modules/abstract-module';
+import GlobalCache from './modules/global-cache';
+import System from './modules/system';
 
 class App {
   private readonly initOrder: AbstractModule[];
@@ -9,17 +11,23 @@ class App {
   private readonly COMMAND: Command;
   private readonly APP_FOLDERS: AppFolders;
   private readonly FILE_SYSTEM: FileSystem;
+  private readonly CACHE: GlobalCache;
+  private readonly SYSTEM: System;
 
 
   constructor() {
     this.COMMAND = new Command();
     this.APP_FOLDERS = new AppFolders();
     this.FILE_SYSTEM = new FileSystem(this.APP_FOLDERS);
+    this.CACHE = new GlobalCache(this.APP_FOLDERS);
+    this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE);
 
     this.initOrder = [
       this.COMMAND,
       this.APP_FOLDERS,
       this.FILE_SYSTEM,
+      this.CACHE,
+      this.SYSTEM,
     ];
   }
 
@@ -39,6 +47,14 @@ class App {
 
   public getFileSystem(): FileSystem {
     return this.FILE_SYSTEM;
+  }
+
+  public getCache(): GlobalCache {
+    return this.CACHE;
+  }
+
+  public getSystem(): System {
+    return this.SYSTEM;
   }
 }
 

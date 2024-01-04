@@ -485,7 +485,7 @@ export default class FileSystem extends AbstractModule {
   }
 
   public async ln(path: string, dest: string): Promise<string> {
-    return await this.exec(`cd "${this.appFolders.getRootDir()}" && ln -sfr "${path}" "${dest}"`);
+    return await this.exec(`cd "${await this.appFolders.getRootDir()}" && ln -sfr "${path}" "${dest}"`);
   }
 
   public async lnOfRoot(path: string, dest: string): Promise<void> {
@@ -538,7 +538,7 @@ export default class FileSystem extends AbstractModule {
       await this.rm(outDir);
     }
 
-    const tmpDir: string = this.appFolders.getCacheDir() + `/tmp_${Utils.rand(10000, 99999)}`;
+    const tmpDir: string = (await this.appFolders.getCacheDir()) + `/tmp_${Utils.rand(10000, 99999)}`;
     await this.mkdir(tmpDir);
 
     if (!await this.exists(tmpDir)) {
@@ -677,7 +677,7 @@ export default class FileSystem extends AbstractModule {
   }
 
   public async unpackSimpleZip(inFile: string, outDir: string): Promise<boolean> {
-    const tmpDir: string = this.appFolders.getCacheDir() + `/tmp_${Utils.rand(10000, 99999)}`;
+    const tmpDir: string = (await this.appFolders.getCacheDir()) + `/tmp_${Utils.rand(10000, 99999)}`;
     await this.mkdir(tmpDir);
 
     if (!await this.exists(tmpDir)) {
