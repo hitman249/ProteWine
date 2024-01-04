@@ -1,8 +1,9 @@
 import path from 'path';
 // import Utils from '../helpers/utils';
 import FileSystem from './file-system';
+import {AbstractModule} from './abstract-module';
 
-export default class AppFolders {
+export default class AppFolders extends AbstractModule {
   private readonly fs: FileSystem;
   private folders: string[];
 
@@ -44,7 +45,12 @@ export default class AppFolders {
   private protonFile: string = '/wine/proton';
 
   constructor() {
+    super();
     this.fs = new FileSystem(this);
+  }
+
+  public async init(): Promise<any> {
+    await this.getFolders();
   }
 
   private async getFolders(): Promise<string[]> {

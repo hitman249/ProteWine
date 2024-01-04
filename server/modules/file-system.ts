@@ -8,6 +8,7 @@ import md5_file from 'md5-file';
 import path from 'path';
 import type {ExecException} from 'child_process';
 import type {Stats} from 'fs';
+import {AbstractModule} from './abstract-module';
 
 type TypeFile = 'directory' | 'file';
 
@@ -20,7 +21,7 @@ type CopyMoveOptions = {
 
 type ArchiveType = {path: string, size: number};
 
-export default class FileSystem {
+export default class FileSystem extends AbstractModule {
   private appFolders: AppFolders;
 
   private DEFAULT_MODE_FILE: number = 0o644;
@@ -28,7 +29,11 @@ export default class FileSystem {
   private FILE_APPEND: string = 'a';
 
   constructor(appFolders: AppFolders) {
+    super();
     this.appFolders = appFolders;
+  }
+
+  public async init(): Promise<any> {
   }
 
   public async exec(cmd: string): Promise<string> {

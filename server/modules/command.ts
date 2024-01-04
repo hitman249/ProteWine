@@ -2,11 +2,27 @@ import _ from 'lodash';
 import process from 'process';
 import child_process from 'child_process';
 import type {ExecException} from 'child_process';
+import {AbstractModule} from './abstract-module';
+import Memory from '../helpers/memory';
 
 type ArgumentsType = {[key: string]: string | string[]};
 
-export default class Command {
-  private locale: string;
+export default class Command extends AbstractModule {
+  private memory: Memory = new Memory();
+  private declare locale: string;
+
+  constructor() {
+    super();
+
+    this.memory
+      .setContext(this)
+      .declareVariables(
+        'locale',
+      );
+  }
+
+  public async init(): Promise<any> {
+  }
 
   public async exec(cmd: string): Promise<string> {
     return await new Promise<string>((resolve: (value: string) => void): void => {
@@ -25,7 +41,7 @@ export default class Command {
       return this.locale;
     }
 
-    const locale: string = window.process.env.LC_ALL;
+    const locale: string = process.env.LC_ALL;
 
     if (locale) {
       this.locale = locale;
@@ -68,7 +84,7 @@ export default class Command {
     return cmd.split('\\').join('\\\\').split('"').join('\\"');
   }
 
-  public parseArguments(): ArgumentsType {
+  public getArguments(): ArgumentsType {
     const args: string[] = process.argv.slice();
     args.shift();
 

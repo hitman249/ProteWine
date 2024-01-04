@@ -6,10 +6,21 @@ import iconv from 'iconv-lite';
 import type {ReadStream} from 'fs';
 
 export default class Utils {
+  private static readonly objectPrototype: any = Object.getPrototypeOf({});
+
+  /**
+   * Empty values:
+   * null, undefined, NaN, '', {}, []
+   */
+  public static isEmpty(value: any): boolean {
+    return Object.is(value, NaN) || '' === value || null === value || undefined === value ||
+      (Array.isArray(value) && 0 === value.length) ||
+      ('object' === typeof value && !Array.isArray(value) && 0 === Object.keys(value).length && Object.getPrototypeOf(value) === Utils.objectPrototype);
+  }
+
   public static jsonEncode(object: Object): string {
     return JSON.stringify(object, null, 4);
   }
-
   public static jsonDecode(text: string): Object {
     if (!text || 'string' !== typeof text || '' === text.trim()) {
       return undefined;

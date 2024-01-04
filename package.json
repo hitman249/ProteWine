@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "server": "yarn",
-    "server-start": "electron . test=1,2,3 --test2=a,b,c ---test3=z,x,c,1,2,34",
+    "server-start": "electron .",
     "server-build": "yarn webpack --mode production --config webpack.config.js",
     "client": "cd client && yarn",
     "client-build": "cd client && yarn build",
