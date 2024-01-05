@@ -416,6 +416,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@types/cookie@npm:0.6.0"
+  checksum: 5b326bd0188120fb32c0be086b141b1481fec9941b76ad537f9110e10d61ee2636beac145463319c71e4be67a17e85b81ca9e13ceb6e3bb63b93d16824d6c149
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.1.6":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -1597,6 +1604,13 @@ __metadata:
   version: 1.1.0
   resolution: "console-control-strings@npm:1.1.0"
   checksum: 7ab51d30b52d461412cd467721bb82afe695da78fff8f29fe6f6b9cbaac9a2328e27a22a966014df9532100f6dd85370460be8130b9c677891ba36d96a343f50
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "cookie@npm:0.6.0"
+  checksum: f2318b31af7a31b4ddb4a678d024514df5e705f9be5909a192d7f116cfb6d45cbacf96a473fa733faa95050e7cff26e7832bb3ef94751592f1387b71c8956686
   languageName: node
   linkType: hard
 
@@ -3933,12 +3947,14 @@ __metadata:
   resolution: "protewine@workspace:."
   dependencies:
     "@electron/rebuild": "npm:^3.4.1"
+    "@types/cookie": "npm:^0.6.0"
     "@types/electron": "npm:^1.6.10"
     "@types/locutus": "npm:^0.0.8"
     "@types/lodash": "npm:^4.14.202"
     "@types/uuid": "npm:^9"
     "@typescript-eslint/eslint-plugin": "npm:^6.17.0"
     "@typescript-eslint/parser": "npm:^6.17.0"
+    cookie: "npm:^0.6.0"
     electron: "npm:^28.1.0"
     electron-builder: "npm:24.9.1"
     eslint: "npm:^8.56.0"

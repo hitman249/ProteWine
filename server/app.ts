@@ -1,11 +1,13 @@
 import type {AbstractModule} from './modules/abstract-module';
 import AppFolders from './modules/app-folders';
 import Command from './modules/command';
+import Driver from './modules/driver';
 import FileSystem from './modules/file-system';
 import GlobalCache from './modules/global-cache';
-import System from './modules/system';
-import Driver from './modules/driver';
 import Monitor from './modules/monitor';
+import Network from './modules/network';
+import System from './modules/system';
+import Update from './modules/update';
 
 class App {
   private readonly initOrder: AbstractModule[];
@@ -13,6 +15,8 @@ class App {
   private readonly COMMAND: Command;
   private readonly APP_FOLDERS: AppFolders;
   private readonly FILE_SYSTEM: FileSystem;
+  private readonly NETWORK: Network;
+  private readonly UPDATE: Update;
   private readonly CACHE: GlobalCache;
   private readonly SYSTEM: System;
   private readonly DRIVER: Driver;
@@ -21,17 +25,21 @@ class App {
 
   constructor() {
     this.COMMAND = new Command();
+    this.NETWORK = new Network();
     this.APP_FOLDERS = new AppFolders();
     this.FILE_SYSTEM = new FileSystem(this.APP_FOLDERS);
     this.CACHE = new GlobalCache(this.APP_FOLDERS);
     this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE);
     this.DRIVER = new Driver(this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
+    this.UPDATE = new Update(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK);
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
 
     this.initOrder = [
       this.COMMAND,
+      this.NETWORK,
       this.APP_FOLDERS,
       this.FILE_SYSTEM,
+      this.UPDATE,
       this.CACHE,
       this.SYSTEM,
       this.DRIVER,
@@ -71,6 +79,14 @@ class App {
 
   public getMonitor(): Monitor {
     return this.MONITOR;
+  }
+
+  public getNetwork(): Network {
+    return this.NETWORK;
+  }
+
+  public getUpdate(): Update {
+    return this.UPDATE;
   }
 }
 

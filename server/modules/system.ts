@@ -554,7 +554,7 @@ export default class System extends AbstractModule {
     // });
   }
 
-  private registerShutdownFunction(fn: Function): void {
+  public registerShutdownFunction(fn: Function): void {
     System.shutdownFunctions.push(fn);
   }
 

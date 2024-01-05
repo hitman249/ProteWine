@@ -4,6 +4,7 @@ import child_process from 'child_process';
 import type {ExecException} from 'child_process';
 import {AbstractModule} from './abstract-module';
 import Memory from '../helpers/memory';
+import WatchResponse from '../helpers/watch-response';
 
 type ArgumentsType = {[key: string]: string | string[]};
 
@@ -49,6 +50,12 @@ export default class Command extends AbstractModule {
     });
   }
 
+  public async watch(cmd: string): Promise<WatchResponse> {
+    return new WatchResponse(
+      child_process.spawn('sh', ['-c', cmd], {detached: true}),
+    );
+  }
+
   public async getLocale(): Promise<string> {
     if (undefined !== this.locale) {
       return this.locale;
@@ -82,7 +89,7 @@ export default class Command extends AbstractModule {
 
     const findLocale: {locale: string, c: number} = _.maxBy(
       Object.keys(counts)
-        .map((locale: string): any => ({ locale, c: counts[locale] })),
+        .map((locale: string): any => ({locale, c: counts[locale]})),
       'c',
     );
 

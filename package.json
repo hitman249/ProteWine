@@ -37,6 +37,7 @@
     }
   },
   "dependencies": {
+    "cookie": "^0.6.0",
     "fetch-blob": "^4.0.0",
     "form-data": "^4.0.0",
     "glob": "^10.3.10",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^3.4.1",
+    "@types/cookie": "^0.6.0",
     "@types/electron": "^1.6.10",
     "@types/locutus": "^0.0.8",
     "@types/lodash": "^4.14.202",
