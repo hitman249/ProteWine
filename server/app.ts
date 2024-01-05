@@ -5,6 +5,7 @@ import FileSystem from './modules/file-system';
 import GlobalCache from './modules/global-cache';
 import System from './modules/system';
 import Driver from './modules/driver';
+import Monitor from './modules/monitor';
 
 class App {
   private readonly initOrder: AbstractModule[];
@@ -15,6 +16,7 @@ class App {
   private readonly CACHE: GlobalCache;
   private readonly SYSTEM: System;
   private readonly DRIVER: Driver;
+  private readonly MONITOR: Monitor;
 
 
   constructor() {
@@ -24,6 +26,7 @@ class App {
     this.CACHE = new GlobalCache(this.APP_FOLDERS);
     this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE);
     this.DRIVER = new Driver(this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
+    this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
 
     this.initOrder = [
       this.COMMAND,
@@ -32,6 +35,7 @@ class App {
       this.CACHE,
       this.SYSTEM,
       this.DRIVER,
+      this.MONITOR,
     ];
   }
 
@@ -63,6 +67,10 @@ class App {
 
   public getDriver(): Driver {
     return this.DRIVER;
+  }
+
+  public getMonitor(): Monitor {
+    return this.MONITOR;
   }
 }
 

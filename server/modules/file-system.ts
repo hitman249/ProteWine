@@ -320,7 +320,7 @@ export default class FileSystem extends AbstractModule {
               return resolve(true);
             });
           } else {
-            fs.copyFile(srcPath, destPath, flag, (err: NodeJS.ErrnoException) => {
+            fs.copyFile(src, dest, flag, (err: NodeJS.ErrnoException) => {
               if (err) {
                 return resolve(false);
               }
