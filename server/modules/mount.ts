@@ -5,8 +5,8 @@ import Command    from './command';
 import Update     from './update';
 import System     from './system';
 import {AbstractModule} from './abstract-module';
-import type {Progress} from './network';
 import process from 'process';
+import type {Progress} from './archiver';
 
 export default class Mount extends AbstractModule {
   private mounted: boolean = false;

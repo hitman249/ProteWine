@@ -4,7 +4,7 @@ import child_process from 'child_process';
 import type {ExecException} from 'child_process';
 import {AbstractModule} from './abstract-module';
 import Memory from '../helpers/memory';
-import WatchResponse from '../helpers/watch-response';
+import WatchProcess from '../helpers/watch-process';
 
 type ArgumentsType = {[key: string]: string | string[]};
 
@@ -50,8 +50,8 @@ export default class Command extends AbstractModule {
     });
   }
 
-  public async watch(cmd: string): Promise<WatchResponse> {
-    return new WatchResponse(
+  public async watch(cmd: string): Promise<WatchProcess> {
+    return new WatchProcess(
       child_process.spawn('sh', ['-c', cmd], {detached: true}),
     );
   }

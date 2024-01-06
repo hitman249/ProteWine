@@ -308,25 +308,29 @@ export default class FileSystem extends AbstractModule {
     }
 
     const settings: CopyMoveOptions = Object.assign(defaultOptions, options);
-    const operation: (src: string, dest: string, flag: number, move: boolean) => Promise<boolean> =
+    const operation: (src: string, dest: string, flag: number, move: boolean) => Promise<void> =
       async (src: string, dest: string, flag: number, move: boolean) => {
-        return new Promise((resolve: (value: boolean) => void) => {
+        return new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) => {
           if (move) {
-            fs.rename(src, dest, (err: NodeJS.ErrnoException) => {
+            return fs.rename(src, dest, (err: NodeJS.ErrnoException) => {
               if (err) {
-                return resolve(false);
+                return ('EXDEV' === String(err.code).toUpperCase())
+                  ? fs.copyFile(src, dest, flag, async (err: NodeJS.ErrnoException) => {
+                    if (err) {
+                      return reject(err);
+                    }
+
+                    await this.rm(src);
+
+                    return resolve();
+                  })
+                  : reject(err);
               }
 
-              return resolve(true);
+              return resolve();
             });
           } else {
-            fs.copyFile(src, dest, flag, (err: NodeJS.ErrnoException) => {
-              if (err) {
-                return resolve(false);
-              }
-
-              return resolve(true);
-            });
+            return fs.copyFile(src, dest, flag, (err: NodeJS.ErrnoException) => err ? reject(err) : resolve());
           }
         });
       };
@@ -732,5 +736,9 @@ export default class FileSystem extends AbstractModule {
     await this.exec(`cd "${folder}" && tar -zcf "${folder}.tar.gz" -C "${folder}" .`);
 
     return await this.exists(`${folder}.tar.gz`);
+  }
+
+  public getAppFolders(): AppFolders {
+    return this.appFolders;
   }
 }

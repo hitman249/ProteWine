@@ -4,12 +4,12 @@ import EventListener from './event-listener';
 type ResolveType = (text: string) => void;
 type RejectType = (err: Error) => void;
 
-export enum WatchResponseEvent {
+export enum WatchProcessEvent {
   STDOUT = 'stdout',
   STDERR = 'stderr',
 }
 
-export default class WatchResponse extends EventListener {
+export default class WatchProcess extends EventListener {
   private readonly promise: Promise<string>;
   private resolve: ResolveType;
   private reject: RejectType;
@@ -42,16 +42,20 @@ export default class WatchResponse extends EventListener {
 
   private onStdout(data: Buffer): void {
     this.outChunks.push(data.toString());
-    this.fireEvent(WatchResponseEvent.STDOUT, data.toString());
+    this.fireEvent(WatchProcessEvent.STDOUT, data.toString());
   }
 
   private onStderr(data: Buffer): void {
     this.errorChunks.push(data.toString());
-    this.fireEvent(WatchResponseEvent.STDERR, data.toString());
+    this.fireEvent(WatchProcessEvent.STDERR, data.toString());
   }
 
   public kill(): void {
     this.watch.kill('SIGKILL');
+  }
+
+  public async wait(): Promise<void> {
+    return this.promise.then(() => undefined);
   }
 
   public async text(): Promise<string> {

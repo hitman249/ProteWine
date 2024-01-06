@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import AppFolders from './app-folders';
 import FileSystem from './file-system';
-import Network, {type Progress} from './network';
+import Network from './network';
 import {AbstractModule} from './abstract-module';
+import type {Progress} from './archiver';
 
 // import child_process from 'child_process';
 // import fs from 'fs';

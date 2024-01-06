@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import path from 'path';
+import process from 'process';
 // import Utils from '../helpers/utils';
 import FileSystem from './file-system';
 import {AbstractModule} from './abstract-module';
@@ -11,6 +13,7 @@ export default class AppFolders extends AbstractModule {
   private binDir: string = '/bin';
   private winetricksFile: string = '/bin/winetricks';
   private squashfuseFile: string = '/bin/squashfuse';
+  private barFile: string = '/bin/bar';
   private dosboxFile: string = '/bin/dosbox';
   private fuseisoFile: string = '/bin/fuseiso';
   private cabextractFile: string = '/bin/cabextract';
@@ -113,7 +116,15 @@ export default class AppFolders extends AbstractModule {
       return this.rootDir;
     }
 
-    let startFile: string = window.process.env.APPIMAGE;
+    let startFile: string = undefined;
+
+    if (_.endsWith(path.resolve(__dirname), 'cache/server')) {
+      startFile = path.resolve(__dirname, '..');
+    }
+
+    if (undefined === startFile) {
+      startFile = process.env.APPIMAGE;
+    }
 
     if (undefined === startFile) {
       startFile = path.resolve(__dirname);
@@ -268,6 +279,10 @@ export default class AppFolders extends AbstractModule {
 
   public async getSquashfuseFile(): Promise<string> {
     return await this.getRootDir() + this.squashfuseFile;
+  }
+
+  public async getBarFile(): Promise<string> {
+    return await this.getRootDir() + this.barFile;
   }
 
   public async getDosboxFile(): Promise<string> {

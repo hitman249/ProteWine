@@ -7,16 +7,14 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import Command from './command';
-import type WatchResponse from '../helpers/watch-response';
+import type WatchProcess from '../helpers/watch-process';
 import {AbstractModule} from './abstract-module';
+import type {Progress} from './archiver';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-export type Progress = {success: boolean, progress: number, total: number, current: number};
-
 type KeyValue = {[key: string]: string};
 type KeyValueAny = {[key: string]: any};
-
 export default class Network extends AbstractModule {
   private readonly repository: string = 'https://raw.githubusercontent.com/hitman249/ProteWine/main';
   private connected: boolean;
@@ -101,8 +99,11 @@ export default class Network extends AbstractModule {
         progress({
           success: contentLength > 0,
           progress: 0,
-          total: contentLength,
-          current: downloadedLength,
+          totalBytes: contentLength,
+          transferredBytes: downloadedLength,
+          path: url,
+          itemsComplete: 1,
+          itemsCount: 1,
         });
 
         return new Promise((resolve: () => void, reject: () => void) => {
@@ -122,8 +123,11 @@ export default class Network extends AbstractModule {
               progress({
                 success: contentLength > 0,
                 progress: 100 / contentLength * downloadedLength,
-                total: contentLength,
-                current: downloadedLength,
+                totalBytes: contentLength,
+                transferredBytes: downloadedLength,
+                path: url,
+                itemsComplete: 1,
+                itemsCount: 1,
               });
             });
           }
@@ -145,7 +149,7 @@ export default class Network extends AbstractModule {
     return Command.create().exec(cmd);
   }
 
-  private async watch(cmd: string): Promise<WatchResponse> {
+  private async watch(cmd: string): Promise<WatchProcess> {
     return Command.create().watch(cmd);
   }
 
