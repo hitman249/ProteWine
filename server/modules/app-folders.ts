@@ -13,6 +13,7 @@ export default class AppFolders extends AbstractModule {
   private binDir: string = '/bin';
   private winetricksFile: string = '/bin/winetricks';
   private squashfuseFile: string = '/bin/squashfuse';
+  private mksquashfsFile: string = '/bin/mksquashfs';
   private barFile: string = '/bin/bar';
   private dosboxFile: string = '/bin/dosbox';
   private fuseisoFile: string = '/bin/fuseiso';
@@ -279,6 +280,10 @@ export default class AppFolders extends AbstractModule {
 
   public async getSquashfuseFile(): Promise<string> {
     return await this.getRootDir() + this.squashfuseFile;
+  }
+
+  public async getMksquashfsFile(): Promise<string> {
+    return await this.getRootDir() + this.mksquashfsFile;
   }
 
   public async getBarFile(): Promise<string> {

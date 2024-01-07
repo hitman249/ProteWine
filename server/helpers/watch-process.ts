@@ -14,6 +14,9 @@ export default class WatchProcess extends EventListener {
   private resolve: ResolveType;
   private reject: RejectType;
 
+  private pid: number;
+  private gid: number;
+
   private readonly watch: ChildProcessWithoutNullStreams;
 
   private outChunks: string[] = [];
@@ -24,6 +27,9 @@ export default class WatchProcess extends EventListener {
 
     this.onStdout = this.onStdout.bind(this);
     this.onStderr = this.onStderr.bind(this);
+
+    this.pid = watch.pid;
+    this.gid = -watch.pid;
 
     this.promise = new Promise((resolve: ResolveType, reject: RejectType): void => {
       this.resolve = resolve;
@@ -38,6 +44,14 @@ export default class WatchProcess extends EventListener {
     watch.on('close', this.resolve);
     watch.on('exit', this.resolve);
     watch.on('error', this.reject);
+  }
+
+  public getPID(): number {
+    return this.pid;
+  }
+
+  public getGID(): number {
+    return this.gid;
   }
 
   private onStdout(data: Buffer): void {

@@ -18,7 +18,7 @@ export type Progress = {
   path?: string,
   itemsCount?: number,
   itemsComplete?: number,
-  event?: 'copy' | 'extract' | 'download',
+  event?: 'copy' | 'extract' | 'packing' | 'download',
 };
 
 export default class Archiver extends EventListener {
@@ -179,6 +179,47 @@ export default class Archiver extends EventListener {
     if (!await this.fs.exists(`${this.src}.tar.gz`)) {
       throw new Error(`Error packing: "${this.src}"`);
     }
+
+    return this;
+  }
+
+  public async packSquashfs(maxLevel: boolean = false): Promise<this> {
+    if (!await this.fs.exists(this.src)) {
+      throw new Error(`Error squashfs packing: "${this.src}"`);
+    }
+
+    const mksquashfs: string = await this.fs.getAppFolders().getMksquashfsFile();
+
+    const cmd: string = maxLevel
+      ? `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp lz4 -Xhc -percentage`
+      : `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp xz -Xdict-size 100% -percentage`;
+
+    const process: WatchProcess = await this.watch(`cd "${this.src}" && ${cmd}`);
+
+    let prevPercent: string = undefined;
+
+    process.on(WatchProcessEvent.STDOUT, (event: WatchProcessEvent.STDOUT, line: string) => {
+      const percent: string = Array.from(line.matchAll(/^([0-9]{1,2})$/gm))[0]?.[1];
+
+      if (undefined === percent || prevPercent === percent) {
+        return;
+      }
+
+      prevPercent = percent;
+
+      this.fireEvent(ArchiverEvent.PROGRESS, {
+        success: true,
+        progress: Utils.toInt(percent),
+        totalBytes: 0,
+        transferredBytes: 0,
+        itemsCount: 1,
+        itemsComplete: 1,
+        path: this.src,
+        event: 'packing',
+      } as Progress);
+    });
+
+    await process.wait();
 
     return this;
   }
