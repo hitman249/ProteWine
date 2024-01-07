@@ -23,7 +23,7 @@ export default class CopyFile extends EventListener {
     this.dest = dest;
   }
 
-  public async move({overwrite = false}: Options = {}): Promise<void> {
+  public async move({overwrite = true}: Options = {}): Promise<void> {
     await this.overwrite(overwrite);
     await this.getSize();
 
@@ -44,7 +44,7 @@ export default class CopyFile extends EventListener {
     });
   }
 
-  public async copy({overwrite = false}: Options = {}): Promise<void> {
+  public async copy({overwrite = true}: Options = {}): Promise<void> {
     await this.overwrite(overwrite);
 
     if (await this.fs.isSymbolicLink(this.src)) {

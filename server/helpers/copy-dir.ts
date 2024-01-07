@@ -43,7 +43,7 @@ export default class CopyDir extends EventListener {
     this.srcLen = this.src.length;
   }
 
-  public async move({overwrite = false}: Options = {}): Promise<void> {
+  public async move({overwrite = true}: Options = {}): Promise<void> {
     if (await this.fs.exists(this.dest)) {
       if (overwrite) {
         await this.fs.rm(this.dest);
@@ -69,7 +69,7 @@ export default class CopyDir extends EventListener {
     });
   }
 
-  public async copy({overwrite = false}: Options = {}): Promise<void> {
+  public async copy({overwrite = true}: Options = {}): Promise<void> {
     await this.scan();
 
     let itemsComplete: number = 0;
