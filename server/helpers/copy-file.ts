@@ -2,14 +2,11 @@ import fs, {type ReadStream, type Stats} from 'fs';
 import EventListener from './event-listener';
 import type {Progress} from '../modules/archiver';
 import type FileSystem from '../modules/file-system';
+import type {Options} from './copy-dir';
 
 export enum CopyFileEvent {
   PROGRESS = 'progress',
 }
-
-export type Options = {
-  overwrite?: boolean,
-};
 
 export default class CopyFile extends EventListener {
   private readonly fs: FileSystem;
@@ -18,7 +15,7 @@ export default class CopyFile extends EventListener {
   private readonly dest: string;
   private size: number;
 
-  constructor(fs: FileSystem, src: string, dest: string) {
+  constructor(fs: FileSystem, src: string, dest: string = '') {
     super();
 
     this.fs = fs;
@@ -139,7 +136,7 @@ export default class CopyFile extends EventListener {
     }
 
     return new Promise((resolve: (value: number) => void, reject: (err: NodeJS.ErrnoException) => void) => {
-      fs.stat(this.src, (err: NodeJS.ErrnoException, stat: Stats): void => {
+      fs.lstat(this.src, (err: NodeJS.ErrnoException, stat: Stats): void => {
         if (err) {
           return reject(err);
         }

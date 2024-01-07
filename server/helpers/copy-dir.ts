@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import fs from 'fs';
 import EventListener from './event-listener';
 import type {Progress} from '../modules/archiver';
 import type FileSystem from '../modules/file-system';
@@ -33,13 +34,39 @@ export default class CopyDir extends EventListener {
   private size: number;
   private count: number;
 
-  constructor(fs: FileSystem, src: string, dest: string) {
+  constructor(fs: FileSystem, src: string, dest: string = '') {
     super();
 
     this.fs = fs;
     this.src = _.trimEnd(src, '/');
     this.dest = _.trimEnd(dest, '/');
     this.srcLen = this.src.length;
+  }
+
+  public async move({overwrite = false}: Options = {}): Promise<void> {
+    if (await this.fs.exists(this.dest)) {
+      if (overwrite) {
+        await this.fs.rm(this.dest);
+      } else {
+        throw new Error(`Error, destination exist "${this.dest}"`);
+      }
+    }
+
+    return new Promise((resolve: () => void, reject: (err?: NodeJS.ErrnoException) => void) => {
+      fs.rename(this.src, this.dest, (err: NodeJS.ErrnoException) => {
+        if (err) {
+          if ('EXDEV' === String(err.code).toUpperCase()) {
+            return this.copy({overwrite})
+              .then(() => this.fs.rm(this.src))
+              .then(() => resolve(), () => reject({path: this.src, code: 'REMOVE'} as NodeJS.ErrnoException));
+          } else {
+            return reject(err);
+          }
+        }
+
+        return resolve();
+      });
+    });
   }
 
   public async copy({overwrite = false}: Options = {}): Promise<void> {
@@ -132,7 +159,7 @@ export default class CopyDir extends EventListener {
         this.dirs.push(path);
       } else {
         this.files.push(path);
-        this.size += await this.fs.size(path);
+        this.size += await new CopyFile(this.fs, path).getSize();
       }
     }
 

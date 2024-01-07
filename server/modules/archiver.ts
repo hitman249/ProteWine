@@ -18,6 +18,7 @@ export type Progress = {
   path?: string,
   itemsCount?: number,
   itemsComplete?: number,
+  event?: 'copy' | 'extract' | 'download',
 };
 
 export default class Archiver extends EventListener {
@@ -26,97 +27,159 @@ export default class Archiver extends EventListener {
 
   private readonly src: string;
   private readonly dest: string;
+  private tempDir: string;
 
-  constructor(fs: FileSystem, src: string, dest: string) {
+  private static readonly SKIP_PROGRESS: string[] = [
+    'unrar',
+    'unzip',
+    '7z',
+  ];
+
+  constructor(fs: FileSystem, src: string, dest: string = '') {
     super();
 
     this.fs = fs;
     this.appFolders = this.fs.getAppFolders();
-    this.src = src;
+    this.src = _.trimEnd(src, '/');
     this.dest = _.trimEnd(dest, '/');
   }
 
-  // public async unpack(inFile: string, outDir: string, simple: boolean = false): Promise<boolean> {
-  //   if (_.endsWith(inFile, '.tar.xz')) {
-  //     return await this.extract(inFile, outDir, 'xf', '', 'tar', simple);
-  //   }
-  //   if (_.endsWith(inFile, '.tar.gz') || _.endsWith(inFile, '.tgz')) {
-  //     return await this.extract(inFile, outDir, simple);
-  //   }
-  //   if (_.endsWith(inFile, '.pol')) {
-  //     return await this.extract(inFile, outDir, simple);
-  //   }
-  //   if (_.endsWith(inFile, '.exe') || _.endsWith(inFile, '.rar')) {
-  //     return await this.extract(inFile, outDir, simple);
-  //   }
-  //   if (_.endsWith(inFile, '.zip')) {
-  //     return await this.extract(inFile, outDir, simple);
-  //   }
-  //
-  //   return false;
-  // }
+  public async unpack(): Promise<this> {
+    if (_.endsWith(this.src, '.tar.gz') || _.endsWith(this.src, '.tgz')) {
+      return await this.extract('tar', 'xzpf -');
+    }
+    if (_.endsWith(this.src, '.tar.xz')) {
+      return await this.extract('tar', 'xJf -');
+    }
+    if (_.endsWith(this.src, '.tar.zst')) {
+      return await this.extract('tar', '-I zstd -xf -');
+    }
+    if (_.endsWith(this.src, '.pol')) {
+      return await this.extract('tar', 'xjf -');
+    }
+    if (_.endsWith(this.src, '.exe') || _.endsWith(this.src, '.rar')) {
+      return await this.extract('unrar', 'x');
+    }
+    if (_.endsWith(this.src, '.zip')) {
+      return await this.extract('unzip', '');
+    }
+    if (_.endsWith(this.src, '.7z')) {
+      return await this.extract('7z', 'x');
+    }
 
-  public async extract(type: string = 'xzpf -', archiver: string = 'tar'): Promise<void> {
-    console.log(this.src);
+    throw new Error(`Unknown archive: "${this.src}"`);
+  }
+
+  private async extract(archiver: string = 'tar', args: string = 'xzpf -'): Promise<this> {
     if (!await this.fs.exists(this.src) || await this.fs.isDirectory(this.src)) {
-      console.log('step1', await this.fs.exists(this.src), await this.fs.isDirectory(this.src));
-      return;
+      return this;
     }
 
     if (await this.fs.exists(this.dest)) {
       await this.fs.rm(this.dest);
     }
 
-    const tmpDir: string = (await this.appFolders.getCacheDir()) + `/tmp_${Utils.rand(10000, 99999)}`;
-    await this.fs.mkdir(tmpDir);
+    this.tempDir = (await this.appFolders.getCacheDir()) + `/tmp_${Utils.rand(10000, 99999)}`;
+    await this.fs.mkdir(this.tempDir);
 
-    console.log(tmpDir);
-
-    if (!await this.fs.exists(tmpDir)) {
-      throw new Error(`Error create dir: ${tmpDir}`);
+    if (!await this.fs.exists(this.tempDir)) {
+      throw new Error(`Error create dir: ${this.tempDir}`);
     }
 
     const size: number = await this.fs.size(this.src);
     const fileName: string = this.fs.basename(this.src);
-    const mvFile: string = `${tmpDir}/${fileName}`;
-    await this.fs.mv(this.src, mvFile);
+    const mvFile: string = `${this.tempDir}/${fileName}`;
+
+    await this.fs.mv(this.src, mvFile, {overwrite: true}, (progress: Progress) => {
+      this.fireEvent(ArchiverEvent.PROGRESS, {
+        success: true,
+        progress: progress.progress,
+        totalBytes: progress.totalBytes,
+        transferredBytes: progress.transferredBytes,
+        itemsCount: progress.itemsCount,
+        itemsComplete: progress.itemsComplete,
+        path: progress.path,
+        event: 'copy',
+      } as Progress);
+    });
 
     if (!await this.fs.exists(mvFile)) {
       throw new Error(`Error found file: ${mvFile}`);
     }
 
-    const bar: string = `"${await this.appFolders.getBarFile()}" -w 100 -n "${fileName}" |`;
-    const process: WatchProcess = await this.watch(`cd "${tmpDir}" && ${bar} ${archiver} ${type}`);
+    const skipProgress: boolean = Archiver.SKIP_PROGRESS.includes(archiver);
 
-    console.log(size, mvFile, `cd "${tmpDir}" && ${bar} ${archiver} ${type}`);
+    const bar: string = skipProgress ? '' : `"${await this.appFolders.getBarFile()}" -w 100 -n "${fileName}" |`;
+    const process: WatchProcess = await this.watch(`cd "${this.tempDir}" && ${bar} ${archiver} ${args}`);
 
-    let prevPercent: string = undefined;
+    if (!skipProgress) {
+      let prevPercent: string = undefined;
 
-    process.on(WatchProcessEvent.STDOUT, (event: WatchProcessEvent.STDOUT, line: string) => {
-      const percent: string = Array.from(line.matchAll(/ ([0-9]{1,2})% \[/gm))[0]?.[1];
+      process.on(WatchProcessEvent.STDERR, (event: WatchProcessEvent.STDERR, line: string) => {
+        const percent: string = Array.from(line.matchAll(/ ([0-9]{1,2})% \[/gm))[0]?.[1];
 
-      if (undefined === percent || prevPercent === percent) {
-        return;
-      }
+        if (undefined === percent || prevPercent === percent) {
+          return;
+        }
 
-      prevPercent = percent;
+        prevPercent = percent;
 
-      const progress: Progress = {
-        success: true,
-        progress: Utils.toInt(percent),
-        totalBytes: size,
-        transferredBytes: size / 100 * Utils.toInt(percent),
-      };
-
-      this.fireEvent(ArchiverEvent.PROGRESS, progress);
-    });
+        this.fireEvent(ArchiverEvent.PROGRESS, {
+          success: true,
+          progress: Utils.toInt(percent),
+          totalBytes: size,
+          transferredBytes: size / 100 * Utils.toInt(percent),
+          itemsCount: 1,
+          itemsComplete: 1,
+          path: this.src,
+          event: 'extract',
+        } as Progress);
+      });
+    }
 
     await process.wait();
+    await this.fs.rm(mvFile);
 
-    // await this.fs.rm(mvFile);
+    return this;
   }
 
   private async watch(cmd: string): Promise<WatchProcess> {
     return await Command.create().watch(cmd);
+  }
+
+  public async clear(): Promise<this> {
+    if (this.tempDir && await this.fs.exists(this.tempDir)) {
+      await this.fs.rm(this.tempDir);
+    }
+
+    return this;
+  }
+
+  public static isArchive(path: string): boolean {
+    return Utils.endsWith(path, [
+      '.tar.xz',
+      '.tar.gz',
+      '.tar.zst',
+      '.tgz',
+      '.exe',
+      '.rar',
+      '.zip',
+      '.7z',
+      '.pol',
+    ]);
+  }
+
+  public async pack(): Promise<this> {
+    if (!(await this.fs.exists(this.src)) || (await this.fs.exists(`${this.src}.tar.gz`))) {
+      return this;
+    }
+
+    await this.fs.exec(`cd "${this.src}" && tar -zcf "${this.src}.tar.gz" -C "${this.src}" .`);
+
+    if (!await this.fs.exists(`${this.src}.tar.gz`)) {
+      throw new Error(`Error packing: "${this.src}"`);
+    }
+
+    return this;
   }
 }
