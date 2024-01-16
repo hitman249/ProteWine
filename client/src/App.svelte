@@ -1,10 +1,11 @@
 <script lang="ts">
   import Background from './widgets/Background.svelte';
+  import Menu from './widgets/Menu.svelte';
 </script>
 
 <main>
   <Background/>
-
+  <Menu/>
 </main>
 
 <style lang="less">
