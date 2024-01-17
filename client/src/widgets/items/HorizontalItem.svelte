@@ -6,40 +6,40 @@ import Prefix from '../icons/Prefix.svelte';
 import Updates from '../icons/Updates.svelte';
 import Build from '../icons/Build.svelte';
 import Database from '../icons/Database.svelte';
+import {MenuItem} from '../../modules/menu';
 export let status: 'normal' | 'active' | 'focused' = 'normal';
-export let icon: string = '';
-export let title: string = '';
 export let dummy: boolean = false;
-export let click: (a: any) => void = () => null;
-
+export let item: MenuItem = undefined;
 </script>
 
-<div aria-hidden="true" class="item" on:click={click} style="opacity: {dummy ? 0 : 1};">
+<div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
   <div class="item-icon">
-    {#if 'gamepad' === icon}
-      <Gamepad status={`item-${status}`} />
-    {/if}
-    {#if 'settings' === icon}
-      <Settings status={`item-${status}`} />
-    {/if}
-    {#if 'layouts' === icon}
-      <Layouts status={`item-${status}`} />
-    {/if}
-    {#if 'prefix' === icon}
-      <Prefix status={`item-${status}`} />
-    {/if}
-    {#if 'updates' === icon}
-      <Updates status={`item-${status}`} />
-    {/if}
-    {#if 'build' === icon}
-      <Build status={`item-${status}`} />
-    {/if}
-    {#if 'database' === icon}
-      <Database status={`item-${status}`} />
+    {#if item}
+      {#if 'gamepad' === item.getIcon()}
+        <Gamepad status={`item-${status}`} />
+      {/if}
+      {#if 'settings' === item.getIcon()}
+        <Settings status={`item-${status}`} />
+      {/if}
+      {#if 'layouts' === item.getIcon()}
+        <Layouts status={`item-${status}`} />
+      {/if}
+      {#if 'prefix' === item.getIcon()}
+        <Prefix status={`item-${status}`} />
+      {/if}
+      {#if 'updates' === item.getIcon()}
+        <Updates status={`item-${status}`} />
+      {/if}
+      {#if 'build' === item.getIcon()}
+        <Build status={`item-${status}`} />
+      {/if}
+      {#if 'database' === item.getIcon()}
+        <Database status={`item-${status}`} />
+      {/if}
     {/if}
   </div>
   <div class="item-title">
-    {title}
+    {item?.getTitle() || ''}
   </div>
 </div>
 

@@ -5,15 +5,17 @@
   import _ from 'lodash';
   import {tweened} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
+  import Menu from '../../modules/menu';
 
   export let items: any = [];
+
+  let itemSpace: number = Menu.ROOT_ITEM_HEIGHT;
+  let itemHeight: number = Menu.ITEM_HEIGHT;
 
   let container: HTMLDivElement;
   let containerHeight: number = 0;
   let scrollTop: number = 0;
   let current: number = 0;
-  let itemHeight: number = 110;
-  let itemSpace: number = 170;
   let direction: boolean = true;
 
   let frame: number;
@@ -64,18 +66,20 @@
 </script>
 
 <div class="list" bind:this={container} bind:clientHeight={containerHeight}>
-  <VirtualList {items} {itemHeight} {itemSpace} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
-    <slot
-      name="item"
-      {item}
-      {dummy}
-      {scrollTop}
-      {y}
-      active={index === (current + 1)}
-      index={index}
-      jump={(direction && index === current) || (!direction && index === current + 1)}
-    />
-  </VirtualList>
+  {#if containerHeight > 0}
+    <VirtualList {items} {itemHeight} {itemSpace} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
+      <slot
+        name="item"
+        {item}
+        {dummy}
+        {scrollTop}
+        {y}
+        active={index === (current + 1)}
+        index={index}
+        jump={(direction && index === current) || (!direction && index === current + 1)}
+      />
+    </VirtualList>
+  {/if}
 </div>
 
 <style lang="less">

@@ -3,98 +3,67 @@
   import VerticalList from '../components/vertical-list/VerticalList.svelte';
   import HorizontalItem from './items/HorizontalItem.svelte';
   import VerticalItem from './items/VerticalItem.svelte';
-
-  type MenuItem = {
-    id: string,
-    title: string,
-  };
-
-  let data: MenuItem[] = [
-    {
-      id: 'gamepad',
-      title: 'Games',
-    },
-    {
-      id: 'prefix',
-      title: 'Prefix',
-    },
-    {
-      id: 'layouts',
-      title: 'Layouts',
-    },
-    {
-      id: 'updates',
-      title: 'Updates',
-    },
-    {
-      id: 'database',
-      title: 'Database',
-    },
-    {
-      id: 'settings',
-      title: 'Settings',
-    },
-    {
-      id: 'build',
-      title: 'Build',
-    },
-  ];
-
-  data = [...data, ...data, ...data, ...data].map((v: any, index: number) => Object.assign({}, v, {key: index}));
+  import Menu, {type MenuItem} from '../modules/menu';
 
   let containerWidth: number = 0;
-  let containerHeight: number = 0;
+  let paddingLeftCategories: number = -(Menu.ROOT_ITEM_HEIGHT + 20);
+
+  const menu: Menu = new Menu();
+  const items: MenuItem[] = menu.getRoot();
+
+  menu.setCurrentIndex(0);
+
+  $: categories = menu.getCategories();
 </script>
 
-<div class="list-container"
-     bind:clientWidth={containerWidth}
-     bind:clientHeight={containerHeight}>
+<div class="list-container" bind:clientWidth={containerWidth}>
   {#if containerWidth > 0}
     <VirtualList
       width={containerWidth - 650}
-      height="170px"
-      itemCount={data.length}
-      itemSize={200}
+      height={`${Menu.ROOT_ITEM_HEIGHT}px`}
+      itemSize={Menu.ROOT_ITEM_WIDTH}
+      itemCount={items.length}
       scrollDirection="horizontal"
     >
       <div slot="item" let:index let:style {style}>
         <HorizontalItem
-          status={0 === index ? 'active' : 'normal'}
-          title={data[index].title}
-          icon={data[index].id}
+          status={menu.getCurrentIndex() === index ? 'active' : 'normal'}
+          item={items[index]}
         />
       </div>
     </VirtualList>
   {/if}
 </div>
 
-<div class="vertical-list">
-  <VerticalList items={data} >
-    <div
-      slot="item"
-      let:index
-      let:dummy
-      let:y
-      let:active
-      let:jump
-      let:item
-      let:scrollTop
-      class="vertical-item"
-      style="transform: translate(0px, {y}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
-    >
-      {#if scrollTop >= 1124 && scrollTop <= 1210}
-        <!--{@debug index, jump}-->
-      {/if}
+<div class="vertical-lists">
+  {#each categories as item}
+    {@const current = item?.isActive()}
+    {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
 
-      {#key y}
-        <VerticalItem
-          {dummy}
-          {item}
-          status={active ? 'focused' : 'normal'}
-        />
-      {/key}
+    <div class="vertical-list" style="left: {left}px; opacity: {current ? 1 : 0};">
+      <VerticalList items={item ? item.items : []}>
+        <div
+          slot="item"
+          let:index
+          let:dummy
+          let:y
+          let:active
+          let:jump
+          let:item
+          class="vertical-item"
+          style="transform: translate(0px, {y}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+        >
+          {#key y}
+            <VerticalItem
+              {dummy}
+              {item}
+              status={active ? 'focused' : 'normal'}
+            />
+          {/key}
+        </div>
+      </VerticalList>
     </div>
-  </VerticalList>
+  {/each}
 </div>
 
 <style lang="less">
@@ -111,6 +80,17 @@
     font-size: 20px;
   }
 
+  .vertical-lists {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+  }
+
   .vertical-list {
     position: absolute;
     display: block;
@@ -118,7 +98,6 @@
     left: 180px;
     width: calc(100% - 180px);
     height: 100%;
-    z-index: 0;
   }
 
   .vertical-item {
