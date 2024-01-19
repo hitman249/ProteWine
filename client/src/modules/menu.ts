@@ -157,26 +157,25 @@ export default class Menu extends EventListener {
       icon: 'updates',
       title: 'Updates',
       items: [
-
         {
-          id: 'updates',
-          icon: 'updates',
-          title: 'Updates',
+          id: 'update-self',
+          icon: 'update-self',
+          title: 'Update ProteWine',
           items: [],
         },
         {
-          id: 'database',
-          icon: 'database',
-          title: 'Database',
+          id: 'updates',
+          icon: 'update-layer',
+          title: 'DXVK',
+          items: [],
+        },
+        {
+          id: 'updates',
+          icon: 'update-layer',
+          title: 'VKD3D',
           items: [],
         },
       ],
-    },
-    {
-      id: 'database',
-      icon: 'database',
-      title: 'Database',
-      items: [],
     },
     {
       id: 'settings',
@@ -188,7 +187,45 @@ export default class Menu extends EventListener {
       id: 'build',
       icon: 'build',
       title: 'Build',
-      items: [],
+      items: [
+        {
+          id: 'wine-unpack',
+          icon: 'unpack',
+          title: 'Unpack Runtime',
+          items: [],
+        },
+        {
+          id: 'wine-pack',
+          icon: 'pack',
+          title: 'Pack Runtime',
+          items: [],
+        },
+        {
+          id: 'build-game',
+          icon: 'compile',
+          title: 'Build portable',
+          items: [],
+        },
+      ],
+    },
+    {
+      id: 'database',
+      icon: 'database',
+      title: 'Database',
+      items: [
+        {
+          id: 'layers-item',
+          icon: 'layers-item',
+          title: 'DXVK 2.3',
+          items: [],
+        },
+        {
+          id: 'layers-item',
+          icon: 'layers-item',
+          title: 'd3dcompiler',
+          items: [],
+        },
+      ],
     },
   ].map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
 

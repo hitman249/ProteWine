@@ -12,6 +12,12 @@
   import PrefixSettings from './PrefixSettings.svelte';
   import LayersAdd from './LayersAdd.svelte';
   import LayersList from './LayersList.svelte';
+  import LayersItem from './LayersItem.svelte';
+  import UpdateSelf from './UpdateSelf.svelte';
+  import UpdateLayer from './UpdateLayer.svelte';
+  import Unpack from './Unpack.svelte';
+  import Pack from './Pack.svelte';
+  import Compile from './Compile.svelte';
 
   export let status: 'normal' | 'active' | 'focused' = 'normal';
   export let icon: string = '';
@@ -56,4 +62,22 @@
 {/if}
 {#if 'layers-list' === icon}
   <LayersList status={`item-${status}`} />
+{/if}
+{#if 'layers-item' === icon}
+  <LayersItem status={`item-${status}`} />
+{/if}
+{#if 'update-self' === icon}
+  <UpdateSelf status={`item-${status}`} />
+{/if}
+{#if 'update-layer' === icon}
+  <UpdateLayer status={`item-${status}`} />
+{/if}
+{#if 'unpack' === icon}
+  <Unpack status={`item-${status}`} />
+{/if}
+{#if 'pack' === icon}
+  <Pack status={`item-${status}`} />
+{/if}
+{#if 'compile' === icon}
+  <Compile status={`item-${status}`} />
 {/if}

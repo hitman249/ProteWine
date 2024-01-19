@@ -37,7 +37,7 @@
       return index !== numOverlap;
     };
 
-  $: contentHeight = items.length * 2 * itemHeight;
+  $: contentHeight = items.length * 2 * itemHeight + (items.length * 2);
   $: startIndex = Math.floor(scrollTop / itemHeight);
   $: endIndex = startIndex + numItems;
   $: numOverlap = Math.floor(scrollTop / itemHeight) % numItems;

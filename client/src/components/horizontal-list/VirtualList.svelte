@@ -17,7 +17,7 @@
     }
   };
 
-  $: contentWidth = items.length * 2 * itemWidth;
+  $: contentWidth = items.length * 2 * itemWidth + (items.length * 2);
   $: startIndex = Math.floor(scrollLeft / itemWidth);
   $: endIndex = startIndex + numItems;
   $: numOverlap = Math.floor(scrollLeft / itemWidth) % numItems;
