@@ -9,27 +9,26 @@
 
   export let items: any = [];
 
-  let itemSpace: number = Menu.ROOT_ITEM_HEIGHT;
-  let itemHeight: number = Menu.ITEM_HEIGHT;
+  let itemWidth: number = Menu.ROOT_ITEM_WIDTH;
 
   let container: HTMLDivElement;
-  let containerHeight: number = 0;
-  let scrollTop: number = 0;
+  let containerWidth: number = 0;
+  let scrollLeft: number = 0;
   let current: number = 0;
   let direction: boolean = true;
 
   let frame: number;
 
   function poll() {
-    if (container.scrollTop !== scrollTop) {
-      scrollTop = container.scrollTop;
+    if (container.scrollLeft !== scrollLeft) {
+      scrollLeft = container.scrollLeft;
     }
 
     frame = requestAnimationFrame(poll);
   }
 
   export function scrollTo(position: number) {
-    container?.scrollTo({top: position});
+    container?.scrollTo({left: position});
   }
 
   const scroll = tweened(0, {
@@ -47,27 +46,27 @@
     return current;
   }
 
-  export function hasDown(): boolean {
+  export function hasRight(): boolean {
     return current < items.length - 1;
   }
 
-  export function hasUp(): boolean {
+  export function hasLeft(): boolean {
     return current > 0;
   }
 
-  export function keyDown() {
-    if (hasDown()) {
+  export function keyRight() {
+    if (hasRight()) {
       direction = true;
       current++;
-      scroll.set(current * itemHeight);
+      scroll.set(current * itemWidth);
     }
   }
 
-  export function keyUp() {
-    if (hasUp()) {
+  export function keyLeft() {
+    if (hasLeft()) {
       direction = false;
       current--;
-      scroll.set(current * itemHeight);
+      scroll.set(current * itemWidth);
     }
   }
 
@@ -81,15 +80,15 @@
   });
 </script>
 
-<div class="list" bind:this={container} bind:clientHeight={containerHeight}>
-  {#if containerHeight > 0}
-    <VirtualList {items} {itemHeight} {itemSpace} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
+<div class="list" bind:this={container} bind:clientWidth={containerWidth}>
+  {#if containerWidth > 0}
+    <VirtualList {items} {itemWidth} {containerWidth} {scrollLeft} {direction} let:item let:dummy let:x let:index>
       <slot
         name="item"
         {item}
         {dummy}
-        {scrollTop}
-        {y}
+        {scrollLeft}
+        {x}
         active={index === (current + 1)}
         index={index}
         jump={(direction && index === current) || (!direction && index === current + 1)}

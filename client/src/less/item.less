@@ -1,0 +1,27 @@
+.item-normal {
+  transition: transform 0.3s;
+  transform: scale(1);
+  filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+}
+
+.item-active {
+  transition: transform 0.3s;
+  transform: scale(1.3);
+  filter: drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px);
+}
+
+.item-focused {
+  animation-duration: 1.2s;
+  animation-name: item-focused;
+  animation-iteration-count: infinite;
+
+  @keyframes item-focused {
+    0% {
+      filter: drop-shadow(transparent 0px 0px 0px);
+    }
+
+    50% {
+      filter: drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 6px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 6px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 6px);
+    }
+  }
+}

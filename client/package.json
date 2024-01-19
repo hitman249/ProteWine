@@ -10,8 +10,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "svelte-tiny-virtual-list": "^2.0.5"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.1",

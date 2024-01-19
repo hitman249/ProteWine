@@ -36,6 +36,10 @@ export class MenuItem {
     return this.id;
   }
 
+  public getIndex(): number {
+    return this.index;
+  }
+
   public getIcon(): string {
     return this.icon;
   }
@@ -77,7 +81,7 @@ export class MenuItem {
 
 export default class Menu extends EventListener {
   public static ROOT_ITEM_HEIGHT: number = 170;
-  public static ROOT_ITEM_WIDTH: number = 200;
+  public static ROOT_ITEM_WIDTH: number = 170;
   
   public static ITEM_HEIGHT: number = 110;
 
@@ -98,12 +102,6 @@ export default class Menu extends EventListener {
           items: [],
         },
         {
-          id: 'prefix',
-          icon: 'prefix',
-          title: 'Prefix',
-          items: [],
-        },
-        {
           id: 'add-game',
           icon: 'plus',
           title: 'Add game',
@@ -116,64 +114,40 @@ export default class Menu extends EventListener {
       title: 'Prefix',
       items: [
         {
-          id: 'prefix',
-          icon: 'prefix',
-          title: 'Prefix',
+          id: 'wine',
+          icon: 'wine',
+          title: 'Runtime change',
           items: [],
         },
         {
-          id: 'layouts',
-          icon: 'layouts',
-          title: 'Layouts',
+          id: 'reset',
+          icon: 'reset',
+          title: 'Prefix reset',
           items: [],
         },
         {
-          id: 'updates',
-          icon: 'updates',
-          title: 'Updates',
-          items: [],
-        },
-        {
-          id: 'database',
-          icon: 'database',
-          title: 'Database',
+          id: 'prefix-settings',
+          icon: 'prefix-settings',
+          title: 'Settings',
           items: [],
         },
       ],
     },
     {
-      id: 'layouts',
-      icon: 'layouts',
-      title: 'Layouts',
+      id: 'layers',
+      icon: 'layers',
+      title: 'Layers',
       items: [
         {
-          id: 'layouts',
-          icon: 'layouts',
-          title: 'Layouts',
+          id: 'layers-list',
+          icon: 'layers-list',
+          title: 'Layers',
           items: [],
         },
         {
-          id: 'updates',
-          icon: 'updates',
-          title: 'Updates',
-          items: [],
-        },
-        {
-          id: 'database',
-          icon: 'database',
-          title: 'Database',
-          items: [],
-        },
-        {
-          id: 'settings',
-          icon: 'settings',
-          title: 'Settings',
-          items: [],
-        },
-        {
-          id: 'build',
-          icon: 'build',
-          title: 'Build',
+          id: 'layers-add',
+          icon: 'layers-add',
+          title: 'New layer',
           items: [],
         },
       ],
@@ -188,12 +162,6 @@ export default class Menu extends EventListener {
           id: 'updates',
           icon: 'updates',
           title: 'Updates',
-          items: [],
-        },
-        {
-          id: 'layouts',
-          icon: 'layouts',
-          title: 'Layouts',
           items: [],
         },
         {
@@ -236,9 +204,22 @@ export default class Menu extends EventListener {
     return this.root;
   }
 
-  public getCategories(): MenuItem[] {
+  public getCategory(index: number = this.currentIndex): MenuItem {
+    return this.root[index];
+  }
+
+  public getCategories(direction?: boolean | undefined): MenuItem[] {
     const count: number = 3;
-    const startIndex: number = this.currentIndex;
+    let startIndex: number = this.currentIndex;
+
+    if (true === direction) {
+      if (startIndex > 0) {
+        startIndex = startIndex - 1;
+      }
+    } else if (false === direction) {
+      startIndex = startIndex + 1;
+    }
+
     const endIndex: number = startIndex + count;
 
     return Helpers.shiftArray(
@@ -251,5 +232,9 @@ export default class Menu extends EventListener {
       ),
       this.currentIndex % count,
     );
+  }
+
+  public getCategoryInstanceIndex(offset: number = 1): number {
+    return (this.currentIndex + offset) % 3;
   }
 }

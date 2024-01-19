@@ -48,7 +48,7 @@
   .item {
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 170px;
     height: 170px;
     padding: 0;
     margin: 0;

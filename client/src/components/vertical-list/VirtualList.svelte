@@ -37,6 +37,7 @@
       return index !== numOverlap;
     };
 
+  $: contentHeight = items.length * 2 * itemHeight;
   $: startIndex = Math.floor(scrollTop / itemHeight);
   $: endIndex = startIndex + numItems;
   $: numOverlap = Math.floor(scrollTop / itemHeight) % numItems;
@@ -52,6 +53,8 @@
     numOverlap,
   );
 </script>
+
+<div style="width: 100%; height: {contentHeight}px;"/>
 
 {#each slice as item, index}
   {@const naturalIndex = getNaturalIndex(index)}

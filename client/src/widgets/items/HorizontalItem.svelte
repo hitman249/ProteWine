@@ -1,44 +1,19 @@
 <script lang="ts">
-import Gamepad from '../icons/Gamepad.svelte';
-import Settings from '../icons/Settings.svelte';
-import Layouts from '../icons/Layouts.svelte';
-import Prefix from '../icons/Prefix.svelte';
-import Updates from '../icons/Updates.svelte';
-import Build from '../icons/Build.svelte';
-import Database from '../icons/Database.svelte';
-import {MenuItem} from '../../modules/menu';
-export let status: 'normal' | 'active' | 'focused' = 'normal';
-export let dummy: boolean = false;
-export let item: MenuItem = undefined;
+  import {MenuItem} from '../../modules/menu';
+  import Icon from '../icons/Icon.svelte';
+
+  export let status: 'normal' | 'active' | 'focused' = 'normal';
+  export let dummy: boolean = false;
+  export let item: MenuItem = undefined;
 </script>
 
 <div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
   <div class="item-icon">
     {#if item}
-      {#if 'gamepad' === item.getIcon()}
-        <Gamepad status={`item-${status}`} />
-      {/if}
-      {#if 'settings' === item.getIcon()}
-        <Settings status={`item-${status}`} />
-      {/if}
-      {#if 'layouts' === item.getIcon()}
-        <Layouts status={`item-${status}`} />
-      {/if}
-      {#if 'prefix' === item.getIcon()}
-        <Prefix status={`item-${status}`} />
-      {/if}
-      {#if 'updates' === item.getIcon()}
-        <Updates status={`item-${status}`} />
-      {/if}
-      {#if 'build' === item.getIcon()}
-        <Build status={`item-${status}`} />
-      {/if}
-      {#if 'database' === item.getIcon()}
-        <Database status={`item-${status}`} />
-      {/if}
+      <Icon icon={item?.getIcon()} bind:status />
     {/if}
   </div>
-  <div class="item-title">
+  <div class="item-title" class:item-title-active={'active' === status}>
     {item?.getTitle() || ''}
   </div>
 </div>
@@ -47,14 +22,14 @@ export let item: MenuItem = undefined;
   .item {
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 170px;
     height: 170px;
     padding: 0;
     margin: 0;
     padding-top: 10px;
     box-sizing: border-box;
     font-weight: 500;
-    font-family: -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
     color: #ffffff;
     cursor: pointer;
     -webkit-font-smoothing: antialiased;
@@ -82,7 +57,7 @@ export let item: MenuItem = undefined;
     display: flex;
     position: relative;
     justify-content: center;
-    align-items: start;
+    align-items: center;
     text-align: center;
     width: 100%;
     height: 40px;
@@ -91,31 +66,11 @@ export let item: MenuItem = undefined;
     font-size: 18px;
     font-weight: 400;
     filter: drop-shadow(rgba(0, 0, 0, 0.7) 4px 4px 2px);
+    opacity: 0;
+    transition: opacity 0.3s;
   }
 
-  :global(.item-active) {
-    filter: drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px);
-  }
-
-  :global(.item-focused) {
-    transform: scale(1.2);
-
-    animation-duration: 1.2s;
-    animation-name: item-focused;
-    animation-iteration-count: infinite;
-
-    @keyframes item-focused {
-      0% {
-        filter: drop-shadow(transparent 0px 0px 0px);
-      }
-
-      50% {
-        filter: drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 6px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 6px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 6px);
-      }
-    }
-  }
-
-  :global(.item-normal) {
-    filter: drop-shadow(rgba(0, 0, 0, 0.7) 3px 3px 3px);
+  .item-title-active {
+    opacity: 1;
   }
 </style>

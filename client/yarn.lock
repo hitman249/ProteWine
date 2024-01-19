@@ -2494,7 +2494,6 @@ __metadata:
     lodash: "npm:^4.17.21"
     svelte: "npm:^4.2.8"
     svelte-check: "npm:^3.6.2"
-    svelte-tiny-virtual-list: "npm:^2.0.5"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
     vite: "npm:^5.0.8"
@@ -2941,13 +2940,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 587246945dada39dd82ce3842f8918848d651ad9cbe5587d455802b6971741fd936e0ed63dbbb82f276a002571602c73cca6c1798f2ec09fe15c7532cdf98880
-  languageName: node
-  linkType: hard
-
-"svelte-tiny-virtual-list@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "svelte-tiny-virtual-list@npm:2.0.5"
-  checksum: ea7bc39df6c746e5425b7a3b8eaa5dd70c35f8bf7ee6648640d60ff68f55ec5a22a57d520770954119919e31279907e2eb0a979b5d4fc855d8f35fa2facb86a6
   languageName: node
   linkType: hard
 
