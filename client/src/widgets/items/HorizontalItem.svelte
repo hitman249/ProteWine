@@ -34,10 +34,6 @@
     cursor: pointer;
     -webkit-font-smoothing: antialiased;
     //border: 1px white solid;
-
-    &:hover .item-icon {
-      filter: drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px);
-    }
   }
 
   .item-icon {

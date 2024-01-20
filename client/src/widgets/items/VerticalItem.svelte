@@ -14,8 +14,13 @@
       <Icon icon={item?.getIcon()} bind:status />
     {/if}
   </div>
-  <div class="item-title" class:item-title-normal={'normal' === status}>
-    {item?.title || ''}
+  <div class="item-footer" class:item-title-normal={'normal' === status}>
+    <div class="item-title">
+      {item?.title || ''}
+    </div>
+    <div class="item-description" style="display: {item?.description ? 'flex' : 'none'}">
+      {item?.description || ''}
+    </div>
   </div>
 </div>
 
@@ -33,10 +38,6 @@
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     //border: 1px white solid;
-
-    &:hover .item-icon {
-      filter: drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px) drop-shadow(rgba(255, 255, 255, 0.5) 0px 0px 4px);
-    }
   }
 
   .item-icon {
@@ -52,22 +53,40 @@
     filter: drop-shadow(transparent 0px 0px 0px);
   }
 
-  .item-title {
+  .item-footer {
     display: flex;
-    position: relative;
+    flex-direction: column;
     flex: 1;
+    position: relative;
     height: 100%;
     padding-left: 20px;
     line-height: 1.5;
     font-size: 24px;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     font-weight: 400;
-    filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
-    justify-content: left;
+    justify-content: center;
     align-items: center;
     text-align: left;
     vertical-align: center;
     transition: opacity ease 0.3s;
+    filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
+  }
+
+  .item-title {
+    display: flex;
+    width: 100%;
+    height: auto;
+  }
+
+  .item-description {
+    display: flex;
+    width: 100%;
+    height: auto;
+    margin-top: 4px;
+    padding-top: 4px;
+    font-size: 16px;
+    border-top: white solid 1px;
+    //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
   }
 
   .item-title-normal {

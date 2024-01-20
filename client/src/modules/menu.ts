@@ -5,6 +5,7 @@ type MenuItemType = {
   id: string,
   icon: string,
   title: string,
+  description: string,
   click?: () => void,
   items?: MenuItemType[],
 };
@@ -18,6 +19,7 @@ export class MenuItem {
   public readonly id: string;
   public readonly icon: string;
   public readonly title: string;
+  public readonly description: string;
   public readonly items?: MenuItem[] = [];
   public readonly click?: () => void = () => undefined;
 
@@ -28,6 +30,7 @@ export class MenuItem {
     this.id = params.id;
     this.icon = params.icon;
     this.title = params.title;
+    this.description = params.description || '';
     this.click = params.click;
     this.items = (params?.items || []).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
   }
@@ -117,6 +120,7 @@ export default class Menu extends EventListener {
           id: 'wine',
           icon: 'wine',
           title: 'Runtime change',
+          description: 'Wine 9.0',
           items: [],
         },
         {
