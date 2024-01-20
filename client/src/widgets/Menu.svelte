@@ -43,9 +43,8 @@
       const nextList: VerticalList = verticalList[menu.getCategoryInstanceIndex(2)];
       const nextCategory: MenuItem = menu.getCategory(menu.getCurrentIndex() + 1);
 
-      if (nextCategory && nextList && nextList.getIndex() !== nextCategory.getCurrentIndex()) {
-        nextList.setIndex(nextCategory.getCurrentIndex());
-        nextList.scrollTo(nextCategory.getCurrentIndex() * Menu.ITEM_HEIGHT);
+      if (nextCategory && nextList && nextList.getItems() !== nextCategory.items) {
+        nextList.changeList(nextCategory.items, nextCategory.getCurrentIndex());
       }
     }
   }
@@ -61,9 +60,8 @@
       const prevList: VerticalList = verticalList[menu.getCategoryInstanceIndex(0)];
       const prevCategory: MenuItem = menu.getCategory(menu.getCurrentIndex() - 1);
 
-      if (prevCategory && prevList && prevList.getIndex() !== prevCategory.getCurrentIndex()) {
-        prevList.setIndex(prevCategory.getCurrentIndex());
-        prevList.scrollTo(prevCategory.getCurrentIndex() * Menu.ITEM_HEIGHT);
+      if (prevCategory && prevList && prevList.getItems() !== prevCategory.items) {
+        prevList.changeList(prevCategory.items, prevCategory.getCurrentIndex());
       }
     }
   }

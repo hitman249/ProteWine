@@ -3,7 +3,7 @@
   import VirtualList from './VirtualList.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
   import _ from 'lodash';
-  import {tweened} from 'svelte/motion';
+  import {type Tweened, tweened, type Unsubscriber} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
   import Menu from '../../modules/menu';
 
@@ -19,6 +19,22 @@
 
   let frame: number;
 
+  let scroll: Tweened<number> = undefined;
+  let unsubscribe: Unsubscriber = undefined;
+
+  function scrollAnimate(): Tweened<number> {
+    unsubscribe?.();
+
+    scroll = tweened(scrollLeft, {
+      duration: 200,
+      easing: cubicOut,
+    });
+
+    unsubscribe = scroll.subscribe((value: number) => scrollTo(value));
+
+    return scroll;
+  }
+
   function poll() {
     if (container.scrollLeft !== scrollLeft) {
       scrollLeft = container.scrollLeft;
@@ -30,13 +46,6 @@
   export function scrollTo(position: number) {
     container?.scrollTo({left: position});
   }
-
-  const scroll = tweened(0, {
-    duration: 200,
-    easing: cubicOut,
-  });
-
-  const unsubscribe = scroll.subscribe((value: number) => scrollTo(value));
 
   export function setIndex(index: number) {
     current = index;
@@ -58,7 +67,7 @@
     if (hasRight()) {
       direction = true;
       current++;
-      scroll.set(current * itemWidth);
+      scrollAnimate().set(current * itemWidth);
     }
   }
 
@@ -66,7 +75,7 @@
     if (hasLeft()) {
       direction = false;
       current--;
-      scroll.set(current * itemWidth);
+      scrollAnimate().set(current * itemWidth);
     }
   }
 

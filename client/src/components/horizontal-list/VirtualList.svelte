@@ -5,7 +5,6 @@
   export let containerWidth: number;
   export let itemWidth: number;
   export let scrollLeft: number;
-  export let direction: boolean;
 
   const dummySymbol = Symbol('dummy item');
 
@@ -17,7 +16,7 @@
     }
   };
 
-  $: contentWidth = items.length * 2 * itemWidth + (items.length * 2);
+  $: contentWidth = (items.length * itemWidth) + window.outerWidth;
   $: startIndex = Math.floor(scrollLeft / itemWidth);
   $: endIndex = startIndex + numItems;
   $: numOverlap = Math.floor(scrollLeft / itemWidth) % numItems;
