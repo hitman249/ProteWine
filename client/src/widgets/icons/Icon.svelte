@@ -27,8 +27,11 @@
 {#if 'gamepad' === icon}
   <Gamepad status={`item-${status}`} />
 {/if}
+<!--{#if 'settings' === icon}-->
+<!--  <Settings status={`item-${status}`} />-->
+<!--{/if}-->
 {#if 'settings' === icon}
-  <Settings status={`item-${status}`} />
+  <PrefixSettings status={`item-${status}`} />
 {/if}
 {#if 'layers' === icon}
   <Layers status={`item-${status}`} {value} />
@@ -53,9 +56,6 @@
 {/if}
 {#if 'wine' === icon}
   <Wine status={`item-${status}`} />
-{/if}
-{#if 'prefix-settings' === icon}
-  <PrefixSettings status={`item-${status}`} />
 {/if}
 {#if 'layers-add' === icon}
   <LayersAdd status={`item-${status}`} />

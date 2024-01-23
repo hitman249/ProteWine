@@ -149,24 +149,24 @@ export default class Menu extends EventListener {
           title: 'Prefix reset',
         },
         {
-          id: 'prefix-settings',
-          icon: 'prefix-settings',
+          id: 'settings',
+          icon: 'settings',
           title: 'Settings',
           items: () => [
             {
               id: 'wine-unpack',
-              icon: 'prefix-settings',
+              icon: 'settings',
               title: 'DXVK',
             },
             {
               id: 'wine-pack',
-              icon: 'prefix-settings',
+              icon: 'settings',
               title: 'VKD3D Proton',
             },
             {
               id: 'build-game',
-              icon: 'prefix-settings',
-              title: 'Build portable',
+              icon: 'settings',
+              title: 'Media Foundation',
             },
           ],
         },

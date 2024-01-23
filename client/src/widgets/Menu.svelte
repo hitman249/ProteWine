@@ -1,12 +1,12 @@
 <script lang="ts">
+  import _ from 'lodash';
+  import {cubicOut} from 'svelte/easing';
+  import {onDestroy, onMount, tick} from 'svelte';
   import HorizontalItem from './items/HorizontalItem.svelte';
   import VerticalItem from './items/VerticalItem.svelte';
   import Menu, {type MenuItem} from '../modules/menu';
-  import _ from 'lodash';
   import {KeyboardKey, KeyboardPressEvent} from '../modules/keyboard';
-  import {onDestroy, onMount, beforeUpdate} from 'svelte';
   import {type Tweened, tweened, type Unsubscriber} from 'svelte/motion';
-  import {cubicOut} from 'svelte/easing';
   import HorizontalList from '../components/horizontal-list/HorizontalList.svelte';
   import VerticalList from '../components/vertical-list/VerticalList.svelte';
   import VerticalListPreloader from '../components/vertical-list/VerticalListPreloader.svelte';
@@ -110,10 +110,12 @@
     if (KeyboardKey.ENTER === key) {
       const item: MenuItem = menu.getFocusedItem();
 
-      if (item.hasItems()) {
-        isInnerList = true;
+      if (item?.hasItems()) {
         item.load().then(() => {
           innerListItems = item.items;
+          tick().then(() => {
+            isInnerList = true;
+          });
         });
       }
     }
@@ -177,8 +179,8 @@
   {/each}
 </div>
 
-<div class="inner-list">
-  {#if isInnerList}
+<div class="inner-list" style="opacity: {isInnerList ? 1 : 0};">
+  {#if innerListItems}
     <VerticalList items={innerListItems} bind:this={innerList}>
       <div
         slot="item"
@@ -237,7 +239,7 @@
     left: 200px;
     width: calc(100% - 200px);
     height: 100%;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.200s ease;
     overflow: hidden;
   }
 </style>

@@ -18,7 +18,7 @@
     <div class="item-title">
       {item?.title || ''}
     </div>
-    <div class="item-description" style="display: {item?.description ? 'flex' : 'none'}">
+    <div class="item-description" class:exist={Boolean(item?.description)}>
       {item?.description || ''}
     </div>
   </div>
@@ -79,7 +79,7 @@
   }
 
   .item-description {
-    display: flex;
+    display: none;
     width: 100%;
     height: auto;
     margin-top: 4px;
