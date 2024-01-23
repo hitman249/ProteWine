@@ -4,14 +4,19 @@
   import Menu, {type MenuItem} from '../modules/menu';
   import _ from 'lodash';
   import {KeyboardKey, KeyboardPressEvent} from '../modules/keyboard';
-  import {onDestroy, onMount} from 'svelte';
-  import {tweened} from 'svelte/motion';
+  import {onDestroy, onMount, beforeUpdate} from 'svelte';
+  import {type Tweened, tweened, type Unsubscriber} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
   import HorizontalList from '../components/horizontal-list/HorizontalList.svelte';
   import VerticalList from '../components/vertical-list/VerticalList.svelte';
+  import VerticalListPreloader from '../components/vertical-list/VerticalListPreloader.svelte';
 
   let horizontalList: HorizontalList;
-  let verticalList: VerticalList[] = [];
+  let verticalList: VerticalListPreloader[] = [];
+
+  let innerList: VerticalList;
+  let innerListItems: MenuItem[];
+  let isInnerList: boolean = false;
 
   let container: HTMLDivElement;
   let containerWidth: number = 0;
@@ -19,18 +24,27 @@
   let direction: boolean;
   let paddingLeftCategories: number = -Menu.ROOT_ITEM_HEIGHT;
 
+  let scroll: Tweened<number> = undefined;
+  let unsubscribe: Unsubscriber = undefined;
+
+  function scrollAnimate(): Tweened<number> {
+    unsubscribe?.();
+
+    scroll = tweened(horizontalList?.getScrollPosition(), {
+      duration: 200,
+      easing: cubicOut,
+    });
+
+    unsubscribe = scroll.subscribe((value: number) => {
+      horizontalList?.scrollTo(value);
+      categoriesDelta = value - ((horizontalList?.getIndex?.() || 0) * Menu.ROOT_ITEM_WIDTH);
+    });
+
+    return scroll;
+  }
+
   const menu: Menu = new Menu();
   const items: MenuItem[] = menu.getRoot();
-
-  const scroll = tweened(0, {
-    duration: 200,
-    easing: cubicOut,
-  });
-
-  const unsubscribe = scroll.subscribe((value: number) => {
-    horizontalList?.scrollTo(value);
-    categoriesDelta = value - ((horizontalList?.getIndex?.() || 0) * Menu.ROOT_ITEM_WIDTH);
-  });
 
   function keyRight() {
     if (horizontalList.hasRight()) {
@@ -38,13 +52,13 @@
       horizontalList.setIndex(horizontalList.getIndex() + 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
-      scroll.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
+      scrollAnimate().set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
-      const nextList: VerticalList = verticalList[menu.getCategoryInstanceIndex(2)];
+      const nextList: VerticalListPreloader = verticalList[menu.getCategoryInstanceIndex(2)];
       const nextCategory: MenuItem = menu.getCategory(menu.getCurrentIndex() + 1);
 
-      if (nextCategory && nextList && nextList.getItems() !== nextCategory.items) {
-        nextList.changeList(nextCategory.items, nextCategory.getCurrentIndex());
+      if (nextCategory && nextList && nextList.getModel() !== nextCategory) {
+        nextList.changeList(nextCategory, nextCategory.getCurrentIndex());
       }
     }
   }
@@ -55,20 +69,20 @@
       horizontalList.setIndex(horizontalList.getIndex() - 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
-      scroll.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
+      scrollAnimate().set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
-      const prevList: VerticalList = verticalList[menu.getCategoryInstanceIndex(0)];
+      const prevList: VerticalListPreloader = verticalList[menu.getCategoryInstanceIndex(0)];
       const prevCategory: MenuItem = menu.getCategory(menu.getCurrentIndex() - 1);
 
-      if (prevCategory && prevList && prevList.getItems() !== prevCategory.items) {
-        prevList.changeList(prevCategory.items, prevCategory.getCurrentIndex());
+      if (prevCategory && prevList && prevList.getModel() !== prevCategory) {
+        prevList.changeList(prevCategory, prevCategory.getCurrentIndex());
       }
     }
   }
 
   const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
-      const list: VerticalList = verticalList[menu.getCategoryInstanceIndex()];
+      const list: VerticalListPreloader = verticalList[menu.getCategoryInstanceIndex()];
 
       if (list) {
         list.keyDown();
@@ -77,7 +91,7 @@
     }
 
     if (KeyboardKey.UP === key) {
-      const list: VerticalList = verticalList[menu.getCategoryInstanceIndex()];
+      const list: VerticalListPreloader = verticalList[menu.getCategoryInstanceIndex()];
 
       if (list) {
         list.keyUp();
@@ -94,11 +108,18 @@
     }
 
     if (KeyboardKey.ENTER === key) {
+      const item: MenuItem = menu.getFocusedItem();
 
+      if (item.hasItems()) {
+        isInnerList = true;
+        item.load().then(() => {
+          innerListItems = item.items;
+        });
+      }
     }
 
-    if (KeyboardKey.ESC === key) {
-
+    if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
+      isInnerList = false;
     }
   }, 50);
 
@@ -109,17 +130,18 @@
   });
 
   onDestroy(() => {
-    unsubscribe();
+    unsubscribe?.();
     window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
   });
 </script>
 
-<div class="list-container" bind:clientWidth={containerWidth}>
+<div class="list-container" class:list-move-to-left={isInnerList} bind:clientWidth={containerWidth}>
   {#if containerWidth > 0}
     <HorizontalList items={items || []} bind:this={horizontalList}>
       <div
         slot="item"
         class="horizontal-item"
+        class:active={active}
         let:index
         let:dummy
         let:x
@@ -140,35 +162,46 @@
   {/if}
 </div>
 
-<div class="vertical-lists">
+<div class="vertical-lists" class:list-move-to-left={isInnerList}>
   {#each categories as item, index}
     {@const current = item?.isActive()}
     {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
 
-    <div class="vertical-list" style="transform: translate({left - categoriesDelta}px, 0px); opacity: {current ? 1 : 0};">
-      <VerticalList items={item ? item.items : []} bind:this={verticalList[index]}>
-        <div
-          slot="item"
-          class="vertical-item"
-          let:index
-          let:dummy
-          let:y
-          let:active
-          let:jump
-          let:item
-          style="transform: translate(0px, {y}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
-        >
-          {#key y}
-            <VerticalItem
-              {dummy}
-              {item}
-              status={active ? 'focused' : 'normal'}
-            />
-          {/key}
-        </div>
-      </VerticalList>
-    </div>
+    <VerticalListPreloader
+      model={item}
+      bind:this={verticalList[index]}
+      {left}
+      {current}
+      delta={categoriesDelta}
+    />
   {/each}
+</div>
+
+<div class="inner-list">
+  {#if isInnerList}
+    <VerticalList items={innerListItems} bind:this={innerList}>
+      <div
+        slot="item"
+        class="vertical-item"
+        class:active={active}
+        let:index
+        let:dummy
+        let:y
+        let:active
+        let:jump
+        let:item
+        style="transform: translate(0px, {y}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+      >
+        {#key y}
+          <VerticalItem
+            {dummy}
+            {item}
+            status={active ? 'focused' : 'normal'}
+          />
+        {/key}
+      </div>
+    </VerticalList>
+  {/if}
 </div>
 
 <style lang="less">
@@ -181,8 +214,8 @@
     height: 170px;
     z-index: 1;
     text-align: center;
-    color: rgba(255, 255, 255, 0.15);
     font-size: 20px;
+    transition: transform 0.3s;
   }
 
   .vertical-lists {
@@ -194,36 +227,17 @@
     height: 100%;
     z-index: 0;
     overflow: hidden;
+    transition: transform 0.3s;
   }
 
-  .vertical-list {
+  .inner-list {
     position: absolute;
     display: block;
     top: 0;
-    left: 0;
-    width: calc(100% - 180px);
+    left: 200px;
+    width: calc(100% - 200px);
     height: 100%;
     transition: opacity 0.15s ease;
-  }
-
-  .vertical-item {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-  }
-
-  .horizontal-item {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  :global(.virtual-list-wrapper) {
-    margin: 0;
-    padding-left: 150px;
-    padding-right: 500px;
-    overflow-x: hidden !important;
-    overflow-y: hidden !important;
+    overflow: hidden;
   }
 </style>

@@ -85,7 +85,7 @@
     margin-top: 4px;
     padding-top: 4px;
     font-size: 16px;
-    border-top: white solid 1px;
+    border-top: rgb(255 255 255 / 40%) solid 1px;
     //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
   }
 

@@ -8,10 +8,6 @@
 
   export let items: any = [];
 
-  export function getItems() {
-    return items;
-  }
-
   let itemSpace: number = Menu.ROOT_ITEM_HEIGHT;
   let itemHeight: number = Menu.ITEM_HEIGHT;
 
@@ -51,8 +47,11 @@
     container?.scrollTo({top: position});
   }
 
-  export function changeList(data: MenuItem[], index: number) {
-    items = data;
+  export function getScrollPosition(): number {
+    return scrollTop;
+  }
+
+  export function changeIndex(index: number) {
     direction = true;
     current = index;
 
@@ -65,7 +64,7 @@
     }
   }
 
-  export function getIndex() {
+  export function getIndex(): number {
     return current;
   }
 
@@ -77,7 +76,7 @@
     return current > 0;
   }
 
-  export function keyDown() {
+  export function keyDown(): void {
     if (hasDown()) {
       direction = true;
       current++;
@@ -85,7 +84,7 @@
     }
   }
 
-  export function keyUp() {
+  export function keyUp(): void {
     if (hasUp()) {
       direction = false;
       current--;
@@ -98,14 +97,14 @@
   });
 
   onDestroy(() => {
-    unsubscribe();
+    unsubscribe?.();
     cancelAnimationFrame(frame);
   });
 </script>
 
 <div class="list" bind:this={container} bind:clientHeight={containerHeight}>
   {#if containerHeight > 0}
-    <VirtualList items={items} {itemHeight} {itemSpace} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
+    <VirtualList {items} {itemHeight} {itemSpace} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
       <slot
         name="item"
         {item}
@@ -129,5 +128,6 @@
     /* One inline-block per line, no horizontal scrolling  */
     box-sizing: border-box;
     will-change: auto;
+    transform: translateZ(0);
   }
 </style>

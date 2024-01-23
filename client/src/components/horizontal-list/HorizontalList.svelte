@@ -43,6 +43,10 @@
     frame = requestAnimationFrame(poll);
   }
 
+  export function getScrollPosition(): number {
+    return scrollLeft;
+  }
+
   export function scrollTo(position: number) {
     container?.scrollTo({left: position});
   }
@@ -84,14 +88,14 @@
   });
 
   onDestroy(() => {
-    unsubscribe();
+    unsubscribe?.();
     cancelAnimationFrame(frame);
   });
 </script>
 
 <div class="list" bind:this={container} bind:clientWidth={containerWidth}>
   {#if containerWidth > 0}
-    <VirtualList {items} {itemWidth} {containerWidth} {scrollLeft} {direction} let:item let:dummy let:x let:index>
+    <VirtualList {items} {itemWidth} {containerWidth} {scrollLeft} let:item let:dummy let:x let:index>
       <slot
         name="item"
         {item}
@@ -115,5 +119,6 @@
     /* One inline-block per line, no horizontal scrolling  */
     box-sizing: border-box;
     will-change: auto;
+    transform: translateZ(0);
   }
 </style>

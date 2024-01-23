@@ -1,0 +1,32 @@
+.list-move-to-left {
+  transform: translate(-160px, 0px);
+
+  .horizontal-item:not(.active) {
+    opacity: 0;
+  }
+
+  .vertical-item .item-footer {
+    opacity: 0;
+  }
+
+  .vertical-list.active .vertical-item.active .item-icon {
+    &::after, &::before {
+      display: block;
+      position: absolute;
+      content: '';
+      width: 15px;
+      height: 5px;
+      right: -35px;
+      top: -7.5px;
+      bottom: 0;
+      margin: auto;
+      background-color: white;
+      transform: rotate(45deg);
+    }
+
+    &::before {
+      top: 7.5px;
+      transform: rotate(-45deg);
+    }
+  }
+}

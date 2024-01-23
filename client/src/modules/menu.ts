@@ -7,7 +7,7 @@ type MenuItemType = {
   title: string,
   description: string,
   click?: () => void,
-  items?: MenuItemType[],
+  items?: () => MenuItemType[],
 };
 
 export class MenuItem {
@@ -20,7 +20,9 @@ export class MenuItem {
   public readonly icon: string;
   public readonly title: string;
   public readonly description: string;
-  public readonly items?: MenuItem[] = [];
+  private readonly fetchItems: MenuItemType['items'];
+  public items: MenuItem[];
+
   public readonly click?: () => void = () => undefined;
 
   constructor(params: MenuItemType, parent: Menu | MenuItem, index: number) {
@@ -32,7 +34,27 @@ export class MenuItem {
     this.title = params.title;
     this.description = params.description || '';
     this.click = params.click;
-    this.items = (params?.items || []).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
+    this.fetchItems = params.items;
+  }
+
+  public async load(): Promise<void> {
+    if (this.isLoaded()) {
+      return Promise.resolve();
+    }
+
+    this.items = [];
+
+    return Promise.resolve(this.fetchItems?.()).then((items: MenuItemType[]) => {
+      this.items = (items || []).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
+    });
+  }
+
+  public isLoaded(): boolean {
+    return undefined !== this.items;
+  }
+
+  public hasItems(): boolean {
+    return undefined !== this.fetchItems;
   }
 
   public getId(): string {
@@ -92,17 +114,16 @@ export default class Menu extends EventListener {
 
   private currentIndex: number = 0;
 
-  protected readonly root: MenuItem[] = [
+  protected readonly root: MenuItem[] = ([
     {
       id: 'games',
       icon: 'gamepad',
       title: 'Games',
-      items: [
+      items: () => [
         {
           id: 'games',
           icon: 'gamepad',
           title: 'Games',
-          items: [],
         },
         {
           id: 'add-game',
@@ -115,25 +136,39 @@ export default class Menu extends EventListener {
       id: 'prefix',
       icon: 'prefix',
       title: 'Prefix',
-      items: [
+      items: () => [
         {
           id: 'wine',
           icon: 'wine',
           title: 'Runtime change',
           description: 'Wine 9.0',
-          items: [],
         },
         {
           id: 'reset',
           icon: 'reset',
           title: 'Prefix reset',
-          items: [],
         },
         {
           id: 'prefix-settings',
           icon: 'prefix-settings',
           title: 'Settings',
-          items: [],
+          items: () => [
+            {
+              id: 'wine-unpack',
+              icon: 'prefix-settings',
+              title: 'DXVK',
+            },
+            {
+              id: 'wine-pack',
+              icon: 'prefix-settings',
+              title: 'VKD3D Proton',
+            },
+            {
+              id: 'build-game',
+              icon: 'prefix-settings',
+              title: 'Build portable',
+            },
+          ],
         },
       ],
     },
@@ -141,18 +176,16 @@ export default class Menu extends EventListener {
       id: 'layers',
       icon: 'layers',
       title: 'Layers',
-      items: [
+      items: () => [
         {
           id: 'layers-list',
           icon: 'layers-list',
           title: 'Layers',
-          items: [],
         },
         {
           id: 'layers-add',
           icon: 'layers-add',
           title: 'New layer',
-          items: [],
         },
       ],
     },
@@ -160,24 +193,21 @@ export default class Menu extends EventListener {
       id: 'updates',
       icon: 'updates',
       title: 'Updates',
-      items: [
+      items: () => [
         {
           id: 'update-self',
           icon: 'update-self',
           title: 'Update ProteWine',
-          items: [],
         },
         {
           id: 'updates',
           icon: 'update-layer',
           title: 'DXVK',
-          items: [],
         },
         {
           id: 'updates',
           icon: 'update-layer',
           title: 'VKD3D',
-          items: [],
         },
       ],
     },
@@ -185,30 +215,27 @@ export default class Menu extends EventListener {
       id: 'settings',
       icon: 'settings',
       title: 'Settings',
-      items: [],
+      items: () => [],
     },
     {
       id: 'build',
       icon: 'build',
       title: 'Build',
-      items: [
+      items: () => [
         {
           id: 'wine-unpack',
           icon: 'unpack',
           title: 'Unpack Runtime',
-          items: [],
         },
         {
           id: 'wine-pack',
           icon: 'pack',
           title: 'Pack Runtime',
-          items: [],
         },
         {
           id: 'build-game',
           icon: 'compile',
           title: 'Build portable',
-          items: [],
         },
       ],
     },
@@ -216,22 +243,20 @@ export default class Menu extends EventListener {
       id: 'database',
       icon: 'database',
       title: 'Database',
-      items: [
+      items: () => [
         {
           id: 'layers-item',
           icon: 'layers-item',
           title: 'DXVK 2.3',
-          items: [],
         },
         {
           id: 'layers-item',
           icon: 'layers-item',
           title: 'd3dcompiler',
-          items: [],
         },
       ],
     },
-  ].map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
+  ] as MenuItemType[]).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
 
   public setCurrentIndex(index: number): void {
     this.currentIndex = index;
@@ -277,5 +302,10 @@ export default class Menu extends EventListener {
 
   public getCategoryInstanceIndex(offset: number = 1): number {
     return (this.currentIndex + offset) % 3;
+  }
+
+  public getFocusedItem(): MenuItem {
+    const category: MenuItem = this.root[this.currentIndex];
+    return category.items[category.getCurrentIndex()];
   }
 }
