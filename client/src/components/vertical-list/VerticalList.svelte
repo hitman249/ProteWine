@@ -8,8 +8,10 @@
 
   export let items: any = [];
 
-  let itemSpace: number = Menu.ROOT_ITEM_HEIGHT;
-  let itemHeight: number = Menu.ITEM_HEIGHT;
+  export let itemSpace: number = Menu.ROOT_ITEM_HEIGHT;
+  export let itemHeight: number = Menu.ITEM_HEIGHT;
+  export let headerMargin: number = 1;
+  export let paddingTop: number = 0;
 
   let container: HTMLDivElement;
   let containerHeight: number = 0;
@@ -104,16 +106,16 @@
 
 <div class="list" bind:this={container} bind:clientHeight={containerHeight}>
   {#if containerHeight > 0}
-    <VirtualList {items} {itemHeight} {itemSpace} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
+    <VirtualList {items} {itemHeight} {itemSpace} {headerMargin} {paddingTop} {containerHeight} {scrollTop} {direction} let:item let:dummy let:y let:index>
       <slot
         name="item"
         {item}
         {dummy}
         {scrollTop}
         {y}
-        active={index === (current + 1)}
+        active={index === (current + headerMargin)}
         index={index}
-        jump={(direction && index === current) || (!direction && index === current + 1)}
+        jump={(direction && index === current) || (!direction && index === current + headerMargin)}
       />
     </VirtualList>
   {/if}

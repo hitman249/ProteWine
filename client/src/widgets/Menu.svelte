@@ -82,6 +82,10 @@
 
   const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
+      if (isInnerList) {
+        return innerList.keyDown();
+      }
+
       const list: VerticalListPreloader = verticalList[menu.getCategoryInstanceIndex()];
 
       if (list) {
@@ -91,6 +95,10 @@
     }
 
     if (KeyboardKey.UP === key) {
+      if (isInnerList) {
+        return innerList.keyUp();
+      }
+
       const list: VerticalListPreloader = verticalList[menu.getCategoryInstanceIndex()];
 
       if (list) {
@@ -100,11 +108,19 @@
     }
 
     if (KeyboardKey.LEFT === key) {
-      keyLeft();
+      if (isInnerList) {
+        key = KeyboardKey.ESC;
+      } else {
+        keyLeft();
+      }
     }
 
     if (KeyboardKey.RIGHT === key) {
-      keyRight();
+      if (isInnerList) {
+        key = KeyboardKey.ENTER;
+      } else {
+        keyRight();
+      }
     }
 
     if (KeyboardKey.ENTER === key) {
@@ -122,8 +138,11 @@
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
       isInnerList = false;
+      tick().then(() => {
+        innerListItems = undefined;
+      });
     }
-  }, 50);
+  }, 100);
 
   $: categories = menu.getCategories();
 
@@ -181,7 +200,7 @@
 
 <div class="inner-list" style="opacity: {isInnerList ? 1 : 0};">
   {#if innerListItems}
-    <VerticalList items={innerListItems} bind:this={innerList}>
+    <VerticalList items={innerListItems} bind:this={innerList} itemSpace={0} headerMargin={3} paddingTop={-50}>
       <div
         slot="item"
         class="vertical-item"

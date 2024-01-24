@@ -4,6 +4,8 @@
   export let items: any[];
   export let containerHeight: number;
   export let itemHeight: number;
+  export let headerMargin: number = 1;
+  export let paddingTop: number = 0;
   export let itemSpace: number;
   export let scrollTop: number;
   export let direction: boolean;
@@ -47,7 +49,7 @@
       startIndex,
       endIndex,
       dummySymbol,
-      1,
+      headerMargin,
     ),
     numOverlap,
   );
@@ -58,7 +60,7 @@
 
 {#each slice as item, index}
   {@const naturalIndex = getNaturalIndex(index)}
-  {@const y = (naturalIndex * itemHeight) + (isAppendSpace(index, naturalIndex, scrollTop) ? itemSpace : 0)}
+  {@const y = (naturalIndex * itemHeight) + (isAppendSpace(index, naturalIndex, scrollTop) ? itemSpace : 0) + paddingTop}
 
   <slot
     index={naturalIndex}

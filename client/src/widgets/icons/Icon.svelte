@@ -18,6 +18,7 @@
   import Unpack from './Unpack.svelte';
   import Pack from './Pack.svelte';
   import Compile from './Compile.svelte';
+  import Storage from './Storage.svelte';
 
   export let status: 'normal' | 'active' | 'focused' = 'normal';
   export let icon: string = '';
@@ -80,4 +81,7 @@
 {/if}
 {#if 'compile' === icon}
   <Compile status={`item-${status}`} />
+{/if}
+{#if 'storage' === icon}
+  <Storage status={`item-${status}`} />
 {/if}

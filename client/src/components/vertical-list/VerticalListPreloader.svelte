@@ -2,6 +2,7 @@
 import VerticalList from './VerticalList.svelte';
 import VerticalItem from '../../widgets/items/VerticalItem.svelte';
 import type {MenuItem} from '../../modules/menu';
+import {tick} from 'svelte';
 
 export let current: boolean = false;
 export let left: number = 0;
@@ -35,7 +36,7 @@ export function getModel(): MenuItem {
 
 export function changeList(data: MenuItem, index: number) {
   model = data;
-  list?.changeIndex(index);
+  tick().then(() => list?.changeIndex(index));
 }
 </script>
 

@@ -3,15 +3,12 @@ import _ from 'lodash';
 export default class Helpers {
   public static sliceArray(arr: any[], start: number, end: number, dummy: Symbol | boolean, leftPaddingItems: number = 0): any[] {
     if (0 < leftPaddingItems) {
-      const fixStart: number = start > 0 ? start - 1 : start;
-      const fixEnd: number = end > 0 ? end - 1 : end;
+      const padding: number = (start < leftPaddingItems) ? start : leftPaddingItems;
+      const fixStart: number = start > 0 ? start - padding : start;
+      const fixEnd: number = end > 0 ? end - padding : end;
 
-      if (0 === start) {
-        if (1 === leftPaddingItems) {
-          arr = [dummy, ...arr.slice(fixStart, fixEnd)];
-        } else {
-          arr = [..._.range(0, leftPaddingItems).map(() => dummy), ...arr.slice(fixStart, fixEnd)];
-        }
+      if (leftPaddingItems > start) {
+        arr = [..._.range(0, leftPaddingItems - start).map(() => dummy), ...arr.slice(fixStart, fixEnd)];
       } else {
         arr = arr.slice(fixStart, fixEnd);
       }
