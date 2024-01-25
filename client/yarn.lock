@@ -1371,6 +1371,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fastdom@npm:^1.0.11":
+  version: 1.0.11
+  resolution: "fastdom@npm:1.0.11"
+  dependencies:
+    strictdom: "npm:^1.0.1"
+  checksum: 4ff808197efe23917770f4868aebf1fd293fa3b202e28152879dd889a39152fbce505dff7e5c5611d8697227ccea5c92cb44875bcacf6740e7c6c91d7bf3d845
+  languageName: node
+  linkType: hard
+
 "fastq@npm:^1.6.0":
   version: 1.16.0
   resolution: "fastq@npm:1.16.0"
@@ -2489,6 +2498,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^6.17.0"
     eslint: "npm:^8.56.0"
     eslint-plugin-svelte: "npm:^2.35.1"
+    fastdom: "npm:^1.0.11"
     helpful-decorators: "npm:^2.1.0"
     less: "npm:^4.2.0"
     lodash: "npm:^4.17.21"
@@ -2782,6 +2792,13 @@ __metadata:
   dependencies:
     minipass: "npm:^7.0.3"
   checksum: b091f2ae92474183c7ac5ed3f9811457e1df23df7a7e70c9476eaa9a0c4a0c8fc190fb45acefbf023ca9ee864dd6754237a697dc52a0fb182afe65d8e77443d8
+  languageName: node
+  linkType: hard
+
+"strictdom@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "strictdom@npm:1.0.1"
+  checksum: 3006ffccaa89ecc0ce2679d2726b7ea4901faa91152bf0211d11685de1c710f09a178c9dbc5ab1496e6101b686192595ff2aa78f128a814fd838793e4f29edc5
   languageName: node
   linkType: hard
 
