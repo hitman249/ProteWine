@@ -173,13 +173,11 @@
       let:item
       style="transform: translate({position}px, 0px);"
     >
-      {#key position}
-        <HorizontalItem
-          {dummy}
-          {item}
-          status={active ? 'active' : 'normal'}
-        />
-      {/key}
+      <HorizontalItem
+        {dummy}
+        {item}
+        status={active ? 'active' : 'normal'}
+      />
     </div>
   </NavigateList>
 </div>
@@ -213,13 +211,11 @@
         let:item
         style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
       >
-        {#key position}
-          <VerticalItem
-            {dummy}
-            {item}
-            status={active ? 'focused' : 'normal'}
-          />
-        {/key}
+        <VerticalItem
+          {dummy}
+          {item}
+          status={active ? 'focused' : 'normal'}
+        />
       </div>
     </ListPreloader>
   {/each}
@@ -251,13 +247,11 @@
         let:item
         style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
       >
-        {#key position}
-          <VerticalItem
-            {dummy}
-            {item}
-            status={active ? 'focused' : 'normal'}
-          />
-        {/key}
+        <VerticalItem
+          {dummy}
+          {item}
+          status={active ? 'focused' : 'normal'}
+        />
       </div>
     </ListPreloader>
   {/if}
