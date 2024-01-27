@@ -69,10 +69,9 @@
     opacity: 0;
   }
 
-  &.inner-list .list.active .vertical-item.active {
-    .focused {
-      animation-name: none;
-    }
+  &.vertical-lists .list.active .vertical-item.active .focused,
+  &.inner-list .list.active .vertical-item.active .focused {
+    animation-name: none;
   }
 
   &.inner-list {
