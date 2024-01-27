@@ -1,3 +1,5 @@
+<script lang="ts" context="module">
+</script>
 <script lang="ts">
   import _ from 'lodash';
   import {cubicOut} from 'svelte/easing';
@@ -13,13 +15,16 @@
   import type {ValueType} from '../modules/value';
 
   let horizontalList: NavigateList;
-  let selectList: NavigateList;
-  let selectListItems: ValueType[];
   let verticalList: ListPreloader[] = [];
 
   let innerList: ListPreloader;
   let innerListItem: MenuItem;
   let isInnerList: boolean = false;
+
+  let selectList: NavigateList;
+  let selectListHeight: number = 0;
+  let isSelectList: boolean = false;
+  let selectListItems: ValueType[];
 
   let categoriesDelta: number = 0;
   let paddingLeftCategories: number = -Menu.ROOT_ITEM_HEIGHT;
@@ -45,7 +50,7 @@
   }
 
   const menu: Menu = new Menu();
-  const items: MenuItem[] = menu.getRoot();
+  const items: MenuItem[] = menu.getItems();
 
   function keyRight() {
     if (horizontalList.hasRight()) {
@@ -55,10 +60,10 @@
       scrollAnimate().set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
       const nextList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(2)];
-      const nextCategory: MenuItem = menu.getCategory(menu.getCurrentIndex() + 1);
+      const nextItem: MenuItem = menu.getFocusedLevel(1).next();
 
-      if (nextCategory && nextList && nextList.getModel() !== nextCategory) {
-        nextList.changeList(nextCategory, nextCategory.getCurrentIndex());
+      if (nextItem && nextList && nextList.getModel() !== nextItem) {
+        nextList.changeList(nextItem);
       }
     }
   }
@@ -71,43 +76,57 @@
       scrollAnimate().set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
       const prevList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(0)];
-      const prevCategory: MenuItem = menu.getCategory(menu.getCurrentIndex() - 1);
+      const prevItem: MenuItem = menu.getFocusedLevel(1).prev();
 
-      if (prevCategory && prevList && prevList.getModel() !== prevCategory) {
-        prevList.changeList(prevCategory, prevCategory.getCurrentIndex());
+      if (prevItem && prevList && prevList.getModel() !== prevItem) {
+        prevList.changeList(prevItem);
       }
     }
   }
 
   const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
+      if (isSelectList) {
+        selectList?.keyDown();
+        return;
+      }
+
       if (isInnerList) {
-        return innerList.keyDown();
+        innerList.keyDown();
+        innerList.getItem()?.updateFocusedItem();
+        return;
       }
 
       const list: ListPreloader = verticalList[menu.getCategoryInstanceIndex()];
 
       if (list) {
         list.keyDown();
-        menu.getCategory().setCurrentIndex(list.getIndex());
+        list.getItem()?.updateFocusedItem();
       }
     }
 
     if (KeyboardKey.UP === key) {
+      if (isSelectList) {
+        selectList?.keyUp();
+        return;
+      }
+
       if (isInnerList) {
-        return innerList.keyUp();
+        innerList.keyUp();
+        innerList.getItem()?.updateFocusedItem();
+        return;
       }
 
       const list: ListPreloader = verticalList[menu.getCategoryInstanceIndex()];
 
       if (list) {
         list.keyUp();
-        menu.getCategory().setCurrentIndex(list.getIndex());
+        list.getItem()?.updateFocusedItem();
       }
     }
 
     if (KeyboardKey.LEFT === key) {
-      if (isInnerList) {
+      if (isInnerList || isSelectList) {
         key = KeyboardKey.ESC;
       } else {
         keyLeft();
@@ -115,8 +134,8 @@
     }
 
     if (KeyboardKey.RIGHT === key) {
-      if (isInnerList) {
-        key = KeyboardKey.ENTER;
+      if (isInnerList || isSelectList) {
+        return;
       } else {
         keyRight();
       }
@@ -132,18 +151,41 @@
 
         innerListItem = item;
         isInnerList = true;
+      } else if (item.value) {
+        selectListItems = item.value.getList();
+
+        tick().then(() => {
+          isSelectList = true;
+        });
       }
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
-      isInnerList = false;
+      if (isSelectList) {
+        isSelectList = false;
 
-      tick().then(() => {
-        timeout = setTimeout(() => {
-          innerListItem = undefined;
-          timeout = undefined;
-        }, 200);
-      });
+        tick().then(() => {
+          timeout = setTimeout(() => {
+            selectListItems = undefined;
+            timeout = undefined;
+          }, 200);
+        });
+        return;
+      }
+
+      if (isInnerList) {
+        menu.backFocus();
+        isInnerList = false;
+
+        tick().then(() => {
+          timeout = setTimeout(() => {
+            innerListItem = undefined;
+            timeout = undefined;
+          }, 200);
+        });
+
+        return;
+      }
     }
   }, 100);
 
@@ -159,7 +201,7 @@
   });
 </script>
 
-<div class="horizontal-list" class:list-move-to-left={isInnerList}>
+<div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
   <NavigateList
     bind:this={horizontalList}
     items={items || []}
@@ -186,7 +228,7 @@
   </NavigateList>
 </div>
 
-<div class="vertical-lists" class:list-move-to-left={isInnerList}>
+<div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
   {#each categories as item, index}
     {@const current = item?.isActive()}
     {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
@@ -194,7 +236,6 @@
     <ListPreloader
       bind:this={verticalList[index]}
       model={item}
-      style="width: calc(100% - 180px);"
       {left}
       {current}
       delta={categoriesDelta}
@@ -225,15 +266,15 @@
   {/each}
 </div>
 
-<div class="inner-list">
-  {#if innerListItem}
+{#if innerListItem}
+  <div class="inner-list" class:list-only-active={isSelectList}>
     <ListPreloader
       bind:this={innerList}
       current={isInnerList}
       model={innerListItem}
       delta={categoriesDelta}
       headersDummy={3}
-      paddingIndent={-50}
+      paddingIndent={-41}
       itemSize={Menu.ITEM_HEIGHT}
       itemSpace={0}
       horizontal={false}
@@ -257,16 +298,16 @@
         />
       </div>
     </ListPreloader>
-  {/if}
-</div>
+  </div>
+{/if}
 
-<div class="select-list">
-  {#if selectListItems}
+{#if selectListItems}
+  <div class="select-list" class:open={isSelectList}>
     <NavigateList
       bind:this={selectList}
-      items={selectListItems || []}
-      itemSize={30}
-      headersDummy={1}
+      items={selectListItems}
+      itemSize={35}
+      headersDummy={9}
       horizontal={false}
     >
       <div
@@ -284,17 +325,17 @@
         <SelectItem
           {dummy}
           {item}
-          status={active ? 'focused' : 'normal'}
+          {active}
         />
       </div>
     </NavigateList>
-  {/if}
-</div>
+  </div>
+{/if}
 
 <style lang="less">
   .horizontal-list {
-    position: absolute;
     display: block;
+    position: absolute;
     top: 110px;
     left: 0;
     width: 100%;
@@ -306,8 +347,8 @@
   }
 
   .vertical-lists {
-    position: absolute;
     display: block;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -317,14 +358,35 @@
     transition: transform 0.3s;
   }
 
-  .inner-list {
+  .select-list {
+    display: flex;
     position: absolute;
-    display: block;
+    justify-content: center;
+    vertical-align: center;
+    align-items: center;
     top: 0;
-    left: 200px;
-    width: calc(100% - 200px);
+    right: -300px;
+    width: 300px;
     height: 100%;
-    transition: opacity 0.2s ease;
     overflow: hidden;
+    opacity: 0;
+    background: rgba(0, 212, 255, 30%);
+    transition: opacity 0.2s ease, right 0.2s ease;
+
+    &.open {
+      right: 0;
+      opacity: 1;
+    }
+
+    &:before {
+      position: absolute;
+      display: block;
+      content: '';
+      top: -50px;
+      left: 0;
+      width: 100%;
+      height: calc(100% + 100px);
+      box-shadow: inset 0 0 50px 0 rgba(255,255,255, 30%);
+    }
   }
 </style>

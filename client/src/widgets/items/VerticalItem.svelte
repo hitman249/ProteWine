@@ -48,7 +48,7 @@
     width: 110px;
     height: 100%;
 
-    transition: filter 0.6s;
+    transition: filter 0.6s, opacity 0.3s;
     filter: drop-shadow(transparent 0px 0px 0px);
   }
 
@@ -64,7 +64,7 @@
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     font-weight: 400;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     text-align: left;
     vertical-align: center;
     transition: opacity ease 0.3s;

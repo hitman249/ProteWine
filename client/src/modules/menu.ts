@@ -1,5 +1,6 @@
 import EventListener from '../../../server/helpers/event-listener';
 import Helpers from './helpers';
+import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 
 type MenuItemType = {
   id: string,
@@ -8,6 +9,7 @@ type MenuItemType = {
   description: string,
   click?: () => void,
   items?: () => MenuItemType[],
+  value?: ValueParams,
 };
 
 export class MenuItem {
@@ -20,6 +22,8 @@ export class MenuItem {
   public readonly icon: string;
   public readonly title: string;
   public readonly description: string;
+  public readonly value: Value;
+
   private readonly fetchItems: MenuItemType['items'];
   public items: MenuItem[];
 
@@ -33,6 +37,7 @@ export class MenuItem {
     this.icon = params.icon;
     this.title = params.title;
     this.description = params.description || '';
+    this.value = params.value ? new Value(params.value) : undefined;
     this.click = params.click;
     this.fetchItems = params.items;
   }
@@ -51,6 +56,10 @@ export class MenuItem {
 
   public isLoaded(): boolean {
     return undefined !== this.items;
+  }
+
+  public getItems(): MenuItem[] {
+    return this.items;
   }
 
   public hasItems(): boolean {
@@ -81,6 +90,10 @@ export class MenuItem {
     return this.currentIndex;
   }
 
+  public getCurrentItem(): MenuItem {
+    return this.items[this.currentIndex];
+  }
+
   public isActive(): boolean {
     return this.parent?.getCurrentIndex() === this.index;
   }
@@ -102,19 +115,79 @@ export class MenuItem {
 
     return 0;
   }
+
+  public next(): MenuItem | undefined {
+    const parent: Menu | MenuItem | undefined = this.parent;
+
+    if (!parent || parent.items.length < this.index + 1) {
+      return;
+    }
+
+    return parent.items[this.index + 1];
+  }
+
+  public prev(): MenuItem | undefined {
+    const parent: Menu | MenuItem | undefined = this.parent;
+
+    if (!parent || this.index - 1 < 0) {
+      return;
+    }
+
+    return parent.items[this.index - 1];
+  }
+
+  public getMenu(): Menu {
+    let parent: Menu | MenuItem = this;
+
+    while (parent.parent) {
+      parent = parent.parent;
+    }
+
+    return parent as Menu;
+  }
+
+  public getPath(): (Menu | MenuItem)[] {
+    let parent: Menu | MenuItem = this;
+    const path: (Menu | MenuItem)[] = [parent];
+
+    while (parent.parent) {
+      parent = parent.parent;
+      path.push(parent);
+    }
+
+    return path.reverse();
+  }
+
+  public updateFocusedItem(): void {
+    const path: (Menu | MenuItem)[] = this.getPath();
+    const menu: Menu = this.getMenu();
+
+    menu.setFocusedPath(path);
+    menu.setFocusedItem(this);
+
+    let parent: Menu | MenuItem = this;
+
+    while (parent.parent) {
+      const index: number = (parent as MenuItem).index;
+      parent = parent.parent;
+      parent.setCurrentIndex(index);
+    }
+  }
 }
 
 export default class Menu extends EventListener {
+  declare public parent: Menu;
+  private focusedItem: MenuItem;
+  private focusedPath: (Menu | MenuItem)[];
+
   public static ROOT_ITEM_HEIGHT: number = 170;
   public static ROOT_ITEM_WIDTH: number = 170;
-  
-  public static ITEM_HEIGHT: number = 110;
 
-  private readonly dummySymbol: Symbol = Symbol('dummy');
+  public static ITEM_HEIGHT: number = 110;
 
   private currentIndex: number = 0;
 
-  protected readonly root: MenuItem[] = ([
+  public readonly items: MenuItem[] = ([
     {
       id: 'games',
       icon: 'storage',
@@ -147,6 +220,11 @@ export default class Menu extends EventListener {
           id: 'reset',
           icon: 'reset',
           title: 'Prefix reset',
+          value: {
+            value: false,
+            labels: ValueLabels.YESNO,
+            type: ValueTypes.SELECT,
+          },
         },
         {
           id: 'settings',
@@ -160,7 +238,8 @@ export default class Menu extends EventListener {
               description: 'Vulkan-based implementation of D3D9, D3D10 and D3D11 for Proton / Wine',
               value: {
                 value: false,
-                type: 'install',
+                labels: ValueLabels.INSTALL,
+                type: ValueTypes.SELECT,
               },
             },
             {
@@ -170,7 +249,8 @@ export default class Menu extends EventListener {
               description: 'Vulkan-based implementation of D3D12 for Proton / Wine',
               value: {
                 value: false,
-                type: 'install',
+                labels: ValueLabels.INSTALL,
+                type: ValueTypes.SELECT,
               },
             },
             {
@@ -180,7 +260,8 @@ export default class Menu extends EventListener {
               description: 'Multimedia framework from Microsoft to replace DirectShow, available starting with Windows Vista',
               value: {
                 value: false,
-                type: 'install',
+                labels: ValueLabels.INSTALL,
+                type: ValueTypes.SELECT,
               },
             },
             {
@@ -190,7 +271,8 @@ export default class Menu extends EventListener {
               description: 'Fixes game installer errors',
               value: {
                 value: false,
-                type: 'install',
+                labels: ValueLabels.INSTALL,
+                type: ValueTypes.SELECT,
               },
             },
           ],
@@ -248,13 +330,19 @@ export default class Menu extends EventListener {
           description: 'Beautiful HUD to display FPS',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
         {
           id: 'win-ver',
           icon: 'settings',
           title: 'Windows version',
+          value: {
+            value: 'win7',
+            labels: ValueLabels.WINVER,
+            type: ValueTypes.SELECT,
+          },
         },
         {
           id: 'no-crash-dialog',
@@ -262,7 +350,8 @@ export default class Menu extends EventListener {
           title: 'No crash dialog',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
         {
@@ -272,47 +361,52 @@ export default class Menu extends EventListener {
           description: 'Required for games with focus loss',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
         {
-          id: 'disable-mono',
+          id: 'mono',
           icon: 'settings',
-          title: 'Disable Mono',
-          description: 'Disable installation of .NET Framework compatible counterpart',
+          title: 'Mono',
+          description: 'Install of .NET Framework compatible counterpart',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
         {
-          id: 'disable-gecko',
+          id: 'gecko',
           icon: 'settings',
-          title: 'Disable Gecko',
-          description: 'Disable installation of the Gecko browser engine (needed to emulate IE WebView inside Wine)',
+          title: 'Gecko',
+          description: 'Install of the Gecko browser engine (needed to emulate IE WebView inside Wine)',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
         {
-          id: 'disable-gstreamer',
+          id: 'gstreamer',
           icon: 'settings',
-          title: 'Disable GStreamer',
-          description: 'Disable winegstreamer (helps in cases where the prefix creation process hangs)',
+          title: 'GStreamer',
+          description: 'WineGStreamer (Disabling helps in cases where the prefix creation process hangs)',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
         {
-          id: 'disable-winemenubuilder',
+          id: 'winemenubuilder',
           icon: 'settings',
-          title: 'Disable WineMenuBuilder',
-          description: 'Disable creation of labels and types (inside Wine)',
+          title: 'WineMenuBuilder',
+          description: 'Creation of labels and types (inside Wine)',
           value: {
             value: false,
-            type: 'boolean',
+            labels: ValueLabels.BOOLEAN,
+            type: ValueTypes.SELECT,
           },
         },
       ],
@@ -358,6 +452,23 @@ export default class Menu extends EventListener {
     },
   ] as MenuItemType[]).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
 
+  constructor() {
+    super();
+    this.items[this.currentIndex].updateFocusedItem();
+  }
+
+  public setFocusedItem(item: MenuItem): void {
+    this.focusedItem = item;
+  }
+
+  public setFocusedPath(path: (Menu | MenuItem)[]): void {
+    this.focusedPath = path;
+  }
+
+  public getFocusedLevel(level: number = 0): MenuItem | undefined {
+    return this.focusedPath[level] as MenuItem;
+  }
+
   public setCurrentIndex(index: number): void {
     this.currentIndex = index;
   }
@@ -366,12 +477,8 @@ export default class Menu extends EventListener {
     return this.currentIndex;
   }
 
-  public getRoot(): MenuItem[] {
-    return this.root;
-  }
-
-  public getCategory(index: number = this.currentIndex): MenuItem {
-    return this.root[index];
+  public getItems(): MenuItem[] {
+    return this.items;
   }
 
   public getCategories(direction?: boolean | undefined): MenuItem[] {
@@ -390,7 +497,7 @@ export default class Menu extends EventListener {
 
     return Helpers.shiftArray(
       Helpers.sliceArray(
-        this.root,
+        this.items,
         startIndex,
         endIndex,
         undefined,
@@ -405,7 +512,22 @@ export default class Menu extends EventListener {
   }
 
   public getFocusedItem(): MenuItem {
-    const category: MenuItem = this.root[this.currentIndex];
-    return category.items[category.getCurrentIndex()];
+    return this.focusedItem;
+  }
+
+  public getFocusedPath(): (Menu | MenuItem)[] {
+    return this.focusedPath;
+  }
+
+  public backFocus(): boolean {
+    if (this.focusedPath.length <= 3) {
+      return false;
+    }
+
+    this.focusedPath.pop();
+
+    this.setFocusedItem(this.focusedPath[this.focusedPath.length - 1] as MenuItem);
+
+    return true;
   }
 }

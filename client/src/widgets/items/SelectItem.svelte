@@ -1,22 +1,26 @@
 <script lang="ts">
   import type {ValueType} from '../../modules/value';
 
-  export let status: 'normal' | 'active' | 'focused' = 'normal';
+  export let active: boolean = false;
   export let item: ValueType = undefined;
   export let dummy: boolean = false;
 </script>
 
-<div aria-hidden="true" class="item" class:focused={'focused' === status} style="opacity: {dummy ? 0 : 1};">
-  {item?.title}
+<div aria-hidden="true" class="item" class:focused={active} style="opacity: {dummy ? 0 : 1};">
+  <p class="title">{item?.title || ''}</p>
 </div>
 
 <style lang="less">
   .item {
+    overflow: hidden;
+    position: relative;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    padding: 0 25px;
+    font-size: 17px;
     width: 100%;
-    height: 30px;
-    padding: 0;
+    height: 35px;
     margin: 0;
     box-sizing: border-box;
     font-weight: 500;
@@ -24,9 +28,36 @@
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     //border: 1px white solid;
+
+    &:after {
+      content: '';
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: -50px;
+      width: calc(100% + 100px);
+      height: 100%;
+    }
   }
 
-  .focused {
+  .title {
+    filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+  }
 
+  .focused:after {
+    transition: box-shadow 0.2s;
+    animation-duration: 1.2s;
+    animation-name: item-focused;
+    animation-iteration-count: infinite;
+
+    @keyframes item-focused {
+      0% {
+        box-shadow: inset 0 0 20px 0 rgba(255,255,255,0.1);
+      }
+
+      50% {
+        box-shadow: inset 0 0 20px 0 rgba(255,255,255,0.8);
+      }
+    }
   }
 </style>

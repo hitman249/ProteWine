@@ -24,7 +24,7 @@
     }
 
     tick().then(() => {
-      const index: number = list?.getIndex();
+      const index: number = model?.getCurrentIndex();
       list?.changeIndex(index);
 
       if (!visible) {
@@ -32,6 +32,15 @@
       }
     });
   });
+
+  let prevItems: MenuItem[];
+
+  $: {
+    if (items !== prevItems && items.length > 0 && current) {
+      prevItems = items;
+      model?.getCurrentItem().updateFocusedItem();
+    }
+  }
 
   export function getIndex(): number {
     return list?.getIndex() || 0;
@@ -43,6 +52,10 @@
 
   export function changeIndex(index: number): void {
     list?.changeIndex(index);
+  }
+
+  export function getItem(): MenuItem {
+    return list?.getItem();
   }
 
   export function hasLeft(): boolean {
@@ -81,9 +94,12 @@
     return model;
   }
 
-  export function changeList(data: MenuItem, index: number) {
-    model = data;
-    changeIndex(index);
+  export function changeList(list: MenuItem) {
+    model = list;
+    const focusedItem: MenuItem = list.getCurrentItem();
+    focusedItem.updateFocusedItem();
+
+    changeIndex(focusedItem.index);
 
     if (visible) {
       visible = false;

@@ -35,6 +35,85 @@
   }
 }
 
+.vertical-lists > .list.active {
+  transition: width 0.2s;
+  width: calc(100% - 180px);
+  overflow: hidden;
+
+  & > .list {
+    position: absolute;
+    transition: width 0.2s;
+    width: 100%;
+  }
+}
+
+.inner-list {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 200px;
+  height: 100%;
+  width: calc(100% - 200px);
+  transition: opacity 0.2s ease, width 0.2s;
+  overflow: hidden;
+
+  & > .list > .list {
+    transition: width 0.2s;
+    position: absolute;
+    width: 100%;
+  }
+}
+
+.list-only-active {
+  .horizontal-item:not(.active) {
+    opacity: 0;
+  }
+
+  &.inner-list .list.active .vertical-item.active {
+    .focused {
+      animation-name: none;
+    }
+  }
+
+  &.inner-list {
+    position: absolute;
+    width: calc(100% - 500px);
+
+    & > .list > .list {
+      position: absolute;
+      width: calc(100% + 300px);
+    }
+  }
+
+  &.inner-list .list.active .vertical-item:not(.active) .item {
+    .icon {
+      opacity: 0.2;
+    }
+
+    .footer {
+      opacity: 0;
+    }
+  }
+
+  &.vertical-lists .list.active .vertical-item:not(.active) .item .icon {
+    opacity: 0.2;
+  }
+
+  &.vertical-lists > .list.active {
+    width: calc(100% - 180px - 300px);
+
+    & > .list {
+      width: calc(100% + 300px);
+    }
+
+    .vertical-item:not(.active) .item {
+      .footer {
+        opacity: 0;
+      }
+    }
+  }
+}
+
 .vertical-item.active .description.exist {
   display: flex;
 }

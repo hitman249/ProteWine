@@ -1,9 +1,13 @@
+<script lang="ts" context="module">
+
+</script>
 <script lang="ts">
   import fastdom from 'fastdom';
   import {onMount, onDestroy} from 'svelte';
   import VirtualList from './VirtualList.svelte';
   import {tweened, type Tweened, type Unsubscriber} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
+  import {MenuItem} from '../../modules/menu';
 
   export let items: any = [];
   export let itemSpace: number = 0;
@@ -11,13 +15,13 @@
   export let headersDummy: number = 0;
   export let paddingIndent: number = 0;
   export let horizontal: boolean = true;
+  let direction: boolean = true;
 
   let container: HTMLDivElement;
   let containerHeight: number = 0;
   let containerWidth: number = 0;
   let scrollIndent: number = 0;
   let current: number = 0;
-  let direction: boolean = true;
 
   let frame: number;
 
@@ -56,8 +60,8 @@
   }
 
   export function changeIndex(index: number): void {
+    setIndex(index);
     direction = true;
-    current = index;
 
     const position: number = current * itemSize;
 
@@ -78,6 +82,10 @@
 
   export function hasLeft(): boolean {
     return current > 0;
+  }
+
+  export function getItem(): MenuItem {
+    return items[current];
   }
 
   export function hasRight(): boolean {
