@@ -3,22 +3,21 @@
   import Icon from '../icons/Icon.svelte';
 
   export let active: boolean = false;
-  export let item: MenuItem = undefined;
   export let dummy: boolean = false;
-  export let click: (a: any) => void = () => null;
+  export let item: MenuItem = undefined;
 </script>
 
-<div aria-hidden="true" class="item" on:click={click} style="opacity: {dummy ? 0 : 1};">
-  <div class="item-icon">
+<div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
+  <div class="icon">
     {#if item}
       <Icon icon={item?.getIcon()} status={active ? 'focused' : 'normal'} />
     {/if}
   </div>
-  <div class="item-footer" class:title-normal={!active}>
-    <div class="item-title">
+  <div class="footer" class:title-normal={!active}>
+    <div class="title">
       {item?.title || ''}
     </div>
-    <div class="item-description" class:exist={Boolean(item?.description)}>
+    <div class="description" class:exist={Boolean(item?.description)}>
       {item?.description || ''}
     </div>
   </div>
@@ -40,7 +39,7 @@
     //border: 1px white solid;
   }
 
-  .item-icon {
+  .icon {
     display: flex;
     position: relative;
     justify-content: center;
@@ -53,7 +52,7 @@
     filter: drop-shadow(transparent 0px 0px 0px);
   }
 
-  .item-footer {
+  .footer {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -72,13 +71,17 @@
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
   }
 
-  .item-title {
+  .title {
     display: flex;
     width: 100%;
     height: auto;
   }
 
-  .item-description {
+  .title-normal {
+    opacity: 0.3;
+  }
+
+  .description {
     display: none;
     width: 100%;
     height: auto;
@@ -87,9 +90,5 @@
     font-size: 16px;
     border-top: rgb(255 255 255 / 40%) solid 1px;
     //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
-  }
-
-  .title-normal {
-    opacity: 0.3;
   }
 </style>

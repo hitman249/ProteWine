@@ -180,7 +180,7 @@
       <HorizontalItem
         {dummy}
         {item}
-        status={active ? 'active' : 'normal'}
+        {active}
       />
     </div>
   </NavigateList>

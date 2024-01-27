@@ -2,18 +2,18 @@
   import {MenuItem} from '../../modules/menu';
   import Icon from '../icons/Icon.svelte';
 
-  export let status: 'normal' | 'active' | 'focused' = 'normal';
+  export let active: boolean = false;
   export let dummy: boolean = false;
   export let item: MenuItem = undefined;
 </script>
 
 <div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
-  <div class="item-icon">
+  <div class="icon">
     {#if item}
-      <Icon icon={item?.getIcon()} bind:status />
+      <Icon icon={item?.getIcon()} status={active ? 'active' : 'normal'} />
     {/if}
   </div>
-  <div class="item-title" class:item-title-active={'active' === status}>
+  <div class="title" class:title-active={active}>
     {item?.getTitle() || ''}
   </div>
 </div>
@@ -36,7 +36,7 @@
     //border: 1px white solid;
   }
 
-  .item-icon {
+  .icon {
     display: flex;
     position: relative;
     justify-content: center;
@@ -49,7 +49,7 @@
     filter: drop-shadow(transparent 0px 0px 0px);
   }
 
-  .item-title {
+  .title {
     display: flex;
     position: relative;
     justify-content: center;
@@ -66,7 +66,7 @@
     transition: opacity 0.3s;
   }
 
-  .item-title-active {
+  .title-active {
     opacity: 1;
   }
 </style>
