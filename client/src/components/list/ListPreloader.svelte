@@ -83,7 +83,7 @@
 
   export function changeList(data: MenuItem, index: number) {
     model = data;
-    setIndex(index);
+    changeIndex(index);
 
     if (visible) {
       visible = false;

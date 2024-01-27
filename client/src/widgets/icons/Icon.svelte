@@ -20,68 +20,68 @@
   import Compile from './Compile.svelte';
   import Storage from './Storage.svelte';
 
-  export let status: 'normal' | 'active' | 'focused' = 'normal';
+  export let status: string = 'normal';
   export let icon: string = '';
   export let value: any = undefined;
 </script>
 
 {#if 'gamepad' === icon}
-  <Gamepad status={`item-${status}`} />
+  <Gamepad {status} />
 {/if}
 <!--{#if 'settings' === icon}-->
-<!--  <Settings status={`item-${status}`} />-->
+<!--  <Settings {status} />-->
 <!--{/if}-->
 {#if 'settings' === icon}
-  <PrefixSettings status={`item-${status}`} />
+  <PrefixSettings {status} />
 {/if}
 {#if 'layers' === icon}
-  <Layers status={`item-${status}`} {value} />
+  <Layers {status} {value} />
 {/if}
 {#if 'prefix' === icon}
-  <Prefix status={`item-${status}`} />
+  <Prefix {status} />
 {/if}
 {#if 'updates' === icon}
-  <Updates status={`item-${status}`} />
+  <Updates {status} />
 {/if}
 {#if 'build' === icon}
-  <Build status={`item-${status}`} />
+  <Build {status} />
 {/if}
 {#if 'database' === icon}
-  <Database status={`item-${status}`} />
+  <Database {status} />
 {/if}
 {#if 'plus' === icon}
-  <Plus status={`item-${status}`} />
+  <Plus {status} />
 {/if}
 {#if 'reset' === icon}
-  <Reset status={`item-${status}`} />
+  <Reset {status} />
 {/if}
 {#if 'wine' === icon}
-  <Wine status={`item-${status}`} />
+  <Wine {status} />
 {/if}
 {#if 'layers-add' === icon}
-  <LayersAdd status={`item-${status}`} />
+  <LayersAdd {status} />
 {/if}
 {#if 'layers-list' === icon}
-  <LayersList status={`item-${status}`} />
+  <LayersList {status} />
 {/if}
 {#if 'layers-item' === icon}
-  <LayersItem status={`item-${status}`} />
+  <LayersItem {status} />
 {/if}
 {#if 'update-self' === icon}
-  <UpdateSelf status={`item-${status}`} />
+  <UpdateSelf {status} />
 {/if}
 {#if 'update-layer' === icon}
-  <UpdateLayer status={`item-${status}`} />
+  <UpdateLayer {status} />
 {/if}
 {#if 'unpack' === icon}
-  <Unpack status={`item-${status}`} />
+  <Unpack {status} />
 {/if}
 {#if 'pack' === icon}
-  <Pack status={`item-${status}`} />
+  <Pack {status} />
 {/if}
 {#if 'compile' === icon}
-  <Compile status={`item-${status}`} />
+  <Compile {status} />
 {/if}
 {#if 'storage' === icon}
-  <Storage status={`item-${status}`} />
+  <Storage {status} />
 {/if}

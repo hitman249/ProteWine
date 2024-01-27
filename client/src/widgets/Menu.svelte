@@ -9,8 +9,12 @@
   import {type Tweened, tweened, type Unsubscriber} from 'svelte/motion';
   import NavigateList from '../components/list/NavigateList.svelte';
   import ListPreloader from '../components/list/ListPreloader.svelte';
+  import SelectItem from './items/SelectItem.svelte';
+  import type {ValueType} from '../modules/value';
 
   let horizontalList: NavigateList;
+  let selectList: NavigateList;
+  let selectListItems: ValueType[];
   let verticalList: ListPreloader[] = [];
 
   let innerList: ListPreloader;
@@ -214,7 +218,7 @@
         <VerticalItem
           {dummy}
           {item}
-          status={active ? 'focused' : 'normal'}
+          {active}
         />
       </div>
     </ListPreloader>
@@ -227,7 +231,6 @@
       bind:this={innerList}
       current={isInnerList}
       model={innerListItem}
-      style="width: calc(100% - 180px);"
       delta={categoriesDelta}
       headersDummy={3}
       paddingIndent={-50}
@@ -250,10 +253,41 @@
         <VerticalItem
           {dummy}
           {item}
-          status={active ? 'focused' : 'normal'}
+          {active}
         />
       </div>
     </ListPreloader>
+  {/if}
+</div>
+
+<div class="select-list">
+  {#if selectListItems}
+    <NavigateList
+      bind:this={selectList}
+      items={selectListItems || []}
+      itemSize={30}
+      headersDummy={1}
+      horizontal={false}
+    >
+      <div
+        slot="item"
+        class="vertical-item"
+        class:active={active}
+        let:index
+        let:dummy
+        let:position
+        let:active
+        let:jump
+        let:item
+        style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+      >
+        <SelectItem
+          {dummy}
+          {item}
+          status={active ? 'focused' : 'normal'}
+        />
+      </div>
+    </NavigateList>
   {/if}
 </div>
 

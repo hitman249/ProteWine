@@ -2,7 +2,7 @@
   import {MenuItem} from '../../modules/menu';
   import Icon from '../icons/Icon.svelte';
 
-  export let status: 'normal' | 'active' | 'focused' = 'normal';
+  export let active: boolean = false;
   export let item: MenuItem = undefined;
   export let dummy: boolean = false;
   export let click: (a: any) => void = () => null;
@@ -11,10 +11,10 @@
 <div aria-hidden="true" class="item" on:click={click} style="opacity: {dummy ? 0 : 1};">
   <div class="item-icon">
     {#if item}
-      <Icon icon={item?.getIcon()} bind:status />
+      <Icon icon={item?.getIcon()} status={active ? 'focused' : 'normal'} />
     {/if}
   </div>
-  <div class="item-footer" class:item-title-normal={'normal' === status}>
+  <div class="item-footer" class:title-normal={!active}>
     <div class="item-title">
       {item?.title || ''}
     </div>
@@ -89,7 +89,7 @@
     //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
   }
 
-  .item-title-normal {
+  .title-normal {
     opacity: 0.3;
   }
 </style>

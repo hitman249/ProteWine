@@ -158,24 +158,40 @@ export default class Menu extends EventListener {
               icon: 'settings',
               title: 'DXVK',
               description: 'Vulkan-based implementation of D3D9, D3D10 and D3D11 for Proton / Wine',
+              value: {
+                value: false,
+                type: 'install',
+              },
             },
             {
               id: 'vkd3d-proton',
               icon: 'settings',
               title: 'VKD3D Proton',
               description: 'Vulkan-based implementation of D3D12 for Proton / Wine',
+              value: {
+                value: false,
+                type: 'install',
+              },
             },
             {
               id: 'mf',
               icon: 'settings',
               title: 'Media Foundation',
               description: 'Multimedia framework from Microsoft to replace DirectShow, available starting with Windows Vista',
+              value: {
+                value: false,
+                type: 'install',
+              },
             },
             {
               id: 'isskin',
               icon: 'settings',
               title: 'Isskin',
               description: 'Fixes game installer errors',
+              value: {
+                value: false,
+                type: 'install',
+              },
             },
           ],
         },
@@ -230,6 +246,10 @@ export default class Menu extends EventListener {
           icon: 'settings',
           title: 'MangoHud',
           description: 'Beautiful HUD to display FPS',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
         {
           id: 'win-ver',
@@ -237,49 +257,63 @@ export default class Menu extends EventListener {
           title: 'Windows version',
         },
         {
-          id: 'arch',
-          icon: 'settings',
-          title: 'Architecture',
-        },
-        {
-          id: 'games-folder',
-          icon: 'settings',
-          title: 'Games folder',
-        },
-        {
           id: 'no-crash-dialog',
           icon: 'settings',
           title: 'No crash dialog',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
         {
           id: 'fix-focus',
           icon: 'settings',
           title: 'Fix focus',
           description: 'Required for games with focus loss',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
         {
           id: 'disable-mono',
           icon: 'settings',
           title: 'Disable Mono',
           description: 'Disable installation of .NET Framework compatible counterpart',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
         {
           id: 'disable-gecko',
           icon: 'settings',
           title: 'Disable Gecko',
           description: 'Disable installation of the Gecko browser engine (needed to emulate IE WebView inside Wine)',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
         {
           id: 'disable-gstreamer',
           icon: 'settings',
           title: 'Disable GStreamer',
           description: 'Disable winegstreamer (helps in cases where the prefix creation process hangs)',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
         {
           id: 'disable-winemenubuilder',
           icon: 'settings',
           title: 'Disable WineMenuBuilder',
           description: 'Disable creation of labels and types (inside Wine)',
+          value: {
+            value: false,
+            type: 'boolean',
+          },
         },
       ],
     },
