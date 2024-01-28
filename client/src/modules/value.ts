@@ -4,6 +4,7 @@ export type ValueParams = {
   value: ValueData,
   labels: ValueLabels,
   type: ValueTypes,
+  hidden?: boolean,
 };
 
 export type ValueType = {
@@ -24,7 +25,7 @@ export enum ValueTypes {
 }
 
 export default class Value {
-  private static TYPES: {[type in ValueLabels]: ValueType[]} = {
+  private static COLLECTS: {[type in ValueLabels]: ValueType[]} = {
     boolean: [
       {
         value: true,
@@ -62,10 +63,6 @@ export default class Value {
         value: 'winxp',
         title: 'Windows XP',
       },
-      {
-        value: 'win2k',
-        title: 'Windows 2000',
-      },
     ],
     yesno: [
       {
@@ -80,15 +77,45 @@ export default class Value {
   };
 
   private value: ValueData;
+  private readonly hidden: boolean;
   private readonly type: ValueLabels;
 
   constructor(params: ValueParams) {
     this.type = params.labels;
     this.value = params.value;
+    this.hidden = Boolean(params.hidden);
+  }
+
+  public isVisible(): boolean {
+    return !this.hidden;
   }
 
   public getValue(): ValueData {
     return this.value;
+  }
+
+  public getValueFormatted(): string {
+    const list: ValueType[] = this.getList();
+
+    for (const value of list) {
+      if (value.value === this.value) {
+        return value.title;
+      }
+    }
+
+    return String(this.value);
+  }
+
+  public getIndexValue(): number {
+    const list: ValueType[] = this.getList();
+
+    for (let i: number = 0, max: number = list.length; i < max; i++) {
+      if (list[i].value === this.value) {
+        return i;
+      }
+    }
+
+    return 0;
   }
 
   public setValue(value: ValueData): void {
@@ -96,6 +123,6 @@ export default class Value {
   }
 
   public getList(): ValueType[] {
-    return Value.TYPES[this.type];
+    return Value.COLLECTS[this.type];
   }
 }

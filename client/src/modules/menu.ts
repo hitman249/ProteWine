@@ -5,8 +5,10 @@ import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 type MenuItemType = {
   id: string,
   icon: string,
+  poster?: string,
   title: string,
   description: string,
+  template?: 'game',
   click?: () => void,
   items?: () => MenuItemType[],
   value?: ValueParams,
@@ -20,8 +22,10 @@ export class MenuItem {
 
   public readonly id: string;
   public readonly icon: string;
+  public readonly poster: string;
   public readonly title: string;
   public readonly description: string;
+  public readonly template: 'game';
   public readonly value: Value;
 
   private readonly fetchItems: MenuItemType['items'];
@@ -35,8 +39,10 @@ export class MenuItem {
     this.index = index;
     this.id = params.id;
     this.icon = params.icon;
+    this.poster = params.poster;
     this.title = params.title;
-    this.description = params.description || '';
+    this.description = params.description;
+    this.template = params.template;
     this.value = params.value ? new Value(params.value) : undefined;
     this.click = params.click;
     this.fetchItems = params.items;
@@ -197,6 +203,39 @@ export default class Menu extends EventListener {
           id: 'games',
           icon: 'gamepad',
           title: 'Games',
+          template: 'game',
+          items: () => [
+            {
+              id: 'game1',
+              title: 'Lineage 2 - Interlude',
+              poster: 'local:///media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/data/configs/game1/icon.png',
+            },
+            {
+              id: 'game2',
+              title: 'Project IGI',
+              poster: 'local:///home/neiron/Изображения/597a12fdb539422eaa8553ac41d42682.jpg',
+            },
+            {
+              id: 'game2',
+              title: 'Final Fantasy XV',
+              poster: 'local:///home/neiron/Изображения/6e283ace2b5701cca6df1baf865dc407.png',
+            },
+            {
+              id: 'game1',
+              title: 'Lineage 2 - Interlude',
+              poster: 'local:///media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/data/configs/game1/icon.png',
+            },
+            {
+              id: 'game2',
+              title: 'Project IGI',
+              poster: 'local:///home/neiron/Изображения/597a12fdb539422eaa8553ac41d42682.jpg',
+            },
+            {
+              id: 'game2',
+              title: 'Final Fantasy XV',
+              poster: 'local:///home/neiron/Изображения/6e283ace2b5701cca6df1baf865dc407.png',
+            },
+          ],
         },
         {
           id: 'add-game',
@@ -221,6 +260,7 @@ export default class Menu extends EventListener {
           icon: 'reset',
           title: 'Prefix reset',
           value: {
+            hidden: true,
             value: false,
             labels: ValueLabels.YESNO,
             type: ValueTypes.SELECT,
@@ -235,10 +275,10 @@ export default class Menu extends EventListener {
               id: 'dxvk',
               icon: 'settings',
               title: 'DXVK',
-              description: 'Vulkan-based implementation of D3D9, D3D10 and D3D11 for Proton / Wine',
+              description: 'Vulkan-based implementation of D3D9, D3D10 and D3D11',
               value: {
                 value: false,
-                labels: ValueLabels.INSTALL,
+                labels: ValueLabels.BOOLEAN,
                 type: ValueTypes.SELECT,
               },
             },
@@ -246,10 +286,10 @@ export default class Menu extends EventListener {
               id: 'vkd3d-proton',
               icon: 'settings',
               title: 'VKD3D Proton',
-              description: 'Vulkan-based implementation of D3D12 for Proton / Wine',
+              description: 'Vulkan-based implementation of D3D12',
               value: {
                 value: false,
-                labels: ValueLabels.INSTALL,
+                labels: ValueLabels.BOOLEAN,
                 type: ValueTypes.SELECT,
               },
             },
@@ -260,7 +300,7 @@ export default class Menu extends EventListener {
               description: 'Multimedia framework from Microsoft to replace DirectShow, available starting with Windows Vista',
               value: {
                 value: false,
-                labels: ValueLabels.INSTALL,
+                labels: ValueLabels.BOOLEAN,
                 type: ValueTypes.SELECT,
               },
             },
@@ -271,7 +311,40 @@ export default class Menu extends EventListener {
               description: 'Fixes game installer errors',
               value: {
                 value: false,
-                labels: ValueLabels.INSTALL,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'mono',
+              icon: 'settings',
+              title: 'Mono',
+              description: '.NET Framework compatible counterpart',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'gecko',
+              icon: 'settings',
+              title: 'Gecko',
+              description: 'Gecko browser engine (needed to emulate IE WebView inside Wine)',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'gstreamer',
+              icon: 'settings',
+              title: 'GStreamer',
+              description: 'WineGStreamer (Disabling helps in cases where the prefix creation process hangs)',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
                 type: ValueTypes.SELECT,
               },
             },
@@ -359,39 +432,6 @@ export default class Menu extends EventListener {
           icon: 'settings',
           title: 'Fix focus',
           description: 'Required for games with focus loss',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'mono',
-          icon: 'settings',
-          title: 'Mono',
-          description: 'Install of .NET Framework compatible counterpart',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'gecko',
-          icon: 'settings',
-          title: 'Gecko',
-          description: 'Install of the Gecko browser engine (needed to emulate IE WebView inside Wine)',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'gstreamer',
-          icon: 'settings',
-          title: 'GStreamer',
-          description: 'WineGStreamer (Disabling helps in cases where the prefix creation process hangs)',
           value: {
             value: false,
             labels: ValueLabels.BOOLEAN,

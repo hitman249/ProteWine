@@ -7,21 +7,21 @@
   import VirtualList from './VirtualList.svelte';
   import {tweened, type Tweened, type Unsubscriber} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
-  import {MenuItem} from '../../modules/menu';
 
   export let items: any = [];
   export let itemSpace: number = 0;
+  export let itemCenter: boolean = false;
   export let itemSize: number = 0;
   export let headersDummy: number = 0;
   export let paddingIndent: number = 0;
   export let horizontal: boolean = true;
-  let direction: boolean = true;
 
   let container: HTMLDivElement;
   let containerHeight: number = 0;
   let containerWidth: number = 0;
   let scrollIndent: number = 0;
   let current: number = 0;
+  let direction: boolean = true;
 
   let frame: number;
 
@@ -84,7 +84,7 @@
     return current > 0;
   }
 
-  export function getItem(): MenuItem {
+  export function getItem(): any {
     return items[current];
   }
 
@@ -155,6 +155,7 @@
       {items}
       {itemSize}
       {itemSpace}
+      {itemCenter}
       {headersDummy}
       {paddingIndent}
       containerSize={horizontal ? containerWidth : containerHeight}
@@ -173,7 +174,7 @@
         {position}
         active={index === (current + headersDummy)}
         index={index}
-        jump={(direction && index === current) || (!direction && index === current + headersDummy)}
+        jump={(direction && (index >= current && index <= current + headersDummy)) || (!direction && index === current + headersDummy)}
       />
     </VirtualList>
   {/if}

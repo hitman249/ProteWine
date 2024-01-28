@@ -2,16 +2,16 @@
   import {MenuItem} from '../../modules/menu';
   import Icon from '../icons/Icon.svelte';
 
-  export let active: boolean = false;
   export let index: number = 0;
+  export let active: boolean = false;
   export let dummy: boolean = false;
   export let item: MenuItem = undefined;
 </script>
 
 <div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
-  <div class="icon">
+  <div class="icon" class:focused={active}>
     {#if item}
-      <Icon icon={item?.getIcon()} status={active ? 'focused' : 'normal'} />
+      <img class="poster" src={item.poster} alt="">
     {/if}
   </div>
   <div class="footer" class:title-normal={!active}>
@@ -52,9 +52,12 @@
     text-align: center;
     width: 110px;
     height: 100%;
+  }
 
-    transition: filter 0.6s, opacity 0.3s;
-    filter: drop-shadow(transparent 0px 0px 0px);
+  .poster {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
   }
 
   .footer {
@@ -108,5 +111,22 @@
     font-size: 16px;
     border-top: rgb(255 255 255 / 40%) solid 1px;
     //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
+  }
+
+  .focused:after {
+    transition: box-shadow 0.2s;
+    animation-duration: 1.2s;
+    animation-name: item-focused;
+    animation-iteration-count: infinite;
+
+    @keyframes item-focused {
+      0% {
+        box-shadow: 0 0 20px 0 rgba(255,255,255,0.1);
+      }
+
+      50% {
+        box-shadow: 0 0 20px 0 rgba(255,255,255,0.8);
+      }
+    }
   }
 </style>

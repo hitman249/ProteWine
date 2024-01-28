@@ -12,6 +12,7 @@
   export let headersDummy: number = 0;
   export let paddingIndent: number = 0;
   export let itemSpace: number = 0;
+  export let itemCenter: boolean = false;
   export let horizontal: boolean = true;
   export let model: MenuItem = undefined;
 
@@ -119,6 +120,7 @@
     {headersDummy}
     {paddingIndent}
     {itemSpace}
+    {itemCenter}
     {horizontal}
   >
     <slot

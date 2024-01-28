@@ -13,6 +13,7 @@
   import ListPreloader from '../components/list/ListPreloader.svelte';
   import SelectItem from './items/SelectItem.svelte';
   import type {ValueType} from '../modules/value';
+  import GameItem from './items/GameItem.svelte';
 
   let horizontalList: NavigateList;
   let verticalList: ListPreloader[] = [];
@@ -155,6 +156,8 @@
         selectListItems = item.value.getList();
 
         tick().then(() => {
+          const index: number = item.value.getIndexValue();
+          selectList.changeIndex(index);
           isSelectList = true;
         });
       }
@@ -201,128 +204,26 @@
   });
 </script>
 
-<div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
-  <NavigateList
-    bind:this={horizontalList}
-    items={items || []}
-    itemSize={Menu.ROOT_ITEM_WIDTH}
-    headersDummy={1}
-    horizontal={true}
-  >
-    <div
-      slot="item"
-      class="horizontal-item"
-      class:active={active}
-      let:dummy
-      let:position
-      let:active
-      let:item
-      style="transform: translate({position}px, 0px);"
-    >
-      <HorizontalItem
-        {dummy}
-        {item}
-        {active}
-      />
-    </div>
-  </NavigateList>
-</div>
-
-<div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
-  {#each categories as item, index}
-    {@const current = item?.isActive()}
-    {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
-
-    <ListPreloader
-      bind:this={verticalList[index]}
-      model={item}
-      {left}
-      {current}
-      delta={categoriesDelta}
-      headersDummy={1}
-      itemSize={Menu.ITEM_HEIGHT}
-      itemSpace={Menu.ROOT_ITEM_HEIGHT}
-      horizontal={false}
-    >
-      <div
-        slot="item"
-        class="vertical-item"
-        class:active={active}
-        let:index
-        let:dummy
-        let:position
-        let:active
-        let:jump
-        let:item
-        style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
-      >
-        <VerticalItem
-          {dummy}
-          {item}
-          {active}
-        />
-      </div>
-    </ListPreloader>
-  {/each}
-</div>
-
-{#if innerListItem}
-  <div class="inner-list" class:list-only-active={isSelectList}>
-    <ListPreloader
-      bind:this={innerList}
-      current={isInnerList}
-      model={innerListItem}
-      delta={categoriesDelta}
-      headersDummy={3}
-      paddingIndent={-41}
-      itemSize={Menu.ITEM_HEIGHT}
-      itemSpace={0}
-      horizontal={false}
-    >
-      <div
-        slot="item"
-        class="vertical-item"
-        class:active={active}
-        let:index
-        let:dummy
-        let:position
-        let:active
-        let:jump
-        let:item
-        style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
-      >
-        <VerticalItem
-          {dummy}
-          {item}
-          {active}
-        />
-      </div>
-    </ListPreloader>
-  </div>
-{/if}
-
-{#if selectListItems}
-  <div class="select-list" class:open={isSelectList}>
+<div class="content">
+  <div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
     <NavigateList
-      bind:this={selectList}
-      items={selectListItems}
-      itemSize={35}
-      headersDummy={9}
-      horizontal={false}
+      bind:this={horizontalList}
+      items={items || []}
+      itemSize={Menu.ROOT_ITEM_WIDTH}
+      headersDummy={1}
+      horizontal={true}
     >
       <div
         slot="item"
-        class="vertical-item"
+        class="horizontal-item"
         class:active={active}
-        let:index
         let:dummy
         let:position
         let:active
-        let:jump
         let:item
-        style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+        style="transform: translate({position}px, 0px);"
       >
-        <SelectItem
+        <HorizontalItem
           {dummy}
           {item}
           {active}
@@ -330,9 +231,137 @@
       </div>
     </NavigateList>
   </div>
-{/if}
+
+  <div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
+    {#each categories as item, index}
+      {@const current = item?.isActive()}
+      {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
+
+      <ListPreloader
+        bind:this={verticalList[index]}
+        model={item}
+        {left}
+        {current}
+        delta={categoriesDelta}
+        headersDummy={1}
+        itemSize={Menu.ITEM_HEIGHT}
+        itemSpace={Menu.ROOT_ITEM_HEIGHT}
+        horizontal={false}
+      >
+        <div
+          slot="item"
+          class="vertical-item"
+          class:active={active}
+          let:index
+          let:dummy
+          let:position
+          let:active
+          let:jump
+          let:item
+          style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+        >
+          <VerticalItem
+            {index}
+            {dummy}
+            {item}
+            {active}
+          />
+        </div>
+      </ListPreloader>
+    {/each}
+  </div>
+
+  {#if innerListItem}
+    {@const isGames = 'game' === innerListItem.template}
+    <div class="inner-list" class:list-only-active={isSelectList}>
+      <ListPreloader
+        bind:this={innerList}
+        current={isInnerList}
+        model={innerListItem}
+        delta={categoriesDelta}
+        headersDummy={isGames ? 2 : 3}
+        paddingIndent={isGames ? -38 : -72}
+        itemSize={Menu.ITEM_HEIGHT}
+        itemSpace={isGames ? 200 : 60}
+        itemCenter={true}
+        horizontal={false}
+      >
+        <div
+          slot="item"
+          class="vertical-item"
+          class:active={active}
+          let:index
+          let:dummy
+          let:position
+          let:active
+          let:jump
+          let:item
+          style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+        >
+          {#if isGames}
+            <GameItem
+              {index}
+              {dummy}
+              {item}
+              {active}
+            />
+          {:else}
+            <VerticalItem
+              {index}
+              {dummy}
+              {item}
+              {active}
+            />
+          {/if}
+        </div>
+      </ListPreloader>
+    </div>
+  {/if}
+
+  {#if selectListItems}
+    <div class="select-list" class:open={isSelectList}>
+      <NavigateList
+        bind:this={selectList}
+        items={selectListItems}
+        itemSize={35}
+        headersDummy={9}
+        horizontal={false}
+        itemSpace={20}
+        itemCenter={true}
+      >
+        <div
+          slot="item"
+          class="vertical-item"
+          class:active={active}
+          let:index
+          let:dummy
+          let:position
+          let:active
+          let:jump
+          let:item
+          style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+        >
+          <SelectItem
+            {dummy}
+            {item}
+            {active}
+          />
+        </div>
+      </NavigateList>
+    </div>
+  {/if}
+</div>
 
 <style lang="less">
+  .content {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s;
+    opacity: 1;
+  }
+
   .horizontal-list {
     display: block;
     position: absolute;

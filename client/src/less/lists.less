@@ -36,13 +36,11 @@
 }
 
 .vertical-lists > .list.active {
-  transition: width 0.2s;
   width: calc(100% - 180px);
   overflow: hidden;
 
   & > .list {
     position: absolute;
-    transition: width 0.2s;
     width: 100%;
   }
 }
@@ -65,6 +63,14 @@
 }
 
 .list-only-active {
+  .vertical-lists > .list.active {
+    transition: width 0.2s;
+
+    & > .list {
+      transition: width 0.2s;
+    }
+  }
+
   .horizontal-item:not(.active) {
     opacity: 0;
   }

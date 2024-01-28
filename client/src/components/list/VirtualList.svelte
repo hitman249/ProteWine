@@ -5,6 +5,7 @@
   export let containerSize: number;
   export let itemSize: number;
   export let itemSpace: number;
+  export let itemCenter: boolean = false;
   export let horizontal: boolean = true;
   export let headersDummy: number = 0;
   export let paddingIndent: number = 0;
@@ -21,22 +22,38 @@
     }
   }
 
-  function isAppendSpace(index: number, naturalIndex: number, scrollIndent: number): boolean {
-    let over: number = (index - 1);
+  function getAppendSpace(index: number, naturalIndex: number, scrollIndent: number): number {
+    const position: number = (naturalIndex * itemSize) - (headersDummy * itemSize);
 
-    if (over < 0) {
-      over = numItems - 1;
-    }
+    if (itemCenter) {
+      if (direction) {
+        if (scrollIndent > position) {
+          return 0;
+        }
 
-    if (direction && over === numOverlap) {
-      const position: number = (naturalIndex * itemSize) - itemSize;
+        if (scrollIndent > position - itemSize) {
+          return itemSpace / 2;
+        }
+      }
 
-      if (scrollIndent > position) {
-        return false;
+      if (!direction && scrollIndent >= position) {
+        if (scrollIndent < (position + itemSize)) {
+          return itemSpace / 2;
+        }
+
+        return 0;
       }
     }
 
-    return index !== numOverlap;
+    if (direction && scrollIndent > position) {
+      return 0;
+    }
+
+    if (!direction && scrollIndent < position + itemSize) {
+      return itemSpace;
+    }
+
+    return index !== numOverlap ? itemSpace : 0;
   }
 
   $: startIndex = Math.floor(scrollIndent / itemSize);
@@ -62,7 +79,7 @@
 
 {#each slice as item, index}
   {@const naturalIndex = getNaturalIndex(index)}
-  {@const position = (naturalIndex * itemSize) + (isAppendSpace(index, naturalIndex, scrollIndent) ? itemSpace : 0) + paddingIndent}
+  {@const position = (naturalIndex * itemSize) + getAppendSpace(index, naturalIndex, scrollIndent) + paddingIndent}
 
   <slot
     index={naturalIndex}
