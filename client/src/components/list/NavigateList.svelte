@@ -22,6 +22,7 @@
   let scrollIndent: number = 0;
   let current: number = 0;
   let direction: boolean = true;
+  let jumpInit: boolean = false;
 
   let frame: number;
 
@@ -29,6 +30,10 @@
   let unsubscribe: Unsubscriber = undefined;
 
   function scrollAnimate(): Tweened<number> {
+    if (!jumpInit) {
+      jumpInit = true;
+    }
+
     unsubscribe?.();
 
     scroll = tweened(scrollIndent, {
@@ -174,7 +179,7 @@
         {position}
         active={index === (current + headersDummy)}
         index={index}
-        jump={(direction && (index >= current && index <= current + headersDummy)) || (!direction && index === current + headersDummy)}
+        jump={jumpInit && ((direction && (index >= current && index <= current + headersDummy)) || (!direction && index === current + headersDummy))}
       />
     </VirtualList>
   {/if}

@@ -14,7 +14,7 @@
       <img class="poster" src={item.poster} alt="">
     {/if}
   </div>
-  <div class="footer" class:title-normal={!active}>
+  <div class="footer" class:focused={active}>
     <div class="title">
       {item?.title || ''}
 
@@ -50,14 +50,56 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    width: 110px;
+    width: 210px;
     height: 100%;
+    transition: transform 0.3s, opacity 0.3s;
+    transform: scale(1);
+    opacity: 0.2;
+
+    img {
+      border-radius: 2px;
+      border-width: 1px;
+      border-color: white;
+      border-style: solid;
+    }
+
+    &.focused {
+      transform: scale(2);
+      opacity: 1;
+
+      img {
+        transition: box-shadow 1.2s;
+        animation-duration: 1.2s;
+        animation-name: item-focused;
+        animation-iteration-count: infinite;
+
+        @keyframes item-focused {
+          0% {
+            box-shadow: 0 0 10px 0 rgba(255,255,255,0.1);
+          }
+
+          50% {
+            box-shadow: 0 0 10px 0 rgba(255,255,255,1);
+          }
+
+          100% {
+            box-shadow: 0 0 10px 0 rgba(255,255,255,0.1);
+          }
+        }
+      }
+    }
   }
 
   .poster {
-    position: relative;
+    display: block;
+    position: absolute;
     max-width: 100%;
     max-height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
   }
 
   .footer {
@@ -77,6 +119,11 @@
     vertical-align: center;
     transition: opacity ease 0.3s;
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
+    opacity: 0;
+
+    &.focused {
+      opacity: 1;
+    }
   }
 
   .title {
@@ -111,22 +158,5 @@
     font-size: 16px;
     border-top: rgb(255 255 255 / 40%) solid 1px;
     //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
-  }
-
-  .focused:after {
-    transition: box-shadow 0.2s;
-    animation-duration: 1.2s;
-    animation-name: item-focused;
-    animation-iteration-count: infinite;
-
-    @keyframes item-focused {
-      0% {
-        box-shadow: 0 0 20px 0 rgba(255,255,255,0.1);
-      }
-
-      50% {
-        box-shadow: 0 0 20px 0 rgba(255,255,255,0.8);
-      }
-    }
   }
 </style>
