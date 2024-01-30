@@ -12,7 +12,7 @@
   import NavigateList from '../components/list/NavigateList.svelte';
   import ListPreloader from '../components/list/ListPreloader.svelte';
   import SelectItem from './items/SelectItem.svelte';
-  import type {ValueType} from '../modules/value';
+  import {ValueLabels, type ValueType} from '../modules/value';
   import GameItem from './items/GameItem.svelte';
 
   let horizontalList: NavigateList;
@@ -271,7 +271,6 @@
           style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
         >
           <VerticalItem
-            {index}
             {dummy}
             {item}
             {active}
@@ -282,7 +281,8 @@
   </div>
 
   {#if innerListItem}
-    {@const isGames = 'game' === innerListItem.template}
+    {@const isGames = (ValueLabels.GAME === innerListItem.template || ValueLabels.MANAGE === innerListItem.template)}
+
     <div class="inner-list" class:list-only-active={isSelectList}>
       <ListPreloader
         bind:this={innerList}
@@ -310,14 +310,12 @@
         >
           {#if isGames}
             <GameItem
-              {index}
               {dummy}
               {item}
               {active}
             />
           {:else}
             <VerticalItem
-              {index}
               {dummy}
               {item}
               {active}

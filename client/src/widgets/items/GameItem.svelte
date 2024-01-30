@@ -2,7 +2,6 @@
   import {MenuItem} from '../../modules/menu';
   import Icon from '../icons/Icon.svelte';
 
-  export let index: number = 0;
   export let active: boolean = false;
   export let dummy: boolean = false;
   export let item: MenuItem = undefined;

@@ -145,6 +145,8 @@
 
   onMount(() => {
     frame = requestAnimationFrame(poll);
+    containerHeight = container.clientHeight;
+    containerWidth = container.clientWidth;
   });
 
   onDestroy(() => {
@@ -156,8 +158,6 @@
 <div
   class="list"
   bind:this={container}
-  bind:clientHeight={containerHeight}
-  bind:clientWidth={containerWidth}
 >
   {#if (horizontal ? containerWidth : containerHeight) > 0}
     <VirtualList

@@ -17,6 +17,8 @@ export enum ValueLabels {
   INSTALL = 'install',
   WINVER = 'winver',
   YESNO = 'yesno',
+  GAME = 'game',
+  MANAGE = 'manage',
 }
 
 export enum ValueTypes {
@@ -28,12 +30,48 @@ export default class Value {
   private static COLLECTS: {[type in ValueLabels]: ValueType[]} = {
     boolean: [
       {
+        value: false,
+        title: 'Disable',
+      },
+      {
         value: true,
         title: 'Enable',
       },
+    ],
+    game: [
       {
-        value: false,
-        title: 'Disable',
+        value: 'run',
+        title: 'Run game',
+      },
+      {
+        value: 'run-debug',
+        title: 'Run debug',
+      },
+      {
+        value: 'game-info',
+        title: 'Info',
+      },
+    ],
+    manage: [
+      {
+        value: 'create-icon',
+        title: 'Create system icon',
+      },
+      {
+        value: 'create-icon',
+        title: 'Remove system icon',
+      },
+      {
+        value: 'change-icon',
+        title: 'Change icon',
+      },
+      {
+        value: 'change-poster',
+        title: 'Change poster',
+      },
+      {
+        value: 'change-background',
+        title: 'Change background',
       },
     ],
     install: [
@@ -66,12 +104,12 @@ export default class Value {
     ],
     yesno: [
       {
-        value: true,
-        title: 'Yes',
-      },
-      {
         value: false,
         title: 'No',
+      },
+      {
+        value: true,
+        title: 'Yes',
       },
     ],
   };

@@ -3,7 +3,6 @@
   import Icon from '../icons/Icon.svelte';
 
   export let active: boolean = false;
-  export let index: number = 0;
   export let dummy: boolean = false;
   export let item: MenuItem = undefined;
 </script>

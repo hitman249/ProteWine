@@ -19,6 +19,7 @@
   import Pack from './Pack.svelte';
   import Compile from './Compile.svelte';
   import Storage from './Storage.svelte';
+  import Manage from './Manage.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -84,4 +85,7 @@
 {/if}
 {#if 'storage' === icon}
   <Storage {status} />
+{/if}
+{#if 'manage' === icon}
+  <Manage {status} />
 {/if}
