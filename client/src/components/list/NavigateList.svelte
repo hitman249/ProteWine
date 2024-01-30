@@ -6,7 +6,7 @@
   import {onMount, onDestroy} from 'svelte';
   import VirtualList from './VirtualList.svelte';
   import {tweened, type Tweened, type Unsubscriber} from 'svelte/motion';
-  import {cubicOut} from 'svelte/easing';
+  import {cubicInOut, cubicOut} from 'svelte/easing';
 
   export let items: any = [];
   export let itemSpace: number = 0;
@@ -36,14 +36,18 @@
 
     unsubscribe?.();
 
+    const position: number = current * itemSize + (direction ? -itemSize : itemSize);
+
+    let easing: boolean = direction
+      ? scrollIndent < position - 20
+      : scrollIndent > position + 20;
+
     scroll = tweened(scrollIndent, {
-      duration: 200,
-      easing: cubicOut,
+      duration: 300,
+      easing: easing ? cubicOut : cubicInOut,
     });
 
-    unsubscribe = scroll.subscribe((value: number) => {
-      fastdom.mutate(() => scrollTo(value));
-    });
+    unsubscribe = scroll.subscribe((value: number) => scrollTo(value));
 
     return scroll;
   }
@@ -171,15 +175,20 @@
       let:position
       let:index
     >
+      {@const realIndex = index - headersDummy}
+
       <slot
         name="item"
         {item}
         {dummy}
         {scrollIndent}
         {position}
-        active={index === (current + headersDummy)}
+        active={current === realIndex}
         index={index}
-        jump={jumpInit && ((direction && (index >= current && index <= current + headersDummy)) || (!direction && index === current + headersDummy))}
+        jump={jumpInit && !dummy && (
+          (direction && (realIndex >= current - 1 && realIndex <= current + headersDummy - 1)) ||
+          (!direction && (realIndex <= current + 1 && realIndex >= current - headersDummy + 1))
+        )}
       />
     </VirtualList>
   {/if}

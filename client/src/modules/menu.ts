@@ -207,33 +207,53 @@ export default class Menu extends EventListener {
           items: () => [
             {
               id: 'game1',
-              title: 'Lineage 2 - Interlude',
-              poster: 'local:///media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/data/configs/game1/icon.png',
+              title: 'Grand Theft Auto - Vice City',
+              poster: '/home/neiron/Изображения/4eb6720c6cd70ee9e67ca6e4dc12e3df.png',
             },
             {
               id: 'game2',
               title: 'Project IGI',
-              poster: 'local:///home/neiron/Изображения/597a12fdb539422eaa8553ac41d42682.jpg',
+              poster: '/home/neiron/Изображения/597a12fdb539422eaa8553ac41d42682.jpg',
             },
             {
               id: 'game2',
-              title: 'Final Fantasy XV',
-              poster: 'local:///home/neiron/Изображения/6e283ace2b5701cca6df1baf865dc407.png',
+              title: 'Hard Reset Redux',
+              poster: '/home/neiron/Изображения/5a5a76e2f8b0aa27f2c2dec653ab35e7.png',
             },
             {
               id: 'game1',
-              title: 'Lineage 2 - Interlude',
-              poster: 'local:///media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/data/configs/game1/icon.png',
-            },
-            {
-              id: 'game2',
-              title: 'Project IGI',
-              poster: 'local:///home/neiron/Изображения/597a12fdb539422eaa8553ac41d42682.jpg',
-            },
-            {
-              id: 'game2',
               title: 'Final Fantasy XV',
-              poster: 'local:///home/neiron/Изображения/6e283ace2b5701cca6df1baf865dc407.png',
+              poster: '/home/neiron/Изображения/6e283ace2b5701cca6df1baf865dc407.png',
+            },
+            {
+              id: 'game2',
+              title: 'Dark Soul III',
+              poster: '/home/neiron/Изображения/9085f5ef67f2f7f0f38e869ffb5016a1.png',
+            },
+            {
+              id: 'game2',
+              title: 'Mafia',
+              poster: '/home/neiron/Изображения/349b4d0760cb85b962fa79800c168927.png',
+            },
+            {
+              id: 'game2',
+              title: 'Lost Planet',
+              poster: '/home/neiron/Изображения/96a65578dd725718afb62869c9c1c3b3.png',
+            },
+            {
+              id: 'game2',
+              title: 'Iron Storm',
+              poster: '/home/neiron/Изображения/c84f4c33b8ed07f61e6356c3a7418bd3.png',
+            },
+            {
+              id: 'game2',
+              title: 'Smash Cars',
+              poster: '/home/neiron/Изображения/0b38ba7ab744745e87cfb4962051c92f.png',
+            },
+            {
+              id: 'game2',
+              title: 'Sekiro: Shadows Die Twice',
+              poster: '/home/neiron/Изображения/7c867647488e862e745b6992a0f882e4.png',
             },
           ],
         },

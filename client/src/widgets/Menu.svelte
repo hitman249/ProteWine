@@ -2,7 +2,7 @@
 </script>
 <script lang="ts">
   import _ from 'lodash';
-  import {cubicOut} from 'svelte/easing';
+  import {cubicInOut, cubicOut} from 'svelte/easing';
   import {onDestroy, onMount, tick} from 'svelte';
   import HorizontalItem from './items/HorizontalItem.svelte';
   import VerticalItem from './items/VerticalItem.svelte';
@@ -27,6 +27,7 @@
   let isSelectList: boolean = false;
   let selectListItems: ValueType[];
 
+  let direction: boolean = true;
   let categoriesDelta: number = 0;
   let paddingLeftCategories: number = -Menu.ROOT_ITEM_HEIGHT;
   let timeout: any;
@@ -37,9 +38,16 @@
   function scrollAnimate(): Tweened<number> {
     unsubscribe?.();
 
-    scroll = tweened(horizontalList?.getScrollPosition(), {
-      duration: 200,
-      easing: cubicOut,
+    const scrollIndent: number = horizontalList?.getScrollPosition() || 0;
+    const position: number = (horizontalList?.getIndex() || 0) * Menu.ROOT_ITEM_WIDTH + (direction ? -Menu.ROOT_ITEM_WIDTH : Menu.ROOT_ITEM_WIDTH);
+
+    let easing: boolean = direction
+      ? scrollIndent < position
+      : scrollIndent > position;
+
+    scroll = tweened(scrollIndent, {
+      duration: 300,
+      easing: easing ? cubicOut : cubicInOut,
     });
 
     unsubscribe = scroll.subscribe((value: number) => {
@@ -55,6 +63,7 @@
 
   function keyRight() {
     if (horizontalList.hasRight()) {
+      direction = true;
       horizontalList.setIndex(horizontalList.getIndex() + 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
@@ -71,6 +80,7 @@
 
   function keyLeft() {
     if (horizontalList.hasLeft()) {
+      direction = false;
       horizontalList.setIndex(horizontalList.getIndex() - 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
@@ -280,9 +290,9 @@
         model={innerListItem}
         delta={categoriesDelta}
         headersDummy={isGames ? 2 : 3}
-        paddingIndent={isGames ? -38 : -72}
+        paddingIndent={isGames ? -38 : -100}
         itemSize={Menu.ITEM_HEIGHT}
-        itemSpace={isGames ? 200 : 60}
+        itemSpace={isGames ? 200 : 100}
         itemCenter={true}
         horizontal={false}
       >
@@ -326,7 +336,7 @@
         itemSize={35}
         headersDummy={9}
         horizontal={false}
-        itemSpace={20}
+        itemSpace={30}
         itemCenter={true}
       >
         <div

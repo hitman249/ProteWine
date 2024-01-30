@@ -11,7 +11,7 @@
 <div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
   <div class="icon" class:focused={active}>
     {#if item}
-      <img class="poster" src={item.poster} alt="">
+      <img class="poster" src={'local://' + item.poster} alt="">
     {/if}
   </div>
   <div class="footer" class:focused={active}>
@@ -143,10 +143,6 @@
     font-size: 16px;
     justify-content: right;
     align-items: end;
-  }
-
-  .title-normal {
-    opacity: 0.3;
   }
 
   .description {

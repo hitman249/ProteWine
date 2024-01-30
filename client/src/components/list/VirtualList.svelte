@@ -56,10 +56,10 @@
     return index !== numOverlap ? itemSpace : 0;
   }
 
+  $: numItems = Math.ceil(containerSize / itemSize) + 1 + (paddingIndent < 0 ? 1 : 0);
   $: startIndex = Math.floor(scrollIndent / itemSize);
   $: endIndex = startIndex + numItems;
   $: numOverlap = Math.floor(scrollIndent / itemSize) % numItems;
-  $: numItems = Math.ceil(containerSize / itemSize) + 1;
   $: slice = Helpers.shiftArray(
     Helpers.sliceArray(
       items,
