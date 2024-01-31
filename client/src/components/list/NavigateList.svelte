@@ -5,8 +5,7 @@
   import fastdom from 'fastdom';
   import {onMount, onDestroy} from 'svelte';
   import VirtualList from './VirtualList.svelte';
-  import {tweened, type Tweened, type Unsubscriber} from 'svelte/motion';
-  import {cubicInOut, cubicOut} from 'svelte/easing';
+  import Animate from '../../modules/animate';
 
   export let items: any = [];
   export let itemSpace: number = 0;
@@ -22,46 +21,46 @@
   let scrollIndent: number = 0;
   let current: number = 0;
   let direction: boolean = true;
-  let jumpInit: boolean = false;
+  let jumpInit: boolean = true;
 
   let frame: number;
 
-  let scroll: Tweened<number> = undefined;
-  let unsubscribe: Unsubscriber = undefined;
-
-  function scrollAnimate(): Tweened<number> {
+  let animate: Animate = new Animate();
+  animate.setOffset(0);
+  animate.subscribe((value: number) => {
     if (!jumpInit) {
       jumpInit = true;
     }
 
-    unsubscribe?.();
-
-    const position: number = current * itemSize + (direction ? -itemSize : itemSize);
-
-    let easing: boolean = direction
-      ? scrollIndent < position - 20
-      : scrollIndent > position + 20;
-
-    scroll = tweened(scrollIndent, {
-      duration: 300,
-      easing: easing ? cubicOut : cubicInOut,
+    fastdom.mutate(() => {
+      scrollTo(value);
     });
-
-    unsubscribe = scroll.subscribe((value: number) => scrollTo(value));
-
-    return scroll;
-  }
+  });
 
   function poll() {
-    if ((horizontal ? container.scrollLeft : container.scrollTop) !== scrollIndent) {
-      scrollIndent = (horizontal ? container.scrollLeft : container.scrollTop);
-    }
+    fastdom.measure(() => {
+      if (!container) {
+        return;
+      }
 
-    frame = requestAnimationFrame(poll);
+      const indent: number = horizontal ? container.scrollLeft : container.scrollTop;
+
+      if (indent !== scrollIndent) {
+        scrollIndent = indent;
+      }
+    });
+
+    fastdom.measure(() => {
+      frame = requestAnimationFrame(poll);
+    });
   }
 
   export function scrollTo(position: number) {
-    container?.scrollTo(horizontal ? {left: position} : {top: position});
+    if (Boolean(container?.scrollTo)) {
+      container?.scrollTo(horizontal ? {left: position} : {top: position});
+    } else if (container) {
+      container[horizontal ? 'scrollLeft' : 'scrollTop'] = position;
+    }
   }
 
   export function getScrollPosition(): number {
@@ -79,6 +78,8 @@
     if (scrollIndent !== position) {
       scrollIndent = position;
     }
+
+    animate.setOffset(position);
   }
 
   export function getIndex(): number {
@@ -113,7 +114,7 @@
     if (hasRight()) {
       direction = true;
       current++;
-      scrollAnimate().set(current * itemSize);
+      animate.set(current * itemSize);
     }
   }
 
@@ -121,7 +122,7 @@
     if (hasLeft()) {
       direction = false;
       current--;
-      scrollAnimate().set(current * itemSize);
+      animate.set(current * itemSize);
     }
   }
 
@@ -129,8 +130,7 @@
     if (hasDown()) {
       direction = true;
       current++;
-
-      scrollAnimate().set(current * itemSize);
+      animate.set(current * itemSize);
     }
   }
 
@@ -138,8 +138,7 @@
     if (hasUp()) {
       direction = false;
       current--;
-
-      scrollAnimate().set(current * itemSize);
+      animate.set(current * itemSize);
     }
   }
 
@@ -150,7 +149,6 @@
   });
 
   onDestroy(() => {
-    unsubscribe?.();
     cancelAnimationFrame(frame);
   });
 </script>
@@ -200,8 +198,6 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* One inline-block per line, no horizontal scrolling  */
-    box-sizing: border-box;
     will-change: auto;
     transform: translateZ(0);
   }

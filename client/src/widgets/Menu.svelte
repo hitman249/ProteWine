@@ -14,6 +14,7 @@
   import SelectItem from './items/SelectItem.svelte';
   import {ValueLabels, type ValueType} from '../modules/value';
   import GameItem from './items/GameItem.svelte';
+  import Animate from '../modules/animate';
 
   let horizontalList: NavigateList;
   let verticalList: ListPreloader[] = [];
@@ -32,31 +33,12 @@
   let paddingLeftCategories: number = -Menu.ROOT_ITEM_HEIGHT;
   let timeout: any;
 
-  let scroll: Tweened<number> = undefined;
-  let unsubscribe: Unsubscriber = undefined;
-
-  function scrollAnimate(): Tweened<number> {
-    unsubscribe?.();
-
-    const scrollIndent: number = horizontalList?.getScrollPosition() || 0;
-    const position: number = (horizontalList?.getIndex() || 0) * Menu.ROOT_ITEM_WIDTH + (direction ? -Menu.ROOT_ITEM_WIDTH : Menu.ROOT_ITEM_WIDTH);
-
-    let easing: boolean = direction
-      ? scrollIndent < position
-      : scrollIndent > position;
-
-    scroll = tweened(scrollIndent, {
-      duration: 300,
-      easing: easing ? cubicOut : cubicInOut,
-    });
-
-    unsubscribe = scroll.subscribe((value: number) => {
-      horizontalList?.scrollTo(value);
-      categoriesDelta = value - ((horizontalList?.getIndex?.() || 0) * Menu.ROOT_ITEM_WIDTH);
-    });
-
-    return scroll;
-  }
+  let animate: Animate = new Animate();
+  animate.setOffset(0);
+  animate.subscribe((value: number) => {
+    horizontalList?.scrollTo(value);
+    categoriesDelta = value - ((horizontalList?.getIndex?.() || 0) * Menu.ROOT_ITEM_WIDTH);
+  });
 
   const menu: Menu = new Menu();
   const items: MenuItem[] = menu.getItems();
@@ -67,7 +49,7 @@
       horizontalList.setIndex(horizontalList.getIndex() + 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
-      scrollAnimate().set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
+      animate.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
       const nextList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(2)];
       const nextItem: MenuItem = menu.getFocusedLevel(1).next();
@@ -84,7 +66,7 @@
       horizontalList.setIndex(horizontalList.getIndex() - 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
-      scrollAnimate().set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
+      animate.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
       const prevList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(0)];
       const prevItem: MenuItem = menu.getFocusedLevel(1).prev();
@@ -200,7 +182,7 @@
         return;
       }
     }
-  }, 100);
+  }, 150);
 
   $: categories = menu.getCategories();
 
@@ -268,7 +250,7 @@
           let:active
           let:jump
           let:item
-          style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.2s;' : ''}"
+          style="transform: translate(0px, {position}px); {jump ? 'transition: transform ease 0.3s;' : ''}"
         >
           <VerticalItem
             {dummy}

@@ -41,11 +41,11 @@ export default class Value {
     game: [
       {
         value: 'run',
-        title: 'Run game',
+        title: 'Play',
       },
       {
         value: 'run-debug',
-        title: 'Run debug',
+        title: 'Debug',
       },
       {
         value: 'game-info',
@@ -55,11 +55,11 @@ export default class Value {
     manage: [
       {
         value: 'create-icon',
-        title: 'Create system icon',
+        title: 'Create icon',
       },
       {
         value: 'create-icon',
-        title: 'Remove system icon',
+        title: 'Remove icon',
       },
       {
         value: 'change-icon',
@@ -72,6 +72,10 @@ export default class Value {
       {
         value: 'change-background',
         title: 'Change background',
+      },
+      {
+        value: 'remove-game',
+        title: 'Remove game',
       },
     ],
     install: [

@@ -51,7 +51,7 @@
     text-align: center;
     width: 210px;
     height: 100%;
-    transition: transform 0.3s, opacity 0.3s;
+    transition: transform 0.4s, opacity 0.3s;
     transform: scale(1);
     opacity: 0.2;
 
