@@ -2,13 +2,11 @@
 </script>
 <script lang="ts">
   import _ from 'lodash';
-  import {cubicInOut, cubicOut} from 'svelte/easing';
   import {onDestroy, onMount, tick} from 'svelte';
   import HorizontalItem from './items/HorizontalItem.svelte';
   import VerticalItem from './items/VerticalItem.svelte';
   import Menu, {type MenuItem} from '../modules/menu';
   import {KeyboardKey, KeyboardPressEvent} from '../modules/keyboard';
-  import {type Tweened, tweened, type Unsubscriber} from 'svelte/motion';
   import NavigateList from '../components/list/NavigateList.svelte';
   import ListPreloader from '../components/list/ListPreloader.svelte';
   import SelectItem from './items/SelectItem.svelte';
@@ -182,7 +180,7 @@
         return;
       }
     }
-  }, 150);
+  }, 100);
 
   $: categories = menu.getCategories();
 
@@ -191,7 +189,6 @@
   });
 
   onDestroy(() => {
-    unsubscribe?.();
     window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
   });
 </script>

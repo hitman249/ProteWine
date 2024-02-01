@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
-
+  let frameIndex: number = 0;
 </script>
 <script lang="ts">
-  import fastdom from 'fastdom';
   import {onMount, onDestroy} from 'svelte';
   import VirtualList from './VirtualList.svelte';
   import Animate from '../../modules/animate';
+  import fastdom, {type Fastdom} from "../../modules/fastdom";
 
   export let items: any = [];
   export let itemSpace: number = 0;
@@ -37,10 +37,34 @@
     });
   });
 
+  function updateSizeContainer(): void {
+    if (containerHeight !== container.clientHeight) {
+      containerHeight = container.clientHeight;
+    }
+
+    if (containerWidth !== container.clientWidth) {
+      containerWidth = container.clientWidth;
+    }
+  }
+
+  export function getFastdom(): Fastdom {
+    return fastdom;
+  }
+
   function poll() {
     fastdom.measure(() => {
       if (!container) {
         return;
+      }
+
+      if (0 === frameIndex) {
+        updateSizeContainer();
+      }
+
+      frameIndex++;
+
+      if (60 < frameIndex) {
+        frameIndex = 0;
       }
 
       const indent: number = horizontal ? container.scrollLeft : container.scrollTop;
@@ -50,9 +74,7 @@
       }
     });
 
-    fastdom.measure(() => {
-      frame = requestAnimationFrame(poll);
-    });
+    frame = requestAnimationFrame(poll);
   }
 
   export function scrollTo(position: number) {
@@ -144,8 +166,7 @@
 
   onMount(() => {
     frame = requestAnimationFrame(poll);
-    containerHeight = container.clientHeight;
-    containerWidth = container.clientWidth;
+    updateSizeContainer();
   });
 
   onDestroy(() => {
@@ -174,6 +195,10 @@
       let:index
     >
       {@const realIndex = index - headersDummy}
+      {@const nextJump = (
+        (direction && (realIndex >= current - 1 && realIndex <= current + headersDummy - 1)) ||
+        (!direction && (realIndex <= current + 1 && realIndex >= current - headersDummy + 1))
+      ) && undefined !== position}
 
       <slot
         name="item"
@@ -181,12 +206,9 @@
         {dummy}
         {scrollIndent}
         {position}
-        active={current === realIndex}
+        active={current === realIndex && undefined !== position}
         index={index}
-        jump={jumpInit && !dummy && (
-          (direction && (realIndex >= current - 1 && realIndex <= current + headersDummy - 1)) ||
-          (!direction && (realIndex <= current + 1 && realIndex >= current - headersDummy + 1))
-        )}
+        jump={jumpInit && !dummy && nextJump}
       />
     </VirtualList>
   {/if}

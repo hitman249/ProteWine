@@ -56,7 +56,7 @@
     return index !== numOverlap ? itemSpace : 0;
   }
 
-  $: numItems = Math.ceil(containerSize / itemSize) + 1 + (paddingIndent < 0 ? 1 : 0);
+  $: numItems = Math.ceil(containerSize / itemSize) + 1 + Math.ceil(Math.abs(paddingIndent) / itemSize);
   $: startIndex = Math.floor(scrollIndent / itemSize);
   $: endIndex = startIndex + numItems;
   $: numOverlap = Math.floor(scrollIndent / itemSize) % numItems;
@@ -72,6 +72,7 @@
   );
   $: contentSize = (items.length * itemSize) + containerSize;
 </script>
+
 <div
   style:width={horizontal ? (contentSize + 'px') : '100%'}
   style:height={!horizontal ? (contentSize + 'px') : '100%'}
