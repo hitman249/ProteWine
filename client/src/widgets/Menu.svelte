@@ -14,6 +14,13 @@
   import GameItem from './items/GameItem.svelte';
   import Animate from '../modules/animate';
 
+  export let openPopupRunGame: (model: MenuItem) => void;
+  export let closePopupRunGame: () => void;
+
+  let isPopupRunGame: boolean = false;
+
+  export let style: string = '';
+
   let horizontalList: NavigateList;
   let verticalList: ListPreloader[] = [];
 
@@ -143,13 +150,27 @@
         innerListItem = item;
         isInnerList = true;
       } else if (item.value) {
-        selectListItems = item.value.getList();
+        if (selectListItems) {
+          if (ValueLabels.GAME === item.template) {
+            const value: ValueType = selectList.getItem();
+            item.value.setValue(value.value);
 
-        tick().then(() => {
-          const index: number = item.value.getIndexValue();
-          selectList.changeIndex(index);
-          isSelectList = true;
-        });
+            if ('run' === value.value) {
+              openPopupRunGame(item);
+              isPopupRunGame = true;
+            }
+
+            return;
+          }
+        } else {
+          selectListItems = item.value.getList();
+
+          tick().then(() => {
+            const index: number = item.value.getIndexValue();
+            selectList.changeIndex(index);
+            isSelectList = true;
+          });
+        }
       }
     }
 
@@ -161,6 +182,11 @@
           timeout = setTimeout(() => {
             selectListItems = undefined;
             timeout = undefined;
+
+            if (isPopupRunGame) {
+              closePopupRunGame();
+              isPopupRunGame = false;
+            }
           }, 200);
         });
         return;
@@ -193,7 +219,7 @@
   });
 </script>
 
-<div class="content">
+<div class="content" style="{style}">
   <div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
     <NavigateList
       bind:this={horizontalList}

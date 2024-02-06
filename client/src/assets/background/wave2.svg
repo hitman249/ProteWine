@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     style="margin:auto;background:#3586ff;display:block;z-index:1;position:relative;"
+     style="margin:auto;display:block;z-index:1;position:relative;"
      width="1920" height="1080" preserveAspectRatio="xMidYMid" viewBox="0 0 1920 1080">
   <g transform="translate(960,540) scale(1,1) translate(-960,-540)">
     <linearGradient id="whiteLG" x1="0" x2="0" y1="0" y2="0">

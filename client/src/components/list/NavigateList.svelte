@@ -21,7 +21,7 @@
   let scrollIndent: number = 0;
   let current: number = 0;
   let direction: boolean = true;
-  let jumpInit: boolean = true;
+  let jumpInit: boolean = false;
 
   let frame: number;
 
