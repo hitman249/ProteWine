@@ -9,6 +9,7 @@ import Network from './modules/network';
 import System from './modules/system';
 import Update from './modules/update';
 import Kernels from './modules/kernels';
+import Settings from './modules/settings';
 
 class App {
   private readonly initOrder: AbstractModule[];
@@ -23,6 +24,7 @@ class App {
   private readonly DRIVER: Driver;
   private readonly MONITOR: Monitor;
   private readonly KERNELS: Kernels;
+  private readonly SETTINGS: Settings;
 
 
   constructor() {
@@ -36,6 +38,7 @@ class App {
     this.UPDATE = new Update(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK);
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
     this.KERNELS = new Kernels(this.SYSTEM);
+    this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM, this.KERNELS);
 
     this.initOrder = [
       this.COMMAND,
@@ -48,6 +51,7 @@ class App {
       this.DRIVER,
       this.MONITOR,
       this.KERNELS,
+      this.SETTINGS,
     ];
   }
 
@@ -95,6 +99,10 @@ class App {
 
   public getKernels(): Kernels {
     return this.KERNELS;
+  }
+
+  public getSettings(): Settings {
+    return this.SETTINGS;
   }
 }
 
