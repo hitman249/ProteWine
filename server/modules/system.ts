@@ -36,10 +36,10 @@ export default class System extends AbstractModule {
   private declare isLocked: boolean;
   private declare commands: {[cmd: string]: boolean};
 
-  private readonly appFolders: AppFolders;
-  private readonly cache: GlobalCache;
-  private readonly command: Command;
-  private readonly fs: FileSystem;
+  public readonly appFolders: AppFolders;
+  public readonly cache: GlobalCache;
+  public readonly command: Command;
+  public readonly fs: FileSystem;
 
   private static shutdownFunctions: Function[];
 
@@ -88,7 +88,7 @@ export default class System extends AbstractModule {
     }
   }
 
-  private async existsCommand(command: string): Promise<boolean> {
+  public async existsCommand(command: string): Promise<boolean> {
     if (undefined === this.commands) {
       this.commands = {};
     }

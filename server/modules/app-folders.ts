@@ -18,8 +18,6 @@ export default class AppFolders extends AbstractModule {
   private dosboxFile: string = '/bin/dosbox';
   private fuseisoFile: string = '/bin/fuseiso';
   private cabextractFile: string = '/bin/cabextract';
-  private libsDir: string = '/bin/libs/i386';
-  private libs64Dir: string = '/bin/libs/x86-64';
   private shareDir: string = '/bin/share';
   private dataDir: string = '/data';
   private gamesDir: string = '/data/games';
@@ -44,6 +42,7 @@ export default class AppFolders extends AbstractModule {
   private logFileVkBasalt: string = '/data/logs/vkBasalt.log';
   private patchesDir: string = '/data/patches';
   private buildDir: string = '/build';
+  private prefixDir: string = '/prefix';
   private wineDir: string = '/wine';
   private wineFile: string = '/wine.squashfs';
   private protonFile: string = '/wine/proton';
@@ -66,8 +65,6 @@ export default class AppFolders extends AbstractModule {
         await this.getLogsDir(),
         await this.getCacheDir(),
         await this.getConfigsDir(),
-        await this.getLibsDir(),
-        await this.getLibs64Dir(),
         await this.getShareDir(),
         await this.getGamesDir(),
         await this.getGamesSymlinksDir(),
@@ -162,14 +159,6 @@ export default class AppFolders extends AbstractModule {
     return await this.getRootDir() + this.binDir;
   }
 
-  public async getLibsDir(): Promise<string> {
-    return await this.getRootDir() + this.libsDir;
-  }
-
-  public async getLibs64Dir(): Promise<string> {
-    return await this.getRootDir() + this.libs64Dir;
-  }
-
   public async getShareDir(): Promise<string> {
     return await this.getRootDir() + this.shareDir;
   }
@@ -212,6 +201,10 @@ export default class AppFolders extends AbstractModule {
 
   public async getWineDir(): Promise<string> {
     return await this.getRootDir() + this.wineDir;
+  }
+
+  public async getPrefixDir(): Promise<string> {
+    return await this.getRootDir() + this.prefixDir;
   }
 
   public async getWineFile(): Promise<string> {

@@ -1,5 +1,7 @@
 import {app, BrowserWindow, protocol, net} from 'electron';
 import $app from './app';
+import Proton from './modules/kernels/proton';
+import {KernelEvent} from './modules/kernels/abstract-kernel';
 // import Archiver, {ArchiverEvent, Progress} from './modules/archiver';
 // import process from 'process';
 // import CopyDir, {CopyDirEvent} from './helpers/copy-dir';
@@ -37,6 +39,21 @@ app.whenReady().then((): void => {
 });
 
 $app.init().then(() => {
+
+  const kernel: Proton = $app.getKernels().getKernel();
+  kernel.on(KernelEvent.LOG, (event: KernelEvent.LOG, line: string) => {
+    console.log(line);
+  });
+  kernel.on(KernelEvent.EXIT, (event: KernelEvent.EXIT, line: string) => {
+    console.log('Wine EXIT');
+  });
+
+  // kernel.createPrefix();
+
+  kernel.version().then((version: string) => {
+    console.log('Version:', version);
+  });
+
   // const cpDir: CopyDir = new CopyDir(
   //   $app.getFileSystem(),
   //   '/media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/prefix/',

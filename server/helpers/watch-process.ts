@@ -1,5 +1,6 @@
 import type {ChildProcessWithoutNullStreams} from 'child_process';
 import EventListener from './event-listener';
+import Utils from './utils';
 
 type ResolveType = (text: string) => void;
 type RejectType = (err: Error) => void;
@@ -55,13 +56,15 @@ export default class WatchProcess extends EventListener {
   }
 
   private onStdout(data: Buffer): void {
-    this.outChunks.push(data.toString());
-    this.fireEvent(WatchProcessEvent.STDOUT, data.toString());
+    const line: string =  Utils.normalize(data);
+    this.outChunks.push(line);
+    this.fireEvent(WatchProcessEvent.STDOUT, line);
   }
 
   private onStderr(data: Buffer): void {
-    this.errorChunks.push(data.toString());
-    this.fireEvent(WatchProcessEvent.STDERR, data.toString());
+    const line: string =  Utils.normalize(data);
+    this.errorChunks.push(line);
+    this.fireEvent(WatchProcessEvent.STDERR, line);
   }
 
   public kill(): void {
