@@ -13,6 +13,7 @@
   import {ValueLabels, type ValueType} from '../modules/value';
   import GameItem from './items/GameItem.svelte';
   import Animate from '../modules/animate';
+  import HorizontalList from '../components/list/HorizontalList.svelte';
 
   export let openPopupRunGame: (model: MenuItem) => void;
   export let closePopupRunGame: () => void;
@@ -21,7 +22,7 @@
 
   export let style: string = '';
 
-  let horizontalList: NavigateList;
+  let horizontalList: HorizontalList;
   let verticalList: ListPreloader[] = [];
 
   let innerList: ListPreloader;
@@ -33,7 +34,6 @@
   let isSelectList: boolean = false;
   let selectListItems: ValueType[];
 
-  let direction: boolean = true;
   let categoriesDelta: number = 0;
   let paddingLeftCategories: number = -Menu.ROOT_ITEM_HEIGHT;
   let timeout: any;
@@ -50,7 +50,7 @@
 
   function keyRight() {
     if (horizontalList.hasRight()) {
-      direction = true;
+      horizontalList.changeDirection(true);
       horizontalList.setIndex(horizontalList.getIndex() + 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
@@ -67,7 +67,7 @@
 
   function keyLeft() {
     if (horizontalList.hasLeft()) {
-      direction = false;
+      horizontalList.changeDirection(false);
       horizontalList.setIndex(horizontalList.getIndex() - 1);
       menu.setCurrentIndex(horizontalList.getIndex());
       categories = menu.getCategories();
@@ -221,34 +221,11 @@
 
 <div class="content" style="{style}">
   <div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
-    <NavigateList
-      bind:this={horizontalList}
-      items={items || []}
-      itemSize={Menu.ROOT_ITEM_WIDTH}
-      headersDummy={1}
-      horizontal={true}
-    >
-      <div
-        slot="item"
-        class="horizontal-item"
-        class:active={active}
-        let:dummy
-        let:position
-        let:active
-        let:item
-        style="transform: translate({position}px, 0px);"
-      >
-        <HorizontalItem
-          {dummy}
-          {item}
-          {active}
-        />
-      </div>
-    </NavigateList>
+    <HorizontalList {items} bind:this={horizontalList} itemSpace={100} itemCenter={true}/>
   </div>
 
   <div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
-    {#each categories as item, index}
+    {#each [] as item, index}
       {@const current = item?.isActive()}
       {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
 
@@ -259,6 +236,7 @@
         {current}
         delta={categoriesDelta}
         headersDummy={1}
+        itemCenter={true}
         itemSize={Menu.ITEM_HEIGHT}
         itemSpace={Menu.ROOT_ITEM_HEIGHT}
         horizontal={false}
@@ -285,7 +263,7 @@
     {/each}
   </div>
 
-  {#if innerListItem}
+  {#if innerListItem && false}
     {@const isGames = (ValueLabels.GAME === innerListItem.template || ValueLabels.MANAGE === innerListItem.template)}
 
     <div class="inner-list" class:list-only-active={isSelectList}>
@@ -331,7 +309,7 @@
     </div>
   {/if}
 
-  {#if selectListItems}
+  {#if selectListItems && false}
     <div class="select-list" class:open={isSelectList}>
       <NavigateList
         bind:this={selectList}

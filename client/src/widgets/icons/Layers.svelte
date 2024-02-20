@@ -1,11 +1,13 @@
 <script lang="ts">
   export let status: string = undefined;
+  export let style: string = '';
   export let value: number = 0;
   let x: number = value > 9 ? 27 : 32;
 </script>
 
 <svg
   class={status}
+  {style}
   xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
   width="90px"
   height="90px"

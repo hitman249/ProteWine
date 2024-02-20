@@ -79,4 +79,6 @@ export default abstract class AbstractKernel extends EventListener {
   public abstract version(): Promise<string>;
 
   public abstract run(cmd: string): Promise<WatchProcess>;
+
+  public abstract getUserName(): Promise<string>;
 }

@@ -2,7 +2,6 @@ import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Command from '../command';
 import type System from '../system';
-import type WatchProcess from '../../helpers/watch-process';
 
 export default class SteamRuntimeSniper {
   private url: string = 'steam://install/1628350';
@@ -18,6 +17,12 @@ export default class SteamRuntimeSniper {
     this.fs = fs;
     this.system = system;
     this.command = command;
+  }
+
+  public async init(): Promise<any> {
+    if (!await this.exists()) {
+      await this.install();
+    }
   }
 
   public getName(): string {
@@ -44,9 +49,5 @@ export default class SteamRuntimeSniper {
 
   public async getCmd(cmd: string): Promise<string> {
     return `"${await this.getPath()}/run" -- ${cmd}`;
-  }
-
-  public async run(cmd: string = ''): Promise<WatchProcess> {
-    return this.command.watch(cmd);
   }
 }

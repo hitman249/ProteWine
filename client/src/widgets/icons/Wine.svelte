@@ -1,8 +1,9 @@
 <script lang="ts">
   export let status: string = undefined;
+  export let style: string = '';
 </script>
 
-<svg version="1.1" class={status} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+<svg version="1.1" class={status} {style} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      width="80px" height="80px" viewBox="0,0,256,256">
   <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter"
      stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none"

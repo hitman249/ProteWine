@@ -10,6 +10,7 @@ import System from './modules/system';
 import Update from './modules/update';
 import Kernels from './modules/kernels';
 import Settings from './modules/settings';
+import Mount from './modules/mount';
 
 class App {
   private readonly initOrder: AbstractModule[];
@@ -25,6 +26,8 @@ class App {
   private readonly MONITOR: Monitor;
   private readonly KERNELS: Kernels;
   private readonly SETTINGS: Settings;
+  private MOUNT_WINE: Mount;
+  private MOUNT_DATA: Mount;
 
 
   constructor() {
@@ -56,9 +59,19 @@ class App {
   }
 
   public async init(): Promise<any> {
+    this.MOUNT_WINE = new Mount(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.UPDATE, this.SYSTEM, await this.APP_FOLDERS.getWineDir());
+    this.MOUNT_DATA = new Mount(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.UPDATE, this.SYSTEM, await this.APP_FOLDERS.getGamesDir());
+
+    this.initOrder.push(this.MOUNT_WINE);
+    this.initOrder.push(this.MOUNT_DATA);
+
     for await (const module of this.initOrder) {
       await module.init();
     }
+
+    await this.APP_FOLDERS.create();
+    await this.MOUNT_WINE.mount();
+    await this.MOUNT_DATA.mount();
   }
 
   public getCommand(): Command {
@@ -103,6 +116,14 @@ class App {
 
   public getSettings(): Settings {
     return this.SETTINGS;
+  }
+
+  public getMountWine(): Mount {
+    return this.MOUNT_WINE;
+  }
+
+  public getMountData(): Mount {
+    return this.MOUNT_DATA;
   }
 }
 

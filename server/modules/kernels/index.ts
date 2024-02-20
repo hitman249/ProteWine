@@ -8,6 +8,8 @@ import type Command from '../command';
 import type GlobalCache from '../global-cache';
 import type AppFolders from '../app-folders';
 
+export type Kernel = Proton | Wine;
+
 export default class Kernels extends AbstractModule {
   protected system: System;
   protected fs: FileSystem;
@@ -43,7 +45,7 @@ export default class Kernels extends AbstractModule {
     await this.kernel.init();
   }
 
-  public getKernel(): Proton | Wine {
-    return this.kernel as Proton | Wine;
+  public getKernel(): Kernel {
+    return this.kernel as Kernel;
   }
 }

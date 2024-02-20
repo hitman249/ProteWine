@@ -7,10 +7,13 @@ module.exports = {
    * This is the main entry point for your application, it's the first file
    * that runs in the main process.
    */
-  entry: ['./server/index.ts'],
+  entry: {
+    server: path.join(__dirname, 'server/index.ts'),
+    preload: path.join(__dirname, 'server/routes/preload.ts'),
+  },
   output: {
-    path: path.join(__dirname, "cache/server"),
-    filename: "index.js"
+    path: path.join(__dirname, 'cache/server'),
+    filename: '[name].js'
   },
   module: {
     rules: [

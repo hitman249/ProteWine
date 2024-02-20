@@ -5,8 +5,7 @@ import type Command from './command';
 import type FileSystem from './file-system';
 import type System from './system';
 import type Kernels from './kernels';
-import type Proton from './kernels/proton';
-import type Wine from './kernels/wine';
+import type {Kernel} from './kernels';
 
 export default class Settings extends AbstractModule {
   private readonly path: string = '/data/configs/settings.json';
@@ -62,7 +61,7 @@ export default class Settings extends AbstractModule {
     return (await this.appFolders.getRootDir()) + this.path;
   }
 
-  public getKernel(): Proton | Wine {
+  public getKernel(): Kernel {
     return this.kernels.getKernel();
   }
 
@@ -93,7 +92,7 @@ export default class Settings extends AbstractModule {
     };
   }
 
-  private getDefaultSaveFolders(): {} {
+  public getDefaultSaveFolders(): {} {
     return {
       'Documents': 'users/{USER}/Documents',
       'Documents Extra': 'users/{USER}/Мои документы',

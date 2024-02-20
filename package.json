@@ -1,7 +1,7 @@
 {
   "name": "protewine",
   "version": "1.0.0",
-  "main": "cache/server/index.js",
+  "main": "cache/server/server.js",
   "repository": "https://github.com/hitman249/protewine",
   "author": "hitman249",
   "description": "Portable Windows application with Wine technology.",

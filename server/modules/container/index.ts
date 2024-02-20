@@ -24,18 +24,27 @@ export default class Container extends AbstractModule {
   }
 
   public async init(): Promise<any> {
-    this.instance = new SteamRuntimeSniper(this.appFolders, this.fs, this.system, this.command);
+    const instance: SteamRuntimeSniper = new SteamRuntimeSniper(this.appFolders, this.fs, this.system, this.command);
+    await instance.init();
+
+    if (await instance.exists()) {
+      this.instance = instance;
+    }
   }
 
   public async install(): Promise<void> {
-    return this.instance.install();
+    return this.instance?.install();
   }
 
   public async getCmd(cmd: string): Promise<string> {
-    return this.instance.getCmd(cmd);
+    if (this.instance) {
+      return this.instance.getCmd(cmd);
+    }
+
+    return cmd;
   }
 
   public async run(cmd: string = ''): Promise<WatchProcess> {
-    return this.instance.run(cmd);
+    return this.command.watch(cmd);
   }
 }

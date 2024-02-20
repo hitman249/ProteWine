@@ -126,4 +126,8 @@ export default class Proton extends AbstractKernel {
       return version;
     }
   }
+
+  public async getUserName(): Promise<string> {
+    return 'steamuser';
+  }
 }

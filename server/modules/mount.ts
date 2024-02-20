@@ -8,6 +8,12 @@ import {AbstractModule} from './abstract-module';
 import process from 'process';
 import type {Progress} from './archiver';
 
+export enum MountEvents {
+  MOUNT = 'mount',
+  MOUNTED = 'mounted',
+  UNMOUNTED = 'unmounted',
+}
+
 export default class Mount extends AbstractModule {
   private mounted: boolean = false;
   private readonly folder: string;
@@ -28,28 +34,27 @@ export default class Mount extends AbstractModule {
     this.system     = system;
     this.folder     = folder;
     this.squashfs   = `${this.folder}.squashfs`;
+  }
 
+  public async init(): Promise<any> {
     this.system.registerShutdownFunction(async () => {
       let start: boolean = false;
 
       if (this.isMounted()) {
         start = true;
-        // action.notifyCustom(window.i18n.t('app.unmount') + ': ' + this.fs.basename(this.folder), window.i18n.t('app.in-progress'));
+        this.fireEvent(MountEvents.MOUNT, this.fs.basename(this.folder));
       }
 
       return this.unmount().then(() => {
         if (start) {
           if (this.isMounted()) {
-            // action.notifyError(window.i18n.t('app.unmount') + ': ' + this.fs.basename(this.folder), window.i18n.t('app.error'));
+            this.fireEvent(MountEvents.MOUNTED, this.fs.basename(this.folder));
           } else {
-            // action.notifySuccess(window.i18n.t('app.unmount') + ': ' + this.fs.basename(this.folder), window.i18n.t('app.success'));
+            this.fireEvent(MountEvents.UNMOUNTED, this.fs.basename(this.folder));
           }
         }
       });
     });
-  }
-
-  public async init(): Promise<any> {
   }
 
   public isMounted(): boolean {

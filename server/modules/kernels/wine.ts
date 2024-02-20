@@ -108,4 +108,8 @@ export default class Wine extends AbstractKernel {
       return version;
     }
   }
+
+  public async getUserName(): Promise<string> {
+    return this.system.getUserName();
+  }
 }

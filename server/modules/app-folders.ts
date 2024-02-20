@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import path from 'path';
 import process from 'process';
-// import Utils from '../helpers/utils';
+import Utils from '../helpers/utils';
 import FileSystem from './file-system';
 import {AbstractModule} from './abstract-module';
+import type Settings from './settings';
 
 export default class AppFolders extends AbstractModule {
   private readonly fs: FileSystem;
@@ -21,11 +22,9 @@ export default class AppFolders extends AbstractModule {
   private shareDir: string = '/bin/share';
   private dataDir: string = '/data';
   private gamesDir: string = '/data/games';
-  private gamesSymlinksDir: string = '/data/games/_symlinks';
   private gamesFile: string = '/data/games.squashfs';
   private savesDir: string = '/data/saves';
   private savesFoldersFile: string = '/data/saves/folders.json';
-  private savesSymlinksDir: string = '/data/saves/symlinks';
   private configsDir: string = '/data/configs';
   private dxvkConfFile: string = '/data/configs/dxvk.conf';
   private dosboxConfFile: string = '/data/configs/dosbox.conf';
@@ -67,9 +66,7 @@ export default class AppFolders extends AbstractModule {
         await this.getConfigsDir(),
         await this.getShareDir(),
         await this.getGamesDir(),
-        await this.getGamesSymlinksDir(),
         await this.getSavesDir(),
-        await this.getSavesSymlinksDir(),
         await this.getPatchesDir(),
       ];
     }
@@ -81,9 +78,9 @@ export default class AppFolders extends AbstractModule {
     return this.fs;
   }
 
-  public async create(): Promise<boolean> {
+  public async create(): Promise<void> {
     if (await this.isCreated()) {
-      return false;
+      return;
     }
 
     const folders: string[] = await this.getFolders();
@@ -94,19 +91,21 @@ export default class AppFolders extends AbstractModule {
       }
     }
 
-    // const prefix = window.app.getPrefix();
-    // const config: string = Utils.jsonEncode(prefix.getConfig());
-    // const saveFolders = prefix.getDefaultSaveFolders();
+    const settings: Settings = global.$app.getSettings();
+    await settings.save();
 
-    // this.fs.filePutContents(prefix.getPath(), config);
+    const saveFolders: {} = settings.getDefaultSaveFolders();
+    const savesDir: string = await this.getSavesDir();
 
-    // Object.keys(saveFolders).forEach(folder => this.fs.mkdir(`${this.getSavesDir()}/${folder}`));
+    for await (const folder of Object.keys(saveFolders)) {
+      await this.fs.mkdir(`${savesDir}/${folder}`);
+    }
 
-    // this.fs.filePutContents(await this.getSavesFoldersFile(), Utils.jsonEncode(saveFolders));
+    await this.fs.filePutContents(await this.getSavesFoldersFile(), Utils.jsonEncode(saveFolders));
   }
 
   public async isCreated(): Promise<boolean> {
-    return await this.fs.exists(await this.getDataDir()) && await this.fs.exists(await this.getBinDir());
+    return (await this.fs.exists(await this.getDataDir())) && await this.fs.exists(await this.getBinDir());
   }
 
   public async getRootDir(): Promise<string> {
@@ -171,10 +170,6 @@ export default class AppFolders extends AbstractModule {
     return await this.getRootDir() + this.gamesDir;
   }
 
-  public async getGamesSymlinksDir(): Promise<string> {
-    return await this.getRootDir() + this.gamesSymlinksDir;
-  }
-
   public async getGamesFile(): Promise<string> {
     return await this.getRootDir() + this.gamesFile;
   }
@@ -185,10 +180,6 @@ export default class AppFolders extends AbstractModule {
 
   public async getSavesFoldersFile(): Promise<string> {
     return await this.getRootDir() + this.savesFoldersFile;
-  }
-
-  public async getSavesSymlinksDir(): Promise<string> {
-    return await this.getRootDir() + this.savesSymlinksDir;
   }
 
   public async getCacheDir(): Promise<string> {

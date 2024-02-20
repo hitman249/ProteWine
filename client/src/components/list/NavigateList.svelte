@@ -1,20 +1,24 @@
 <script lang="ts" context="module">
-  let frameIndex: number = 0;
 </script>
 <script lang="ts">
   import {onMount, onDestroy} from 'svelte';
   import VirtualList from './VirtualList.svelte';
   import Animate from '../../modules/animate';
   import fastdom, {type Fastdom} from "../../modules/fastdom";
+  import {StickerType} from '../../widgets/stickers';
 
   export let items: any = [];
+  export let type: StickerType;
   export let itemSpace: number = 0;
   export let itemCenter: boolean = false;
   export let itemSize: number = 0;
+  export let marginIndent: number = 0;
   export let headersDummy: number = 0;
   export let paddingIndent: number = 0;
   export let horizontal: boolean = true;
+  export let updateSize: (size: {width: number, height: number}) => void;
 
+  let list: VirtualList;
   let container: HTMLDivElement;
   let containerHeight: number = 0;
   let containerWidth: number = 0;
@@ -22,8 +26,6 @@
   let current: number = 0;
   let direction: boolean = true;
   let jumpInit: boolean = false;
-
-  let frame: number;
 
   let animate: Animate = new Animate();
   animate.setOffset(0);
@@ -38,55 +40,33 @@
   });
 
   function updateSizeContainer(): void {
+    let change: boolean = false;
+
     if (containerHeight !== container.clientHeight) {
       containerHeight = container.clientHeight;
+      change = true;
     }
 
     if (containerWidth !== container.clientWidth) {
       containerWidth = container.clientWidth;
+      change = true;
     }
-  }
 
-  export function getFastdom(): Fastdom {
-    return fastdom;
-  }
-
-  function poll() {
-    fastdom.measure(() => {
-      if (!container) {
-        return;
-      }
-
-      if (0 === frameIndex) {
-        updateSizeContainer();
-      }
-
-      frameIndex++;
-
-      if (60 < frameIndex) {
-        frameIndex = 0;
-      }
-
-      const indent: number = horizontal ? container.scrollLeft : container.scrollTop;
-
-      if (indent !== scrollIndent) {
-        scrollIndent = indent;
-      }
-    });
-
-    frame = requestAnimationFrame(poll);
+    if (change && updateSize) {
+      updateSize(getSize());
+    }
   }
 
   export function scrollTo(position: number) {
-    if (Boolean(container?.scrollTo)) {
-      container?.scrollTo(horizontal ? {left: position} : {top: position});
-    } else if (container) {
-      container[horizontal ? 'scrollLeft' : 'scrollTop'] = position;
-    }
+    scrollIndent = position;
   }
 
   export function getScrollPosition(): number {
     return scrollIndent;
+  }
+
+  export function changeDirection(value: boolean): void {
+    direction = value;
   }
 
   export function changeIndex(index: number): void {
@@ -96,10 +76,6 @@
     const position: number = current * itemSize;
 
     scrollTo(position);
-
-    if (scrollIndent !== position) {
-      scrollIndent = position;
-    }
 
     animate.setOffset(position);
   }
@@ -164,13 +140,24 @@
     }
   }
 
+  export function getSize(): { width: number, height: number } {
+    return {
+      width: containerWidth,
+      height: containerHeight
+    };
+  }
+
+  function getStyles(horizontal: boolean, position: number, marginIndent: number = 0): any {
+    return {
+      transform: `translate(${horizontal ? position : marginIndent}px, ${horizontal ? marginIndent : position}px)`
+    };
+  }
+
   onMount(() => {
-    frame = requestAnimationFrame(poll);
     updateSizeContainer();
   });
 
   onDestroy(() => {
-    cancelAnimationFrame(frame);
   });
 </script>
 
@@ -180,35 +167,41 @@
 >
   {#if (horizontal ? containerWidth : containerHeight) > 0}
     <VirtualList
-      {items}
+      bind:this={list}
+      containerSize={horizontal ? containerWidth : containerHeight}
+      {direction}
+      {headersDummy}
+      {itemCenter}
       {itemSize}
       {itemSpace}
-      {itemCenter}
-      {headersDummy}
+      {items}
       {paddingIndent}
-      containerSize={horizontal ? containerWidth : containerHeight}
       {scrollIndent}
-      {direction}
-      let:item
-      let:dummy
-      let:position
-      let:index
-    >
-      {@const realIndex = index - headersDummy}
-      {@const nextJump = (
-        (direction && (realIndex >= current - 1 && realIndex <= current + headersDummy - 1)) ||
-        (!direction && (realIndex <= current + 1 && realIndex >= current - headersDummy + 1))
-      ) && undefined !== position}
+      {type}
 
+      let:dummy
+      let:percent
+      let:active
+      let:index
+      let:indexTag
+      let:item
+      let:position
+      let:type
+    >
       <slot
-        name="item"
-        {item}
+        name="navigate-list-item"
+
+        {active}
         {dummy}
-        {scrollIndent}
+        {indexTag}
+        {item}
+        {percent}
         {position}
-        active={current === realIndex && undefined !== position}
+        {scrollIndent}
+        {type}
         index={index}
-        jump={jumpInit && !dummy && nextJump}
+        itemClass={`list-item ${active ? 'active' : ''}`}
+        itemStyle={getStyles(horizontal, position, marginIndent)}
       />
     </VirtualList>
   {/if}
