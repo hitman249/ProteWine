@@ -3,19 +3,24 @@
   import Icon from '../icons/Icon.svelte';
 
   export let style: string;
+  export let index: number;
   export let itemClass: string;
   export let active: boolean = false;
   export let dummy: boolean = false;
+  export let percent: number;
   export let item: MenuItem = undefined;
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
   <div class="icon">
     {#if item}
-      <Icon icon={item?.getIcon()} status={active ? 'focused' : 'normal'} />
+      <Icon
+        icon={item?.getIcon()}
+        status={active && percent > 90 ? 'focused' : 'normal'}
+      />
     {/if}
   </div>
-  <div class="footer" class:title-normal={!active}>
+  <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
     <div class="title">
       {item?.title || ''}
 
@@ -23,7 +28,8 @@
         {item?.value?.getValueFormatted() || ''}
       </div>
     </div>
-    <div class="description" class:exist={Boolean(item?.description || active && item?.value && item?.value?.isVisible())}>
+    <div class="description"
+         class:exist={Boolean(item?.description || active && item?.value && item?.value?.isVisible())}>
       {item?.description || ''}
     </div>
   </div>
@@ -54,7 +60,7 @@
     width: 110px;
     height: 100%;
 
-    transition: filter 0.6s, opacity 0.3s;
+    transition: filter 0.6s;
     filter: drop-shadow(transparent 0px 0px 0px);
   }
 
@@ -73,7 +79,6 @@
     align-items: start;
     text-align: left;
     vertical-align: center;
-    transition: opacity ease 0.3s;
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
   }
 
@@ -94,10 +99,6 @@
     font-size: 16px;
     justify-content: right;
     align-items: end;
-  }
-
-  .title-normal {
-    opacity: 0.3;
   }
 
   .description {

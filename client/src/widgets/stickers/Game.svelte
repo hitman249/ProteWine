@@ -6,16 +6,23 @@
   export let itemClass: string;
   export let active: boolean = false;
   export let dummy: boolean = false;
+  export let percent: number;
   export let item: MenuItem = undefined;
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
-  <div class="icon" class:focused={active}>
+  <div class="icon">
     {#if item}
-      <img class="poster" src={'local://' + item.poster} alt="">
+      <img
+        class="poster"
+        style="transform: scale({(100 + percent * 1.5) / 100})"
+        style:opacity={Math.max(percent / 100, 0.2)}
+        src={'local://' + item.poster}
+        alt=""
+      >
     {/if}
   </div>
-  <div class="footer" class:focused={active}>
+  <div class="footer" style:opacity={percent / 100}>
     <div class="title">
       {item?.title || ''}
 
@@ -53,11 +60,17 @@
     text-align: center;
     width: 210px;
     height: 100%;
-    transition: transform 0.4s, opacity 0.3s;
-    transform: scale(1);
-    opacity: 0.2;
+    //transition: transform 0.4s, opacity 0.3s;
+    //transform: scale(1);
+    //opacity: 0.2;
 
     img {
+      position: absolute;
+      margin: auto;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       border-radius: 2px;
       border-width: 1px;
       border-color: white;
@@ -65,11 +78,9 @@
     }
 
     &.focused {
-      transform: scale(2);
-      opacity: 1;
-
       img {
         transition: box-shadow 1.2s;
+        animation-delay: 0.3s;
         animation-duration: 1.2s;
         animation-name: item-focused;
         animation-iteration-count: infinite;
@@ -118,13 +129,13 @@
     align-items: start;
     text-align: left;
     vertical-align: center;
-    transition: opacity ease 0.3s;
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
-    opacity: 0;
+    //opacity: 0;
+    //transition: opacity ease 0.3s;
 
-    &.focused {
-      opacity: 1;
-    }
+    //&.focused {
+    //  opacity: 1;
+    //}
   }
 
   .title {

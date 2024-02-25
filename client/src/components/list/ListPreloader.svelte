@@ -1,7 +1,8 @@
 <script lang="ts">
   import {tick} from 'svelte';
-  import NavigateList from './NavigateList.svelte';
   import {type MenuItem} from '../../modules/menu';
+  import List from './List.svelte';
+  import {StickerType} from '../../widgets/stickers';
 
   export let style: string = '';
   export let current: boolean = false;
@@ -14,9 +15,11 @@
   export let itemSpace: number = 0;
   export let itemCenter: boolean = false;
   export let horizontal: boolean = true;
+  export let extendItemClass: string = '';
+  export let type: StickerType = StickerType.ITEM;
   export let model: MenuItem = undefined;
 
-  let list: NavigateList;
+  let list: List;
 
   $: items = model?.items || [];
   $: model?.load().then(() => {
@@ -113,34 +116,18 @@
   class:active={current}
   style="transform: translate({left - delta}px, 0px); opacity: {current && visible ? 1 : 0}; {style}"
 >
-  <NavigateList
+  <List
     bind:this={list}
     {items}
+    {horizontal}
     {itemSize}
     {headersDummy}
     {paddingIndent}
     {itemSpace}
     {itemCenter}
-    {horizontal}
-  >
-    <slot
-      slot="item"
-      name="item"
-      let:index
-      let:dummy
-      let:position
-      let:active
-      let:jump
-      let:item
-
-      {index}
-      {dummy}
-      {position}
-      {active}
-      {jump}
-      {item}
-    />
-  </NavigateList>
+    {extendItemClass}
+    {type}
+  />
 </div>
 
 <style lang="less">

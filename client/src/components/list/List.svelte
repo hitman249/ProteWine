@@ -5,14 +5,16 @@
   import {StickerType} from '../../widgets/stickers';
   import Sticker from '../../widgets/stickers/Sticker.svelte';
 
-  export let items: MenuItem[] = [];
+  export let items: any[] = [];
   export let itemSize: number = Menu.ROOT_ITEM_WIDTH;
+  export let horizontal: boolean = true;
   export let headersDummy: number = 1;
   export let type: StickerType = StickerType.MENU;
   export let itemCenter: boolean = false;
   export let itemSpace: number = 0;
   export let marginIndent: number = 0;
   export let paddingIndent: number = 0;
+  export let extendItemClass: string = '';
 
 
   let list: NavigateList;
@@ -93,15 +95,16 @@
   {itemSpace}
   {items}
   {marginIndent}
+  {horizontal}
   {paddingIndent}
   {type}
-  horizontal={true}
   {updateSize}
 >
   <Sticker
     slot="navigate-list-item"
 
     let:active
+    let:index
     let:dummy
     let:item
     let:itemClass
@@ -109,12 +112,13 @@
     let:percent
     let:type
 
+    {index}
     {active}
     {dummy}
     {itemStyle}
     {item}
     {percent}
     {type}
-    itemClass="horizontal-item {itemClass}"
+    itemClass="{extendItemClass} {itemClass}"
   />
 </NavigateList>

@@ -35,7 +35,7 @@
       <Icon icon={item?.getIcon()} status={active ? 'active' : 'normal'} style={iconStyle}/>
     {/if}
   </div>
-  <div class="title" class:title-active={active}>
+  <div class="title" style:opacity={percent / 100}>
     {item?.getTitle() || ''}
   </div>
 </div>
@@ -84,11 +84,5 @@
     font-size: 18px;
     font-weight: 400;
     filter: drop-shadow(rgba(0, 0, 0, 0.7) 4px 4px 2px);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  .title-active {
-    opacity: 1;
   }
 </style>

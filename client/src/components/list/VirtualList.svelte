@@ -1,6 +1,7 @@
 <script lang="ts">
   import Helpers from '../../modules/helpers';
   import {StickerType} from '../../widgets/stickers';
+  import AnimateRange from '../../modules/animate-range';
 
   export let items: any[];
   export let type: StickerType;
@@ -14,6 +15,7 @@
   export let direction: boolean;
 
   const dummySymbol = Symbol('dummy item');
+  const animateRange: AnimateRange = new AnimateRange(0, 0);
 
   function getNaturalIndex(index: number): number {
     if (index < numOverlap) {
@@ -33,13 +35,13 @@
         }
 
         if (scrollIndent > position - itemSize) {
-          return itemSpace / 2;
+          return itemSpace;
         }
       }
 
       if (!direction && scrollIndent >= position) {
         if (scrollIndent < (position + itemSize)) {
-          return itemSpace / 2;
+          return itemSpace;
         }
 
         return 0;
@@ -51,10 +53,10 @@
     }
 
     if (!direction && scrollIndent < position + itemSize) {
-      return itemSpace;
+      return (itemCenter ? itemSpace * 2 : itemSpace);
     }
 
-    return index !== numOverlap ? itemSpace : 0;
+    return index !== numOverlap ? (itemCenter ? itemSpace * 2 : itemSpace) : 0;
   }
 
   function getPercent(active: boolean, position: number, startLeftPosition: number, endLeftPosition: number, startRightPosition: number, first: number): number {
@@ -71,20 +73,32 @@
     }
 
     if (direction) {
+      // [item] left
+      if (position <= endLeftPosition && position >= startLeftPosition) {
+        return animateRange.update(startLeftPosition, endLeftPosition).getPercent(position);
+      }
+
+      // [item] center
+
+      // [item] right
       if (position > endLeftPosition && position <= startRightPosition) {
         return 100 - ((position - first) / itemSize * 100);
       }
-
-      if (position <= endLeftPosition && position >= startLeftPosition) {
-        return (position / endLeftPosition * 100);
-      }
     } else {
-      if (0 <= position && position <= first) {
-        return ((position - margin) / itemSize * 100);
+      // [item] left
+      if (startLeftPosition <= position && position < first) {
+        return animateRange.update(first - itemSize, first).getPercent(position);
       }
 
-      if (position > first && position <= startRightPosition) {
-        return 200 - ((position - itemSpace) / itemSize * 100);
+      // [item] center
+
+      // [item] right
+      if (position >= first && position <= startRightPosition) {
+        if (!itemCenter) {
+          return 100 - animateRange.update(first, first + itemSize).getPercent(position);
+        }
+
+        return 100 - ((position - (startRightPosition - itemSize)) / (startRightPosition - (startRightPosition - itemSize)) * 100);
       }
     }
   }
@@ -92,6 +106,12 @@
   function getFixPosition(active: boolean, position: number, percent: number): number {
     if (!active) {
       return position;
+    }
+
+    if (!itemCenter) {
+      if (position >= first) {
+        return position;
+      }
     }
 
     if (direction) {
@@ -130,17 +150,18 @@
     numOverlap,
   );
 
-  $: margin = (itemSpace / 2);
+  $: margin = itemSpace;
   $: first = (headersDummy * itemSize) + paddingIndent + margin;
   $: startLeftPosition = first - itemSize - margin;
   $: endLeftPosition = startLeftPosition + itemSize;
   $: startRightPosition = (itemSize + margin) + first;
+  $: endRightPosition = startRightPosition + itemSize;
 </script>
 
 {#each slice as item, indexTag}
   {@const index = getNaturalIndex(indexTag)}
   {@const position = (index * itemSize) + getAppendSpace(indexTag, index, scrollIndent) + paddingIndent - scrollIndent}
-  {@const active = position > startLeftPosition && position < startRightPosition}
+  {@const active = itemCenter ? (position > startLeftPosition && position < startRightPosition) : (position > startLeftPosition && position < (first + itemSize))}
   {@const percent = getPercent(active, position, startLeftPosition, endLeftPosition, startRightPosition, first)}
   {@const fixPosition = getFixPosition(active, position, percent)}
 

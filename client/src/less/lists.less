@@ -2,11 +2,11 @@
   transform: translate(-160px, 0px);
 
   .horizontal-item:not(.active) {
-    opacity: 0;
+    opacity: 0 !important;
   }
 
   .vertical-item .footer {
-    opacity: 0;
+    opacity: 0 !important;
   }
 
   &.vertical-lists .list.active .vertical-item.active .icon {
@@ -72,6 +72,7 @@
   }
 
   .horizontal-item:not(.active) {
+    //!
     opacity: 0;
   }
 
@@ -91,6 +92,7 @@
   }
 
   &.inner-list .list.active .vertical-item:not(.active) .item {
+    //!
     .icon {
       opacity: 0.2;
     }
@@ -101,6 +103,7 @@
   }
 
   &.vertical-lists .list.active .vertical-item:not(.active) .item .icon {
+    //!
     opacity: 0.2;
   }
 
@@ -112,6 +115,7 @@
     }
 
     .vertical-item:not(.active) .item {
+      //!
       .footer {
         opacity: 0;
       }

@@ -65,6 +65,7 @@
   import Item from './Item.svelte';
 
   export let active: boolean;
+  export let index: number;
   export let dummy: boolean;
   export let percent: number;
   export let type: StickerType;
@@ -85,35 +86,40 @@
 
 {#if isGame(type)}
   <Game
-    {style}
     {active}
-    {itemClass}
     {dummy}
+    {itemClass}
     {item}
+    {percent}
+    {style}
   />
 {:else if isMenu(type)}
   <Menu
-    {style}
     {active}
-    {itemClass}
     {dummy}
+    {itemClass}
     {item}
     {percent}
+    {style}
   />
 {:else if isSelect(type)}
   <Select
-    {style}
     {active}
-    {itemClass}
     {dummy}
+    {itemClass}
     {item}
+    {percent}
+    {style}
+    {index}
   />
 {:else if isItem(type)}
   <Item
-    {style}
     {active}
-    {itemClass}
     {dummy}
+    {itemClass}
     {item}
+    {percent}
+    {style}
+    {index}
   />
 {/if}
