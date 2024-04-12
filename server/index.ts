@@ -4,6 +4,7 @@ import $app from './app';
 import Routes from './routes';
 import {KernelEvent} from './modules/kernels/abstract-kernel';
 import type {Kernel} from './modules/kernels';
+import process from 'process';
 // import Archiver, {ArchiverEvent, Progress} from './modules/archiver';
 // import process from 'process';
 // import CopyDir, {CopyDirEvent} from './helpers/copy-dir';
@@ -38,7 +39,11 @@ function createWindow(): void {
   routes = new Routes(ipcMain, win);
   routes.init().then(() => {
     win.loadFile('cache/client/index.html');
-    win.webContents.openDevTools();
+
+    if (process.env.debug === '1') {
+      // Open the DevTools.
+      win.webContents.openDevTools();
+    }
   });
 }
 
