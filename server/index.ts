@@ -31,6 +31,7 @@ function createWindow(): void {
       nodeIntegration: false,
       nodeIntegrationInWorker: false,
       backgroundThrottling: true,
+      sandbox: false,
     },
   });
 
@@ -38,7 +39,7 @@ function createWindow(): void {
 
   routes = new Routes(ipcMain, win);
   routes.init().then(() => {
-    win.loadFile('cache/client/index.html');
+    win.loadFile('cache/client/loader.html');
 
     if (process.env.debug === '1') {
       // Open the DevTools.
