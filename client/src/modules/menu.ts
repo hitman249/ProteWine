@@ -119,15 +119,19 @@ export class MenuItem {
   }
 
   public getCurrentItem(): MenuItem {
-    return this.items[this.currentIndex];
+    return this.items?.[this.currentIndex];
   }
 
-  public isActive(): boolean {
+  public isActive(activeIndex?: number): boolean {
+    if (undefined !== activeIndex) {
+      return activeIndex === this.index;
+    }
+
     return this.parent?.getCurrentIndex() === this.index;
   }
 
-  public getStackIndex(): number {
-    const index: number = this.index - this.parent?.getCurrentIndex();
+  public getStackIndex(activeIndex?: number): number {
+    const index: number = this.index - (undefined !== activeIndex ? activeIndex : this.parent?.getCurrentIndex());
 
     if (0 === index) {
       return 1;
@@ -572,9 +576,9 @@ export default class Menu extends EventListener {
     return this.items;
   }
 
-  public getCategories(direction?: boolean | undefined): MenuItem[] {
+  public getCategories(currentIndex: number = this.currentIndex, direction?: boolean | undefined): MenuItem[] {
     const count: number = 3;
-    let startIndex: number = this.currentIndex;
+    let startIndex: number = currentIndex;
 
     if (true === direction) {
       if (startIndex > 0) {
@@ -594,7 +598,7 @@ export default class Menu extends EventListener {
         undefined,
         1,
       ),
-      this.currentIndex % count,
+      currentIndex % count,
     );
   }
 

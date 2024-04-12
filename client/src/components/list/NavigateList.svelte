@@ -17,6 +17,7 @@
   export let paddingIndent: number = 0;
   export let horizontal: boolean = true;
   export let updateSize: (size: {width: number, height: number}) => void;
+  export let onScroll: (position: number, activeIndex: number) => void = undefined;
 
   let list: VirtualList;
   let container: HTMLDivElement;
@@ -59,25 +60,32 @@
 
   export function scrollTo(position: number) {
     scrollIndent = position;
+    onScroll?.(position, list?.getIndexByPosition(position) || 0);
   }
 
   export function getScrollPosition(): number {
     return scrollIndent;
   }
 
-  export function changeDirection(value: boolean): void {
-    direction = value;
+  export function setDirection(value: boolean): void {
+    if (direction !== value) {
+      direction = value;
+    }
   }
 
-  export function changeIndex(index: number): void {
+  export function changeIndex(index: number, animated: boolean = false): void {
     setIndex(index);
-    direction = true;
+    setDirection(true);
 
     const position: number = current * itemSize;
 
-    scrollTo(position);
+    if (animated) {
+      animate.set(position);
+    } else {
+      scrollTo(position);
 
-    animate.setOffset(position);
+      animate.setOffset(position);
+    }
   }
 
   export function getIndex(): number {
@@ -110,7 +118,7 @@
 
   export function keyRight() {
     if (hasRight()) {
-      direction = true;
+      setDirection(true);
       current++;
       animate.set(current * itemSize);
     }
@@ -118,7 +126,7 @@
 
   export function keyLeft() {
     if (hasLeft()) {
-      direction = false;
+      setDirection(false);
       current--;
       animate.set(current * itemSize);
     }
@@ -126,7 +134,7 @@
 
   export function keyDown(): void {
     if (hasDown()) {
-      direction = true;
+      setDirection(true);
       current++;
       animate.set(current * itemSize);
     }
@@ -134,7 +142,7 @@
 
   export function keyUp(): void {
     if (hasUp()) {
-      direction = false;
+      setDirection(false);
       current--;
       animate.set(current * itemSize);
     }
@@ -161,10 +169,7 @@
   });
 </script>
 
-<div
-  class="list"
-  bind:this={container}
->
+<div class="list" bind:this={container}>
   {#if (horizontal ? containerWidth : containerHeight) > 0}
     <VirtualList
       bind:this={list}
@@ -193,15 +198,15 @@
 
         {active}
         {dummy}
+        {index}
         {indexTag}
         {item}
-        {percent}
         {position}
         {scrollIndent}
         {type}
-        index={index}
         itemClass={`list-item ${active ? 'active' : ''}`}
         itemStyle={getStyles(horizontal, position, marginIndent)}
+        {percent}
       />
     </VirtualList>
   {/if}

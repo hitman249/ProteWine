@@ -1,3 +1,6 @@
+<script lang="ts" context="module">
+  const animateRange: AnimateRange = new AnimateRange(0, 0);
+</script>
 <script lang="ts">
   import Helpers from '../../modules/helpers';
   import {StickerType} from '../../widgets/stickers';
@@ -15,7 +18,6 @@
   export let direction: boolean;
 
   const dummySymbol = Symbol('dummy item');
-  const animateRange: AnimateRange = new AnimateRange(0, 0);
 
   function getNaturalIndex(index: number): number {
     if (index < numOverlap) {
@@ -135,6 +137,10 @@
     return position;
   }
 
+  export function getIndexByPosition(position: number = scrollIndent): number {
+    return direction ? Math.ceil(position / itemSize) : Math.trunc(position / itemSize);
+  }
+
   $: numItems = Math.ceil(containerSize / itemSize) + 1 + Math.ceil(Math.abs(paddingIndent) / itemSize) + headersDummy;
   $: startIndex = Math.floor(scrollIndent / itemSize);
   $: endIndex = startIndex + numItems;
@@ -150,7 +156,7 @@
     numOverlap,
   );
 
-  $: margin = itemSpace;
+  $: margin = Math.trunc(itemSpace);
   $: first = (headersDummy * itemSize) + paddingIndent + margin;
   $: startLeftPosition = first - itemSize - margin;
   $: endLeftPosition = startLeftPosition + itemSize;

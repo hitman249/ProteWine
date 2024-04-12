@@ -15,6 +15,7 @@
   export let marginIndent: number = 0;
   export let paddingIndent: number = 0;
   export let extendItemClass: string = '';
+  export let onScroll: (position: number, activeIndex: number) => void = undefined;
 
 
   let list: NavigateList;
@@ -34,8 +35,8 @@
     list?.scrollTo(position);
   }
 
-  export function changeDirection(value: boolean) {
-    list?.changeDirection(value);
+  export function setDirection(value: boolean) {
+    list?.setDirection(value);
   }
 
   export function getIndex(): number {
@@ -89,6 +90,7 @@
 
 <NavigateList
   bind:this={list}
+  {onScroll}
   {headersDummy}
   {itemCenter}
   {itemSize}

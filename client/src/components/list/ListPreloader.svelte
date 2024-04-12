@@ -100,7 +100,13 @@
 
   export function changeList(list: MenuItem) {
     model = list;
+
     const focusedItem: MenuItem = list.getCurrentItem();
+
+    if (!focusedItem) {
+      return;
+    }
+
     focusedItem.updateFocusedItem();
 
     changeIndex(focusedItem.index);

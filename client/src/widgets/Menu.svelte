@@ -5,11 +5,8 @@
   import {onDestroy, onMount, tick} from 'svelte';
   import Menu, {type MenuItem} from '../modules/menu';
   import {KeyboardKey, KeyboardPressEvent} from '../modules/keyboard';
-  import NavigateList from '../components/list/NavigateList.svelte';
   import ListPreloader from '../components/list/ListPreloader.svelte';
-  import SelectItem from './items/SelectItem.svelte';
   import {ValueLabels, type ValueType} from '../modules/value';
-  import GameItem from './items/GameItem.svelte';
   import Animate from '../modules/animate';
   import List from '../components/list/List.svelte';
   import {StickerType} from './stickers';
@@ -23,6 +20,7 @@
 
   let horizontalList: List;
   let verticalList: ListPreloader[] = [];
+  let verticalListActiveIndex: number = 0;
 
   let innerList: ListPreloader;
   let innerListItem: MenuItem;
@@ -41,18 +39,18 @@
   animate.setOffset(0);
   animate.subscribe((value: number) => {
     horizontalList?.scrollTo(value);
-    categoriesDelta = value - ((horizontalList?.getIndex?.() || 0) * Menu.ROOT_ITEM_WIDTH);
+    categoriesDelta = value - ((verticalListActiveIndex || 0) * Menu.ROOT_ITEM_WIDTH);
   });
 
   const menu: Menu = new Menu();
   const items: MenuItem[] = menu.getItems();
+  let categories: MenuItem[] = menu.getCategories(verticalListActiveIndex);
 
   function keyRight() {
     if (horizontalList.hasRight()) {
-      horizontalList.changeDirection(true);
+      horizontalList.setDirection(true);
       horizontalList.setIndex(horizontalList.getIndex() + 1);
       menu.setCurrentIndex(horizontalList.getIndex());
-      categories = menu.getCategories();
       animate.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
       const nextList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(2)];
@@ -66,10 +64,9 @@
 
   function keyLeft() {
     if (horizontalList.hasLeft()) {
-      horizontalList.changeDirection(false);
+      horizontalList.setDirection(false);
       horizontalList.setIndex(horizontalList.getIndex() - 1);
       menu.setCurrentIndex(horizontalList.getIndex());
-      categories = menu.getCategories();
       animate.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
       const prevList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(0)];
@@ -78,6 +75,13 @@
       if (prevItem && prevList && prevList.getModel() !== prevItem) {
         prevList.changeList(prevItem);
       }
+    }
+  }
+
+  function onScroll(position: number, activeIndex: number): void {
+    if (verticalListActiveIndex !== activeIndex) {
+      verticalListActiveIndex = activeIndex;
+      categories = menu.getCategories(activeIndex);
     }
   }
 
@@ -207,8 +211,6 @@
     }
   }, 100);
 
-  $: categories = menu.getCategories();
-
   onMount(() => {
     window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
   });
@@ -223,6 +225,7 @@
     <List
       bind:this={horizontalList}
       {items}
+      {onScroll}
       horizontal={true}
       itemSpace={50}
       itemCenter={true}
@@ -233,8 +236,8 @@
 
   <div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
     {#each categories as item, index}
-      {@const current = item?.isActive()}
-      {@const left = (((item?.getStackIndex() || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
+      {@const current = item?.isActive(verticalListActiveIndex)}
+      {@const left = (((item?.getStackIndex(verticalListActiveIndex) || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
 
       <ListPreloader
         bind:this={verticalList[index]}
