@@ -221,7 +221,7 @@
 </script>
 
 <div class="content" style="{style}">
-  <div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
+  <div class="horizontal-list" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList} class:active={isSelectList}>
     <List
       bind:this={horizontalList}
       {items}
@@ -345,6 +345,7 @@
     opacity: 0;
     background: rgba(0, 212, 255, 30%);
     transition: opacity 0.2s ease, right 0.2s ease;
+    z-index: 2;
 
     &.open {
       right: 0;
