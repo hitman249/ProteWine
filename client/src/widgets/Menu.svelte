@@ -10,12 +10,9 @@
   import Animate from '../modules/animate';
   import List from '../components/list/List.svelte';
   import {StickerType} from './stickers';
+  import Popup, {PopupNames} from '../modules/popup';
 
-  export let openPopupRunGame: (model: MenuItem) => void;
-  export let closePopupRunGame: () => void;
-
-  let isPopupRunGame: boolean = false;
-
+  export let popup: Popup;
   export let style: string = '';
 
   let horizontalList: List;
@@ -159,8 +156,7 @@
             item.value.setValue(value.value);
 
             if ('run' === value.value) {
-              openPopupRunGame(item);
-              isPopupRunGame = true;
+              popup.setData(item).open(PopupNames.RUN_GAME);
             }
 
             return;
@@ -186,9 +182,8 @@
             selectListItems = undefined;
             timeout = undefined;
 
-            if (isPopupRunGame) {
-              closePopupRunGame();
-              isPopupRunGame = false;
+            if (popup.isOpen(PopupNames.RUN_GAME)) {
+              popup.close();
             }
           }, 200);
         });

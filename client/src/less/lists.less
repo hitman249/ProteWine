@@ -42,6 +42,16 @@
   & > .list {
     position: absolute;
     width: 100%;
+
+    .vertical-item {
+      .icon {
+        transition: opacity 0.2s;
+      }
+
+      .footer {
+        transition: opacity 0.2s;
+      }
+    }
   }
 }
 
@@ -59,6 +69,16 @@
     transition: width 0.2s;
     position: absolute;
     width: 100%;
+
+    .vertical-item {
+      .icon {
+        transition: opacity 0.2s;
+      }
+
+      .footer {
+        transition: opacity 0.2s;
+      }
+    }
   }
 }
 
@@ -73,11 +93,7 @@
 
   .horizontal-item:not(.active) {
     //!
-    opacity: 0;
-  }
-
-  &.horizontal-list.active {
-    width: calc(100% - 300px);
+    opacity: 0 !important;
   }
 
   &.vertical-lists .list.active .vertical-item.active .focused,
@@ -95,20 +111,20 @@
     }
   }
 
-  &.inner-list .list.active .vertical-item:not(.active) .item {
+  &.inner-list .list.active .vertical-item:not(.active) {
     //!
     .icon {
-      opacity: 0.2;
+      opacity: 0.2 !important;
     }
 
     .footer {
-      opacity: 0;
+      opacity: 0 !important;
     }
   }
 
-  &.vertical-lists .list.active .vertical-item:not(.active) .item .icon {
+  &.vertical-lists .list.active .vertical-item:not(.active) .icon {
     //!
-    opacity: 0.2;
+    opacity: 0.2 !important;
   }
 
   &.vertical-lists > .list.active {
@@ -118,10 +134,10 @@
       width: calc(100% + 300px);
     }
 
-    .vertical-item:not(.active) .item {
+    .vertical-item:not(.active) {
       //!
       .footer {
-        opacity: 0;
+        opacity: 0 !important;
       }
     }
   }

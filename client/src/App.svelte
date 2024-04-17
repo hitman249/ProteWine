@@ -1,39 +1,42 @@
 <script lang="ts">
   import Background from './widgets/Background.svelte';
   import Menu from './widgets/Menu.svelte';
-  import PopupGame from './widgets/PopupGame.svelte';
-  import type {MenuItem} from './modules/menu';
+  import PopupGame from './widgets/popups/PopupGame.svelte';
+  import Popup, {PopupEvents, PopupNames} from './modules/popup';
+
+  let popup: Popup = new Popup();
 
   const color1: string = '#3586ff';
   const color2: string = '#a9a9a9';
 
-  let hideMenu: boolean = false;
-  let openRunGame: boolean = false;
-  let item: MenuItem;
+  let showMenu: boolean = true;
+  let namePopup: PopupNames = undefined;
+  let showPopup: boolean = false;
 
-  function openPopupRunGame(model: MenuItem): void {
-    item = model;
-    hideMenu = true;
-    openRunGame = true;
-  }
+  popup.on(PopupEvents.OPEN, (event: PopupEvents.OPEN, name: PopupNames) => {
+    showMenu = false;
+    namePopup = name;
+    showPopup = true;
+  });
 
-  function closePopupRunGame(): void {
-    openRunGame = false;
-    hideMenu = false;
-  }
+  popup.on(PopupEvents.CLOSE, (event: PopupEvents.CLOSE, name: PopupNames) => {
+    showPopup = false;
+    showMenu = true;
+  });
 </script>
 
-<main style="background-color: {color1};">
+<main style:background-color={color1}>
   <Background/>
 
   <Menu
-    style="{hideMenu ? 'opacity: 0;' : 'opacity: 1;'}"
-    openPopupRunGame={openPopupRunGame}
-    closePopupRunGame={closePopupRunGame}
+    style="{showMenu ? 'opacity: 1;' : 'opacity: 0;'}"
+    {popup}
   />
 
-  {#if openRunGame && item}
-    <PopupGame {item}/>
+  {#if showPopup}
+    {#if namePopup === PopupNames.RUN_GAME}
+      <PopupGame bind:this={popup.ref} item={popup.getData()}/>
+    {/if}
   {/if}
 </main>
 

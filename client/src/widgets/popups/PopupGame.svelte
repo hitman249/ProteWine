@@ -1,7 +1,7 @@
 <script lang="ts">
-import Progress from './Progress.svelte';
+import Progress from '../Progress.svelte';
 import {onMount} from 'svelte';
-import type {MenuItem} from '../modules/menu';
+import type {MenuItem} from '../../modules/menu';
 
 export let item: MenuItem;
 
