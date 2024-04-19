@@ -9,6 +9,8 @@
   export let dummy: boolean = false;
   export let percent: number;
   export let item: File = undefined;
+
+  $: descriptionExist = Boolean(active && !item?.isDirectory());
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
@@ -21,16 +23,16 @@
     {/if}
   </div>
   <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
-    <div class="title" style:transform="translate(0px, {(22 - (22 * percent / 100)) + 10}px)">
+    <div class="title" style:transform="translate(0px, {descriptionExist ? (22 - (22 * percent / 100)) + 10 : 32}px)">
       {(item?.isStorage() ? item?.path : item?.basename) || ''}
     </div>
     <div
       class="description"
-      class:exist={Boolean(active)}
+      class:exist={descriptionExist}
       style:transform="translate(0px, {40 - (20 * percent / 100)}px)"
       style:opacity={percent / 100}
     >
-      test2
+      Size: {item?.sizeFormat}
     </div>
   </div>
 </div>

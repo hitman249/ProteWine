@@ -36,11 +36,13 @@ export default class Index {
 
         for await (const pathfile of list) {
           const directory: boolean = await fs.isDirectory(pathfile);
+          const size: number = directory ? 0 : await fs.size(pathfile);
 
           result.push({
             path: pathfile,
             directory,
-            size: directory ? 0 : await fs.size(pathfile),
+            size,
+            sizeFormat: directory ? '' : fs.convertBytes(size),
             extension: _.toLower(fs.extension(pathfile)),
             basename: fs.basename(pathfile),
             dirname: fs.dirname(pathfile),
@@ -80,6 +82,7 @@ export default class Index {
           path,
           directory: true,
           size: 0,
+          sizeFormat: '',
           extension: '',
           basename: fs.basename(path),
           dirname: fs.dirname(path),

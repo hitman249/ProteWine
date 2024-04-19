@@ -10,14 +10,17 @@
   let list: List;
   let data: File[] = undefined;
   let currentPath: string = '';
+  let pathIndices: {[path: string]: number} = {};
 
-  const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
-    if (KeyboardKey.DOWN === key) {
-      list?.keyDown();
+  const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+    if (KeyboardKey.DOWN === key && list) {
+      list.keyDown();
+      pathIndices[currentPath] = list.getIndex();
     }
 
-    if (KeyboardKey.UP === key) {
-      list?.keyUp();
+    if (KeyboardKey.UP === key && list) {
+      list.keyUp();
+      pathIndices[currentPath] = list.getIndex();
     }
 
     if (KeyboardKey.ENTER === key) {
@@ -29,7 +32,7 @@
 
       window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
         currentPath = item.path;
-        list.changeIndex(0);
+        list.changeIndex(pathIndices?.[currentPath] || 0);
         data = files;
       });
     }
@@ -46,11 +49,11 @@
 
       (currentPath ? window.$app.getApi().getFileSystemLs(currentPath) : window.$app.getApi().getFileSystemStorages())
         .then((files: File[]) => {
-          list.changeIndex(0);
+          list.changeIndex(pathIndices?.[currentPath] || 0);
           data = files;
         });
     }
-  }, 100);
+  };
 
   export function bindEvents(): void {
     window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);

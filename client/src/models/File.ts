@@ -5,6 +5,7 @@ export type FileInfo = {
   extension: string,
   path: string,
   size: number,
+  sizeFormat: string,
 };
 
 export enum FileType {
@@ -120,6 +121,7 @@ export default class File {
   private readonly extension: string;
   public readonly path: string;
   private readonly size: number;
+  public readonly sizeFormat: string;
   private storage: boolean = false;
   private type: FileType;
 
@@ -130,6 +132,7 @@ export default class File {
     this.extension = params.extension;
     this.path = params.path;
     this.size = params.size;
+    this.sizeFormat = params.sizeFormat;
 
     if (this.directory) {
       this.type = FileType.DIRECTORY;
