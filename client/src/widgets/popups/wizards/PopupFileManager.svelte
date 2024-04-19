@@ -1,11 +1,15 @@
 <script lang="ts">
   import {onDestroy, onMount} from 'svelte';
   import {StickerType} from '../../stickers';
-  import List from '../../../components/list/List.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
   import _ from 'lodash';
+  import Menu from '../../../modules/menu';
+  import List from '../../../components/list/List.svelte';
+  import File from '../../../models/File';
 
   let list: List;
+  let data: File[] = undefined;
+  let currentPath: string = '';
 
   const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
@@ -17,11 +21,34 @@
     }
 
     if (KeyboardKey.ENTER === key) {
+      const item: File = list?.getItem();
 
+      if (!item) {
+        return;
+      }
+
+      window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
+        currentPath = item.path;
+        list.changeIndex(0);
+        data = files;
+      });
     }
 
-    if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
-      window.$app.getPopup().close();
+    if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
+      const path: string[] = currentPath.split('/').slice(0, -1);
+
+      if (path.length === 0) {
+        window.$app.getPopup().close();
+        return;
+      }
+
+      currentPath = path.join('/');
+
+      (currentPath ? window.$app.getApi().getFileSystemLs(currentPath) : window.$app.getApi().getFileSystemStorages())
+        .then((files: File[]) => {
+          list.changeIndex(0);
+          data = files;
+        });
     }
   }, 100);
 
@@ -35,6 +62,7 @@
 
   onMount(() => {
     bindEvents();
+    window.$app.getApi().getFileSystemStorages().then((files: File[]) => data = files);
   });
 
   onDestroy(() => {
@@ -44,43 +72,25 @@
 
 <div class="popup">
   <div class="header">
-    Add game wizard
+    <div class="left">{currentPath}</div>
+    <div class="right">File Manager</div>
   </div>
   <div class="content">
     <div class="center">
-      <List
-        bind:this={list}
-        items={[
-          {
-            value: 1,
-            title: 'Install game from file',
-          },
-          {
-            value: 1,
-            title: 'Install game from the image',
-          },
-          {
-            value: 1,
-            title: 'Copy existing game folder',
-          },
-          {
-            value: 1,
-            title: 'Move existing game folder',
-          },
-          {
-            value: 1,
-            title: 'Create a symlink to an existing game folder',
-          },
-        ]}
-        paddingIndent={0}
-        headersDummy={5}
-        itemSize={35}
-        itemSpace={25}
-        horizontal={false}
-        itemCenter={true}
-        extendItemClass="vertical-item"
-        type={StickerType.SELECT_CENTER}
-      />
+      {#if data}
+        <List
+          bind:this={list}
+          items={data}
+          headersDummy={2}
+          paddingIndent={-50}
+          itemSize={Menu.ITEM_HEIGHT}
+          itemSpace={40}
+          itemCenter={true}
+          horizontal={false}
+          extendItemClass="vertical-item"
+          type={StickerType.FILE}
+        />
+      {/if}
     </div>
   </div>
   <div class="footer"></div>
@@ -112,6 +122,18 @@
       font-weight: 100;
       font-size: 16px;
       filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+
+      .left {
+        display: flex;
+        flex: 1;
+        justify-content: start;
+      }
+
+      .right {
+        display: flex;
+        width: 250px;
+        justify-content: end;
+      }
     }
 
     .footer {
@@ -133,8 +155,8 @@
       justify-content: center;
 
       .center {
-        width: 400px;
-        height: 400px;
+        width: calc(100% - 300px);
+        height: 100%;
         position: absolute;
         margin: auto;
         top: 0;

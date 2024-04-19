@@ -1,0 +1,6 @@
+<script lang="ts">
+  export let status: string = undefined;
+  export let style: string = '';
+</script>
+
+<svg version="1.1" class={status} {style} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80px" height="80px" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M7,2v46h36v-32.41406l-13.58594,-13.58594zM9,4h19v13h13v29h-32zM30,5.41406l9.58594,9.58594h-9.58594zM25,20.41797c-0.5625,0 -0.94141,0.36719 -0.94141,0.91406v8.98438c0,1.10156 -0.37891,2.01563 -2.45703,2.01563c-2.92969,0 -4.15625,0.64453 -4.15625,2.47656c0,1.19141 0.28516,3.02344 4.15625,3.02344c3.58984,0 4.34375,-2.65625 4.34375,-4.03125v-8.61719c3.39844,0 3.02344,1.28516 5.57031,1.55859c0.56641,0.08984 1.04297,-0.27344 1.04297,-0.82422v-2.75c0,-0.46094 -0.38281,-0.91797 -0.85547,-0.91797c-2.83203,-0.27344 -2.26562,-1.83203 -5.75781,-1.83203z"></path></g></g></svg>

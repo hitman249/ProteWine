@@ -49,6 +49,14 @@
     return StickerType.SELECT === type;
   }
 
+  function isSelectCenter(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.SELECT_CENTER === type;
+  }
+
   function isItem(type: StickerType): boolean {
     if (!type) {
       return false;
@@ -56,13 +64,23 @@
 
     return StickerType.ITEM === type;
   }
+
+  function isFile(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.FILE === type;
+  }
 </script>
 <script lang="ts">
   import type {MenuItem} from '../../modules/menu';
   import Game from './Game.svelte';
   import Menu from './Menu.svelte';
   import Select from './Select.svelte';
+  import SelectCenter from './SelectCenter.svelte';
   import Item from './Item.svelte';
+  import File from './File.svelte';
 
   export let active: boolean;
   export let index: number;
@@ -112,8 +130,28 @@
     {style}
     {index}
   />
+{:else if isSelectCenter(type)}
+  <SelectCenter
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+    {index}
+  />
 {:else if isItem(type)}
   <Item
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+    {index}
+  />
+{:else if isFile(type)}
+  <File
     {active}
     {dummy}
     {itemClass}

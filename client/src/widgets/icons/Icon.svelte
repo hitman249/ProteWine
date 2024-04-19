@@ -20,6 +20,16 @@
   import Compile from './Compile.svelte';
   import Storage from './Storage.svelte';
   import Manage from './Manage.svelte';
+  import Root from './Root.svelte';
+  import Home from './Home.svelte';
+  import Directory from './Directory.svelte';
+  import Archive from './Archive.svelte';
+  import Image from './Image.svelte';
+  import File from './File.svelte';
+  import Text from './Text.svelte';
+  import Executable from './Executable.svelte';
+  import Video from './Video.svelte';
+  import Music from './Music.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -89,4 +99,34 @@
 {/if}
 {#if 'manage' === icon}
   <Manage {status} {style} />
+{/if}
+{#if 'root' === icon}
+  <Root {status} {style} />
+{/if}
+{#if 'home' === icon}
+  <Home {status} {style} />
+{/if}
+{#if 'directory' === icon}
+  <Directory {status} {style} />
+{/if}
+{#if 'archive' === icon}
+  <Archive {status} {style} />
+{/if}
+{#if 'image' === icon}
+  <Image {status} {style} />
+{/if}
+{#if 'file' === icon}
+  <File {status} {style} />
+{/if}
+{#if 'text' === icon}
+  <Text {status} {style} />
+{/if}
+{#if 'executable' === icon}
+  <Executable {status} {style} />
+{/if}
+{#if 'video' === icon}
+  <Video {status} {style} />
+{/if}
+{#if 'music' === icon}
+  <Music {status} {style} />
 {/if}

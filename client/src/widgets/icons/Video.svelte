@@ -1,0 +1,6 @@
+<script lang="ts">
+  export let status: string = undefined;
+  export let style: string = '';
+</script>
+
+<svg version="1.1" class={status} {style} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80px" height="80px" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M7,2v46h36v-32.58984l-13.81641,-13.41016zM9,4h19v13h13v29h-32zM30,5.57813l9.70703,9.42188h-9.70703zM20.94531,22c-0.53125,0.03125 -0.94531,0.46875 -0.94531,1v13c0,0.34766 0.18359,0.67188 0.48047,0.85547c0.30078,0.17969 0.67188,0.19141 0.98047,0.03125l11.55469,-6c0.32422,-0.16797 0.52734,-0.49219 0.53906,-0.85547c0.01172,-0.35937 -0.17187,-0.69922 -0.48047,-0.88672l-11.55859,-7c-0.17187,-0.10547 -0.37109,-0.15234 -0.57031,-0.14453zM22,24.77734l8.51563,5.15625l-8.51562,4.42188z"></path></g></g></svg>

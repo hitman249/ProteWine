@@ -1,28 +1,36 @@
 <script lang="ts">
-  import {MenuItem} from '../../modules/menu';
   import Icon from '../icons/Icon.svelte';
+  import File from '../../models/File';
 
+  export let style: string;
+  export let index: number;
+  export let itemClass: string;
   export let active: boolean = false;
   export let dummy: boolean = false;
-  export let item: MenuItem = undefined;
+  export let percent: number;
+  export let item: File = undefined;
 </script>
 
-<div aria-hidden="true" class="item" on:click={item?.click} style="opacity: {dummy ? 0 : 1};">
+<div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
   <div class="icon">
     {#if item}
-      <Icon icon={item?.getIcon()} status={active ? 'focused' : 'normal'} />
+      <Icon
+        icon={item?.getType()}
+        status={active && percent > 90 ? 'focused' : 'normal'}
+      />
     {/if}
   </div>
-  <div class="footer" class:title-normal={!active}>
-    <div class="title">
-      {item?.title || ''}
-
-      <div class="value" style:display={active && item?.value && item?.value?.isVisible() ? 'flex' : 'none'}>
-        {item?.value?.getValueFormatted() || ''}
-      </div>
+  <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
+    <div class="title" style:transform="translate(0px, {(22 - (22 * percent / 100)) + 10}px)">
+      {(item?.isStorage() ? item?.path : item?.basename) || ''}
     </div>
-    <div class="description" class:exist={Boolean(item?.description || active && item?.value && item?.value?.isVisible())}>
-      {item?.description || ''}
+    <div
+      class="description"
+      class:exist={Boolean(active)}
+      style:transform="translate(0px, {40 - (20 * percent / 100)}px)"
+      style:opacity={percent / 100}
+    >
+      test2
     </div>
   </div>
 </div>
@@ -51,8 +59,8 @@
     text-align: center;
     width: 110px;
     height: 100%;
-
-    transition: filter 0.6s, opacity 0.3s;
+    flex-shrink: 0;
+    transition: filter 0.6s;
     filter: drop-shadow(transparent 0px 0px 0px);
   }
 
@@ -71,15 +79,18 @@
     align-items: start;
     text-align: left;
     vertical-align: center;
-    transition: opacity ease 0.3s;
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
   }
 
   .title {
-    position: relative;
-    display: flex;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    display: block;
+    width: calc(100% - 20px);
     height: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .value {
@@ -94,11 +105,9 @@
     align-items: end;
   }
 
-  .title-normal {
-    opacity: 0.3;
-  }
-
   .description {
+    position: absolute;
+    top: 30px;
     display: none;
     width: 100%;
     height: auto;

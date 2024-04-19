@@ -1,14 +1,20 @@
 <script lang="ts">
 import Progress from '../Progress.svelte';
-import {onMount} from 'svelte';
+import {onDestroy, onMount} from 'svelte';
 import type {MenuItem} from '../../modules/menu';
+import List from '../../components/list/List.svelte';
+import _ from 'lodash';
+import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
 
 export let item: MenuItem;
+
+let list: List;
 
 let left: HTMLDivElement;
 let img: HTMLImageElement;
 let title: HTMLDivElement;
 
+let animate: boolean = false;
 let value: number = 0;
 
 function percentUp() {
@@ -38,14 +44,44 @@ function getTitleTranslation(): string {
   return `transform: translate(${titleRect.left}px, ${titleRect.top - 101}px);`;
 }
 
-let animate: boolean = false;
+const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+  if (KeyboardKey.DOWN === key) {
+    list?.keyDown();
+  }
+
+  if (KeyboardKey.UP === key) {
+    list?.keyUp();
+  }
+
+  if (KeyboardKey.ENTER === key) {
+
+  }
+
+  if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
+    window.$app.getPopup().close();
+  }
+}, 100);
+
+export function bindEvents(): void {
+  window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+}
+
+export function unbindEvents(): void {
+  window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+}
 
 onMount(() => {
+  bindEvents();
+
   setTimeout(() => {
     if (item) {
       animate = true;
     }
   }, 100);
+});
+
+onDestroy(() => {
+  unbindEvents();
 });
 </script>
 

@@ -1,6 +1,7 @@
 import EventListener from '../../../server/helpers/event-listener';
 import Helpers from './helpers';
 import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
+import {PopupNames} from './popup';
 
 type MenuItemType = {
   id: string,
@@ -12,6 +13,7 @@ type MenuItemType = {
   click?: () => void,
   items?: () => MenuItemType[],
   value?: ValueParams,
+  popup?: PopupNames,
 };
 
 export class MenuItem {
@@ -27,6 +29,7 @@ export class MenuItem {
   public readonly description: string;
   public readonly template: ValueLabels;
   public readonly value: Value;
+  public readonly popup: PopupNames;
 
   private readonly fetchItems: MenuItemType['items'];
   public items: MenuItem[];
@@ -46,6 +49,7 @@ export class MenuItem {
     this.value = params.value ? new Value(params.value) : undefined;
     this.click = params.click;
     this.fetchItems = params.items;
+    this.popup = params.popup;
 
     if (!this.value && ValueLabels.GAME === params.template && !this.hasItems()) {
       const value: ValueParams = {
@@ -296,6 +300,7 @@ export default class Menu extends EventListener {
           id: 'add-game',
           icon: 'plus',
           title: 'Add game',
+          popup: PopupNames.FILE_MANAGER,
         },
       ],
     },

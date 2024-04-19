@@ -1,0 +1,6 @@
+<script lang="ts">
+  export let status: string = undefined;
+  export let style: string = '';
+</script>
+
+<svg version="1.1" class={status} {style} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80px" height="80px" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M29.98438,1.98438c-0.04687,0.00391 -0.09766,0.00781 -0.14453,0.01563h-22.83984v46h36v-32.83203c0.01953,-0.10937 0.01953,-0.21875 0,-0.32422v-0.25781l-0.19141,-0.19531c-0.05469,-0.07031 -0.12109,-0.13281 -0.19141,-0.1875l-11.82422,-11.82812c-0.05469,-0.07031 -0.11719,-0.13281 -0.1875,-0.1875l-0.19141,-0.1875h-0.25781c-0.05859,-0.00781 -0.11328,-0.01562 -0.17187,-0.01562zM9,4h20v12h12v30h-32zM31,5.41406l8.58594,8.58594h-8.58594zM26,22l-4,16h2l4,-16zM18.14063,24.48438l-3.30859,5.51563l3.30859,5.51563l1.71875,-1.03125l-2.69141,-4.48437l2.69141,-4.48437zM31.85547,24.48438l-1.71484,1.03125l2.69141,4.48438l-2.69141,4.48438l1.71875,1.03125l3.30859,-5.51562z"></path></g></g></svg>

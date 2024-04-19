@@ -1,16 +1,31 @@
 <script lang="ts">
   import type {ValueType} from '../../modules/value';
 
+  export let style: string;
+  export let itemClass: string;
   export let active: boolean = false;
-  export let item: ValueType = undefined;
+  export let item: any | ValueType = undefined;
+  export let percent: number;
+  export let index: number;
   export let dummy: boolean = false;
 </script>
 
-<div aria-hidden="true" class="item" class:focused={active} style="opacity: {dummy ? 0 : 1};">
-  <p class="title">{item?.title || ''}</p>
+<div aria-hidden="true" class="item-wrap" style:opacity={dummy ? 0 : 1}>
+  <div aria-hidden="true" class="item {itemClass}" class:focused={active} {style}>
+    <p class="title">{item?.title || ''}</p>
+  </div>
 </div>
 
 <style lang="less">
+  .item-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    height: 35px;
+  }
+
   .item {
     overflow: hidden;
     position: relative;
@@ -19,7 +34,7 @@
     align-items: center;
     padding: 0 25px;
     font-size: 17px;
-    width: 100%;
+    width: auto;
     height: 35px;
     margin: 0;
     box-sizing: border-box;

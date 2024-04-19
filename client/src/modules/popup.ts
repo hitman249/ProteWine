@@ -2,6 +2,8 @@ import EventListener from '../../../server/helpers/event-listener';
 
 export enum PopupNames {
   RUN_GAME = 'run-game',
+  GAME_OPERATION = 'game-operation',
+  FILE_MANAGER = 'file-manager',
 }
 
 export enum PopupEvents {
@@ -46,7 +48,11 @@ export default class Popup extends EventListener {
     return this.ref;
   }
 
-  public isOpen(name: PopupNames): boolean {
+  public isOpen(name?: PopupNames): boolean {
+    if (undefined === name) {
+      return undefined !== this.opened;
+    }
+
     return this.opened === name;
   }
 

@@ -142,7 +142,10 @@
     if (KeyboardKey.ENTER === key) {
       const item: MenuItem = menu.getFocusedItem();
 
-      if (item?.hasItems()) {
+      if (item?.popup) {
+        popup.setData(item).open(item?.popup);
+        return;
+      } else if (item?.hasItems()) {
         if (timeout) {
           clearTimeout(timeout);
         }
@@ -190,6 +193,11 @@
         return;
       }
 
+      if (popup.isOpen()) {
+        popup.close();
+        return;
+      }
+
       if (isInnerList) {
         menu.backFocus();
         isInnerList = false;
@@ -206,12 +214,20 @@
     }
   }, 100);
 
-  onMount(() => {
+  export function bindEvents(): void {
     window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+  }
+
+  export function unbindEvents(): void {
+    window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+  }
+
+  onMount(() => {
+    bindEvents();
   });
 
   onDestroy(() => {
-    window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+    unbindEvents();
   });
 </script>
 
