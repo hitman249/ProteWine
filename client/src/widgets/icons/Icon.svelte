@@ -37,96 +37,68 @@
   export let value: any = undefined;
 </script>
 
-{#if 'gamepad' === icon}
-  <Gamepad {status} {style} />
-{/if}
 <!--{#if 'settings' === icon}-->
 <!--  <Settings {status} {style}/>-->
 <!--{/if}-->
-{#if 'settings' === icon}
+
+{#if 'gamepad' === icon}
+  <Gamepad {status} {style} />
+{:else if 'settings' === icon}
   <PrefixSettings {status} {style} />
-{/if}
-{#if 'layers' === icon}
+{:else if 'layers' === icon}
   <Layers {status} {value} {style} />
-{/if}
-{#if 'prefix' === icon}
+{:else if 'prefix' === icon}
   <Prefix {status} {style} />
-{/if}
-{#if 'updates' === icon}
+{:else if 'updates' === icon}
   <Updates {status} {style} />
-{/if}
-{#if 'build' === icon}
+{:else if 'build' === icon}
   <Build {status} {style} />
-{/if}
-{#if 'database' === icon}
+{:else if 'database' === icon}
   <Database {status} {style} />
-{/if}
-{#if 'plus' === icon}
+{:else if 'plus' === icon}
   <Plus {status} {style} />
-{/if}
-{#if 'reset' === icon}
+{:else if 'reset' === icon}
   <Reset {status} {style} />
-{/if}
-{#if 'wine' === icon}
+{:else if 'wine' === icon}
   <Wine {status} {style} />
-{/if}
-{#if 'layers-add' === icon}
+{:else if 'layers-add' === icon}
   <LayersAdd {status} {style} />
-{/if}
-{#if 'layers-list' === icon}
+{:else if 'layers-list' === icon}
   <LayersList {status} {style} />
-{/if}
-{#if 'layers-item' === icon}
+{:else if 'layers-item' === icon}
   <LayersItem {status} {style} />
-{/if}
-{#if 'update-self' === icon}
+{:else if 'update-self' === icon}
   <UpdateSelf {status} {style} />
-{/if}
-{#if 'update-layer' === icon}
+{:else if 'update-layer' === icon}
   <UpdateLayer {status} {style} />
-{/if}
-{#if 'unpack' === icon}
+{:else if 'unpack' === icon}
   <Unpack {status} {style} />
-{/if}
-{#if 'pack' === icon}
+{:else if 'pack' === icon}
   <Pack {status} {style} />
-{/if}
-{#if 'compile' === icon}
+{:else if 'compile' === icon}
   <Compile {status} {style} />
-{/if}
-{#if 'storage' === icon}
+{:else if 'storage' === icon}
   <Storage {status} {style} />
-{/if}
-{#if 'manage' === icon}
+{:else if 'manage' === icon}
   <Manage {status} {style} />
-{/if}
-{#if 'root' === icon}
+{:else if 'root' === icon}
   <Root {status} {style} />
-{/if}
-{#if 'home' === icon}
+{:else if 'home' === icon}
   <Home {status} {style} />
-{/if}
-{#if 'directory' === icon}
+{:else if 'directory' === icon}
   <Directory {status} {style} />
-{/if}
-{#if 'archive' === icon}
+{:else if 'archive' === icon}
   <Archive {status} {style} />
-{/if}
-{#if 'image' === icon}
+{:else if 'image' === icon}
   <Image {status} {style} />
-{/if}
-{#if 'file' === icon}
+{:else if 'file' === icon}
   <File {status} {style} />
-{/if}
-{#if 'text' === icon}
+{:else if 'text' === icon}
   <Text {status} {style} />
-{/if}
-{#if 'executable' === icon}
+{:else if 'executable' === icon}
   <Executable {status} {style} />
-{/if}
-{#if 'video' === icon}
+{:else if 'video' === icon}
   <Video {status} {style} />
-{/if}
-{#if 'music' === icon}
+{:else if 'music' === icon}
   <Music {status} {style} />
 {/if}

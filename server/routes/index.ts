@@ -30,8 +30,12 @@ export default class Index {
     this.ipc.handle(
       ApiFileSystem.LS,
       async (event: IpcMainInvokeEvent, path: string): Promise<any> => {
+        const safePath: string = _.trimEnd(path, '/')
+          .split('[').join('\\[').split(']').join('\\]')
+          .split('(').join('\\(').split(')').join('\\)');
+
         const fs: FileSystem = global.$app.getFileSystem();
-        const list: string[] = await fs.glob(`${_.trimEnd(path, '/')}/*`);
+        const list: string[] = await fs.glob(`${safePath}/*`);
         const result: any[] = [];
 
         for await (const pathfile of list) {
@@ -49,7 +53,26 @@ export default class Index {
           });
         }
 
-        return result;
+        const compare: (x: string, y: string) => number =
+          (new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'})).compare;
+
+        return result.sort((a: any, b: any): number => {
+          if (b.directory && !a.directory) {
+            return 1;
+          }
+
+          if (a.directory && !b.directory) {
+            return -1;
+          }
+
+          const ext: number = compare(a.extension, b.extension);
+
+          if (-1 === ext || 1 === ext) {
+            return ext;
+          }
+
+          return compare(a.path, b.path);
+        });
       },
     );
   }

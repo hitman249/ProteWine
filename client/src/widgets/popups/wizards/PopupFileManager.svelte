@@ -26,7 +26,7 @@
     if (KeyboardKey.ENTER === key) {
       const item: File = list?.getItem();
 
-      if (!item) {
+      if (!item || !item.isDirectory()) {
         return;
       }
 

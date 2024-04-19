@@ -230,7 +230,7 @@ export default class FileSystem extends AbstractModule {
   }
 
   public async glob(path: string): Promise<string[]> {
-    return await glob(path);
+    return await glob(path, {dot: true});
   }
 
   public async fileGetContents(filepath: string, autoEncoding: boolean = false): Promise<string> {
