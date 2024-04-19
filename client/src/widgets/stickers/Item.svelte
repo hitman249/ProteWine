@@ -9,6 +9,8 @@
   export let dummy: boolean = false;
   export let percent: number;
   export let item: MenuItem = undefined;
+
+  $: descriptionExist = Boolean(item?.description || active && item?.value && item?.value?.isVisible());
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
@@ -21,15 +23,19 @@
     {/if}
   </div>
   <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
-    <div class="title">
+    <div class="title" style:transform="translate(0px, {descriptionExist ? (20 - (20 * percent / 100)) + 10 : 32}px)">
       {item?.title || ''}
 
       <div class="value" style:display={active && item?.value && item?.value?.isVisible() ? 'flex' : 'none'}>
         {item?.value?.getValueFormatted() || ''}
       </div>
     </div>
-    <div class="description"
-         class:exist={Boolean(item?.description || active && item?.value && item?.value?.isVisible())}>
+    <div
+      class="description"
+      class:exist={descriptionExist}
+      style:transform="translate(0px, {40 - (20 * percent / 100)}px)"
+      style:opacity={percent / 100}
+    >
       {item?.description || ''}
     </div>
   </div>
@@ -83,10 +89,14 @@
   }
 
   .title {
-    position: relative;
-    display: flex;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    display: block;
+    width: calc(100% - 20px);
     height: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .value {
@@ -102,6 +112,8 @@
   }
 
   .description {
+    position: absolute;
+    top: 30px;
     display: none;
     width: 100%;
     height: auto;
