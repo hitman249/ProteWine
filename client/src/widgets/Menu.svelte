@@ -82,7 +82,7 @@
     }
   }
 
-  const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+  const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
       if (isSelectList) {
         selectList?.keyDown();
@@ -212,7 +212,7 @@
         return;
       }
     }
-  }, 100);
+  };
 
   export function bindEvents(): void {
     window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);

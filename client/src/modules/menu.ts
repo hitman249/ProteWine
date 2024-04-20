@@ -300,7 +300,7 @@ export default class Menu extends EventListener {
           id: 'add-game',
           icon: 'plus',
           title: 'Add game',
-          popup: PopupNames.FILE_MANAGER,
+          popup: PopupNames.GAME_OPERATION,
         },
       ],
     },

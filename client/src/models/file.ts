@@ -161,6 +161,10 @@ export default class File {
     return this.directory;
   }
 
+  public isExecutable(): boolean {
+    return FileType.EXECUTABLE === this.type;
+  }
+
   public getExtension(): string {
     return this.extension;
   }

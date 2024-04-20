@@ -3,11 +3,12 @@
   import {StickerType} from '../../stickers';
   import List from '../../../components/list/List.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
-  import _ from 'lodash';
+  import {PopupNames} from '../../../modules/popup';
+  import {GameOperation} from '../../../models/new-game';
 
   let list: List;
 
-  const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+  const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
       list?.keyDown();
     }
@@ -17,13 +18,17 @@
     }
 
     if (KeyboardKey.ENTER === key) {
-
+      unbindEvents();
+      window.$app.getPopup().close();
+      window.$app.getPopup().open(PopupNames.FILE_MANAGER);
+      return;
     }
 
-    if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
+    if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
+      unbindEvents();
       window.$app.getPopup().close();
     }
-  }, 100);
+  };
 
   export function bindEvents(): void {
     window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
@@ -52,23 +57,23 @@
         bind:this={list}
         items={[
           {
-            value: 1,
+            value: GameOperation.INSTALL_FILE,
             title: 'Install game from file',
           },
           {
-            value: 1,
+            value: GameOperation.INSTALL_IMAGE,
             title: 'Install game from the image',
           },
           {
-            value: 1,
+            value: GameOperation.COPY_GAME,
             title: 'Copy existing game folder',
           },
           {
-            value: 1,
+            value: GameOperation.MOVE_GAME,
             title: 'Move existing game folder',
           },
           {
-            value: 1,
+            value: GameOperation.SYMLINK_GAME,
             title: 'Create a symlink to an existing game folder',
           },
         ]}

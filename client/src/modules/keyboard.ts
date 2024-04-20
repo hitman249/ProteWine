@@ -36,10 +36,10 @@ export default class Keyboard extends EventListener {
   }
 
   private onKeyDown(event: KeyboardEvent): void {
-    this.fireEvent(KeyboardPressEvent.KEY_DOWN, event.code);
+    this.fireEvent(KeyboardPressEvent.KEY_DOWN, event.code, event);
   }
 
   private onKeyUp(event: KeyboardEvent): void {
-    this.fireEvent(KeyboardPressEvent.KEY_UP, KeyboardKey[event.code]);
+    this.fireEvent(KeyboardPressEvent.KEY_UP, event.code, event);
   }
 }

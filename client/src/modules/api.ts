@@ -1,4 +1,4 @@
-import File, {type FileInfo, FileType} from '../models/File';
+import File, {type FileInfo, FileType} from '../models/file';
 import {ApiFileSystem} from '../../../server/routes/rules';
 
 export default class Api {

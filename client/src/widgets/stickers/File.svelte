@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from '../icons/Icon.svelte';
-  import File from '../../models/File';
+  import File from '../../models/file';
 
   export let style: string;
   export let index: number;

@@ -11,6 +11,7 @@ import Update from './modules/update';
 import Kernels from './modules/kernels';
 import Settings from './modules/settings';
 import Mount from './modules/mount';
+import LinkInfo from './modules/link-info';
 
 class App {
   private readonly initOrder: AbstractModule[];
@@ -26,6 +27,7 @@ class App {
   private readonly MONITOR: Monitor;
   private readonly KERNELS: Kernels;
   private readonly SETTINGS: Settings;
+  private readonly LINK_INFO: LinkInfo;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -42,6 +44,7 @@ class App {
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
     this.KERNELS = new Kernels(this.SYSTEM);
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM, this.KERNELS);
+    this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM);
 
     this.initOrder = [
       this.COMMAND,
@@ -55,6 +58,7 @@ class App {
       this.MONITOR,
       this.KERNELS,
       this.SETTINGS,
+      this.LINK_INFO,
     ];
   }
 
@@ -116,6 +120,10 @@ class App {
 
   public getSettings(): Settings {
     return this.SETTINGS;
+  }
+
+  public getLinkInfo(): LinkInfo {
+    return this.LINK_INFO;
   }
 
   public getMountWine(): Mount {

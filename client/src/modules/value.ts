@@ -19,6 +19,7 @@ export enum ValueLabels {
   YESNO = 'yesno',
   GAME = 'game',
   MANAGE = 'manage',
+  FILE_MANAGER = 'fileManager',
 }
 
 export enum ValueTypes {
@@ -114,6 +115,16 @@ export default class Value {
       {
         value: true,
         title: 'Yes',
+      },
+    ],
+    fileManager: [
+      {
+        value: 'select',
+        title: 'Select',
+      },
+      {
+        value: 'execute',
+        title: 'Execute',
       },
     ],
   };

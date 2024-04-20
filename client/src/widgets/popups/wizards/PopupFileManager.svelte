@@ -2,25 +2,65 @@
   import {onDestroy, onMount} from 'svelte';
   import {StickerType} from '../../stickers';
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
-  import _ from 'lodash';
   import Menu from '../../../modules/menu';
   import List from '../../../components/list/List.svelte';
-  import File from '../../../models/File';
+  import File from '../../../models/file';
+  import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
 
   let list: List;
   let data: File[] = undefined;
   let currentPath: string = '';
   let pathIndices: {[path: string]: number} = {};
 
+  const value: Value = new Value({
+    value: 'select',
+    labels: ValueLabels.FILE_MANAGER,
+    type: ValueTypes.SELECT,
+  });
+  let selectList: List;
+  let isSelectList: boolean = false;
+  let selectListItems: ValueType[] = [];
+
   const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key && list) {
+      if (isSelectList) {
+        selectList?.keyDown();
+        return;
+      }
+
       list.keyDown();
       pathIndices[currentPath] = list.getIndex();
     }
 
     if (KeyboardKey.UP === key && list) {
+      if (isSelectList) {
+        selectList?.keyUp();
+        return;
+      }
+
       list.keyUp();
       pathIndices[currentPath] = list.getIndex();
+    }
+
+    if (KeyboardKey.RIGHT === key && list) {
+      if (isSelectList) {
+        return;
+      }
+
+      const item: File = list?.getItem();
+
+      if (!item) {
+        return;
+      }
+
+      selectListItems = value.getList().filter((value: ValueType) => {
+        if ('execute' === value.value) {
+          return item.isExecutable();
+        }
+
+        return true;
+      });
+      isSelectList = true;
     }
 
     if (KeyboardKey.ENTER === key) {
@@ -38,6 +78,11 @@
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
+      if (isSelectList) {
+        isSelectList = false;
+        return;
+      }
+
       const path: string[] = currentPath.split('/').slice(0, -1);
 
       if (path.length === 0) {
@@ -97,6 +142,23 @@
     </div>
   </div>
   <div class="footer"></div>
+
+  {#if selectListItems}
+    <div class="select-list" class:open={isSelectList}>
+      <List
+        bind:this={selectList}
+        items={selectListItems}
+        paddingIndent={-22}
+        headersDummy={9}
+        itemSize={35}
+        itemSpace={15}
+        horizontal={false}
+        itemCenter={true}
+        extendItemClass="vertical-item"
+        type={StickerType.SELECT}
+      />
+    </div>
+  {/if}
 </div>
 
 <style lang="less">
@@ -166,6 +228,39 @@
         bottom: 0;
         left: 0;
         right: 0;
+      }
+    }
+
+    .select-list {
+      display: flex;
+      position: absolute;
+      justify-content: center;
+      vertical-align: center;
+      align-items: center;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      overflow: hidden;
+      opacity: 0;
+      background: rgba(0, 212, 255, 30%);
+      transition: opacity 0.2s ease, right 0.2s ease;
+      z-index: 2;
+
+      &.open {
+        right: 0;
+        opacity: 1;
+      }
+
+      &:before {
+        position: absolute;
+        display: block;
+        content: '';
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: calc(100% + 100px);
+        box-shadow: inset 0 0 50px 0 rgba(255, 255, 255, 30%);
       }
     }
   }
