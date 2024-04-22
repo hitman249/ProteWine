@@ -42,6 +42,20 @@
       pathIndices[currentPath] = list.getIndex();
     }
 
+    if (KeyboardKey.ENTER === key) {
+      const item: File = list?.getItem();
+
+      if (item && item.isDirectory()) {
+        window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
+          currentPath = item.path;
+          list.changeIndex(pathIndices?.[currentPath] || 0);
+          data = files;
+        });
+      } else if (item && !item.isDirectory()) {
+        key = KeyboardKey.RIGHT;
+      }
+    }
+
     if (KeyboardKey.RIGHT === key && list) {
       if (isSelectList) {
         return;
@@ -61,20 +75,6 @@
         return true;
       });
       isSelectList = true;
-    }
-
-    if (KeyboardKey.ENTER === key) {
-      const item: File = list?.getItem();
-
-      if (!item || !item.isDirectory()) {
-        return;
-      }
-
-      window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
-        currentPath = item.path;
-        list.changeIndex(pathIndices?.[currentPath] || 0);
-        data = files;
-      });
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {

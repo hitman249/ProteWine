@@ -5,6 +5,7 @@
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
   import {PopupNames} from '../../../modules/popup';
   import {GameOperation} from '../../../models/new-game';
+  import type Popup from '../../../modules/popup.js';
 
   let list: List;
 
@@ -19,8 +20,11 @@
 
     if (KeyboardKey.ENTER === key) {
       unbindEvents();
+      const popup: Popup = window.$app.getPopup();
+      const data: any = popup.getData();
+
       window.$app.getPopup().close();
-      window.$app.getPopup().open(PopupNames.FILE_MANAGER);
+      window.$app.getPopup().setData(data).open(PopupNames.FILE_MANAGER);
       return;
     }
 
@@ -74,7 +78,11 @@
           },
           {
             value: GameOperation.SYMLINK_GAME,
-            title: 'Create a symlink to an existing game folder',
+            title: 'Symlink to an existing game folder',
+          },
+          {
+            value: GameOperation.IMPORT_LINK,
+            title: 'Import game from *.lnk file',
           },
         ]}
         paddingIndent={0}
@@ -139,7 +147,7 @@
 
       .center {
         width: 400px;
-        height: 400px;
+        height: 450px;
         position: absolute;
         margin: auto;
         top: 0;

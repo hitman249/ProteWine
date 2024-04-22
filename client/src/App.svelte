@@ -42,7 +42,7 @@
 
   {#if showPopup}
     {#if namePopup === PopupNames.RUN_GAME}
-      <PopupGame bind:this={popup.ref} item={popup.getData()}/>
+      <PopupGame bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.GAME_OPERATION}
       <PopupSelectOperation bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.FILE_MANAGER}

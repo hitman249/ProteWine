@@ -6,7 +6,7 @@ import List from '../../components/list/List.svelte';
 import _ from 'lodash';
 import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
 
-export let item: MenuItem;
+let item: MenuItem = window.$app.getPopup().getData();
 
 let list: List;
 
