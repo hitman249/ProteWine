@@ -4,7 +4,7 @@
   import List from '../../../components/list/List.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
   import {PopupNames} from '../../../modules/popup';
-  import {GameOperation} from '../../../models/new-game';
+  import {GameOperation} from '../../../models/form-data';
   import type Popup from '../../../modules/popup.js';
 
   let list: List;
@@ -18,19 +18,17 @@
       list?.keyUp();
     }
 
-    if (KeyboardKey.ENTER === key) {
+    if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key) {
       unbindEvents();
       const popup: Popup = window.$app.getPopup();
-      const data: any = popup.getData();
+      popup.open(PopupNames.FILE_MANAGER, popup.getData());
 
-      window.$app.getPopup().close();
-      window.$app.getPopup().setData(data).open(PopupNames.FILE_MANAGER);
       return;
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
       unbindEvents();
-      window.$app.getPopup().close();
+      window.$app.getPopup().back();
     }
   };
 

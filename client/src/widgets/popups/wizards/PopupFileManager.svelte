@@ -86,7 +86,7 @@
       const path: string[] = currentPath.split('/').slice(0, -1);
 
       if (path.length === 0) {
-        window.$app.getPopup().close();
+        window.$app.getPopup().back();
         return;
       }
 

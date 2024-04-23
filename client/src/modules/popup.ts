@@ -16,32 +16,34 @@ export enum PopupEvents {
   BEFORE_CLOSE = 'before-close',
   CLOSE = 'close',
   AFTER_CLOSE = 'after-close',
-
-  // UPDATE
-  UPDATE_DATA = 'update-data',
 }
+
+type PopupItem = {
+  name: PopupNames,
+  data: any,
+  arguments: any,
+};
 
 export default class Popup extends EventListener {
   private opened: PopupNames;
   private data: any;
+  private arguments: any;
+  private history: PopupItem[] = [];
   public ref: any;
 
   constructor() {
     super();
 
-    this.setData = this.setData.bind(this);
     this.getData = this.getData.bind(this);
-  }
-
-  public setData(data: any): this {
-    this.data = data;
-    this.fireEvent(PopupEvents.UPDATE_DATA, data);
-
-    return this;
+    this.getArguments = this.getArguments.bind(this);
   }
 
   public getData(): any {
     return this.data;
+  }
+
+  public getArguments(): any {
+    return this.arguments;
   }
 
   public getRef(): any {
@@ -56,15 +58,40 @@ export default class Popup extends EventListener {
     return this.opened === name;
   }
 
-  public open(name: PopupNames): void {
+  public open(name: PopupNames, data?: any, args?: any): void {
+    if (name === this.opened) {
+      return;
+    }
+
+    if (undefined !== this.opened) {
+      this.history.push({
+        name: this.opened,
+        data: this.data,
+        arguments: this.arguments,
+      });
+    }
+
     this.opened = name;
+    this.data = data;
+    this.arguments = args;
 
     this.fireEvent(PopupEvents.BEFORE_OPEN, name, this);
     this.fireEvent(PopupEvents.OPEN, name, this);
     this.fireEvent(PopupEvents.AFTER_OPEN, name, this);
   }
 
-  public close(): void {
+  public back(): void {
+    if (this.history.length > 0) {
+      const historyItem: PopupItem = this.history[this.history.length - 1];
+      this.history = this.history.slice(0, -1);
+      this.close();
+      this.open(historyItem.name, historyItem.data, historyItem.arguments);
+    } else {
+      this.close();
+    }
+  }
+
+  private close(): void {
     if (undefined === this.opened) {
       return;
     }

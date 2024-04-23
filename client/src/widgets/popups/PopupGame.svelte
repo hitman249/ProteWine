@@ -58,7 +58,7 @@ const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: Keybo
   }
 
   if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
-    window.$app.getPopup().close();
+    window.$app.getPopup().back();
   }
 }, 100);
 

@@ -143,7 +143,7 @@
       const item: MenuItem = menu.getFocusedItem();
 
       if (item?.popup) {
-        popup.setData(item).open(item?.popup);
+        popup.open(item?.popup, item);
         return;
       } else if (item?.hasItems()) {
         if (timeout) {
@@ -159,7 +159,7 @@
             item.value.setValue(value.value);
 
             if ('run' === value.value) {
-              popup.setData(item).open(PopupNames.RUN_GAME);
+              popup.open(PopupNames.RUN_GAME, item);
             }
 
             return;
@@ -186,7 +186,7 @@
             timeout = undefined;
 
             if (popup.isOpen(PopupNames.RUN_GAME)) {
-              popup.close();
+              popup.back();
             }
           }, 200);
         });
@@ -194,7 +194,7 @@
       }
 
       if (popup.isOpen()) {
-        popup.close();
+        popup.back();
         return;
       }
 
