@@ -10,8 +10,14 @@
   export let dummy: boolean = false;
 </script>
 
-<div aria-hidden="true" class="item-wrap" style:opacity={dummy ? 0 : 1}>
-  <div aria-hidden="true" class="item {itemClass}" class:focused={active} {style}>
+<div aria-hidden="true" class="item-wrap" style:opacity={dummy ? 0 : 1} {style}>
+  <div aria-hidden="true" class="item {itemClass}" style:transform="scale({1 + (0.2 * percent / 100)})">
+    <div
+      class="item-focus"
+      class:focused={active}
+      style:opacity={percent / 100}
+      style:display={0 === percent ? 'none' : 'block'}
+    />
     <p class="title">{item?.title || ''}</p>
   </div>
 </div>
@@ -44,9 +50,8 @@
     -webkit-font-smoothing: antialiased;
     //border: 1px white solid;
 
-    &:after {
-      content: '';
-      display: flex;
+    .item-focus {
+      display: block;
       position: absolute;
       top: 0;
       left: -50px;
@@ -59,7 +64,7 @@
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
   }
 
-  .focused:after {
+  .focused {
     transition: box-shadow 0.2s;
     animation-duration: 1.2s;
     animation-name: item-focused;

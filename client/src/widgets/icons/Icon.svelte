@@ -30,6 +30,7 @@
   import Executable from './Executable.svelte';
   import Video from './Video.svelte';
   import Music from './Music.svelte';
+  import DiskImage from './DiskImage.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -101,4 +102,6 @@
   <Video {status} {style} />
 {:else if 'music' === icon}
   <Music {status} {style} />
+{:else if 'disk-image' === icon}
+  <DiskImage {status} {style} />
 {/if}

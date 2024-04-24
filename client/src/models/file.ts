@@ -17,6 +17,7 @@ export enum FileType {
   ARCHIVE = 'archive',
   EXECUTABLE = 'executable',
   DIRECTORY = 'directory',
+  DISK_IMAGE = 'disk-image',
   HOME = 'home',
   STORAGE = 'storage',
   ROOT = 'root',
@@ -58,6 +59,13 @@ const MUSIC: string[] = [
   'mp3',
   'ogg',
   'wav',
+];
+
+const DISK_IMAGE: string[] = [
+  'iso',
+  'nrg',
+  'mdf',
+  'img',
 ];
 
 const VIDEO: string[] = [
@@ -148,6 +156,8 @@ export default class File {
       this.type = FileType.TEXT;
     } else if (-1 !== EXECUTION.indexOf(this.extension)) {
       this.type = FileType.EXECUTABLE;
+    } else if (-1 !== DISK_IMAGE.indexOf(this.extension)) {
+      this.type = FileType.DISK_IMAGE;
     } else {
       this.type = FileType.FILE;
     }
@@ -163,6 +173,10 @@ export default class File {
 
   public isExecutable(): boolean {
     return FileType.EXECUTABLE === this.type;
+  }
+
+  public isDiskImage(): boolean {
+    return FileType.DISK_IMAGE === this.type;
   }
 
   public getExtension(): string {

@@ -84,10 +84,7 @@ export default class Index {
         const fs: FileSystem = global.$app.getFileSystem();
         const system: System = global.$app.getSystem();
 
-        const storages: string[] = [
-          '/',
-          await system.getHomeDir(),
-        ];
+        const storages: string[] = [];
 
         const media: string[] = [
           `/media/${await system.getUserName()}`,
@@ -100,6 +97,9 @@ export default class Index {
             storages.push(path);
           }
         }
+
+        storages.push(await system.getHomeDir());
+        storages.push('/');
 
         return storages.map((path: string) => ({
           path,

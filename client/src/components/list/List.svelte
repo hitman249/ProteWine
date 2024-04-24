@@ -5,6 +5,7 @@
   import {StickerType} from '../../widgets/stickers';
   import Sticker from '../../widgets/stickers/Sticker.svelte';
 
+  export let style: string = undefined;
   export let items: any[] = [];
   export let itemSize: number = Menu.ROOT_ITEM_WIDTH;
   export let horizontal: boolean = true;
@@ -90,6 +91,7 @@
 
 <NavigateList
   bind:this={list}
+  {style}
   {onScroll}
   {headersDummy}
   {itemCenter}

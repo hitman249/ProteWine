@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 </script>
 <script lang="ts">
-  import _ from 'lodash';
   import {onDestroy, onMount, tick} from 'svelte';
   import Menu, {type MenuItem} from '../modules/menu';
   import {KeyboardKey, KeyboardPressEvent} from '../modules/keyboard';
@@ -11,6 +10,7 @@
   import List from '../components/list/List.svelte';
   import {StickerType} from './stickers';
   import Popup, {PopupNames} from '../modules/popup';
+  import FormData from '../models/form-data';
 
   export let popup: Popup;
   export let style: string = '';
@@ -143,7 +143,9 @@
       const item: MenuItem = menu.getFocusedItem();
 
       if (item?.popup) {
-        popup.open(item?.popup, item);
+        const data: FormData<MenuItem> = new FormData(item);
+        popup.open(item?.popup, data);
+
         return;
       } else if (item?.hasItems()) {
         if (timeout) {

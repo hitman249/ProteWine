@@ -4,10 +4,39 @@
   import List from '../../../components/list/List.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
   import {PopupNames} from '../../../modules/popup';
-  import {GameOperation} from '../../../models/form-data';
-  import type Popup from '../../../modules/popup.js';
+  import FormData, {GameOperation} from '../../../models/form-data';
+  import type {ValueType} from '../../../modules/value';
+  import type {MenuItem} from '../../../modules/menu';
 
   let list: List;
+  const data: FormData<MenuItem> = window.$app.getPopup().getData();
+
+  const items: ValueType[] = [
+    {
+      value: GameOperation.INSTALL_FILE,
+      title: 'Install game from file',
+    },
+    {
+      value: GameOperation.INSTALL_IMAGE,
+      title: 'Install game from the image',
+    },
+    {
+      value: GameOperation.COPY_GAME,
+      title: 'Copy existing game folder',
+    },
+    {
+      value: GameOperation.MOVE_GAME,
+      title: 'Move existing game folder',
+    },
+    {
+      value: GameOperation.SYMLINK_GAME,
+      title: 'Symlink to an existing game folder',
+    },
+    {
+      value: GameOperation.IMPORT_LINK,
+      title: 'Import game link from *.lnk file',
+    },
+  ];
 
   const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
@@ -20,8 +49,8 @@
 
     if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key) {
       unbindEvents();
-      const popup: Popup = window.$app.getPopup();
-      popup.open(PopupNames.FILE_MANAGER, popup.getData());
+      data.setOperation(list?.getItem()?.value);
+      window.$app.getPopup().open(PopupNames.FILE_MANAGER, data);
 
       return;
     }
@@ -42,6 +71,22 @@
 
   onMount(() => {
     bindEvents();
+
+    if (list) {
+      let index: number;
+      const operation: GameOperation = data.getOperation();
+
+      for (let i: number = 0, max: number = items.length; i < max; i++) {
+        if (operation === items[i].value) {
+          index = i;
+          break;
+        }
+      }
+
+      if (undefined !== index) {
+        list.changeIndex(index);
+      }
+    }
   });
 
   onDestroy(() => {
@@ -57,36 +102,11 @@
     <div class="center">
       <List
         bind:this={list}
-        items={[
-          {
-            value: GameOperation.INSTALL_FILE,
-            title: 'Install game from file',
-          },
-          {
-            value: GameOperation.INSTALL_IMAGE,
-            title: 'Install game from the image',
-          },
-          {
-            value: GameOperation.COPY_GAME,
-            title: 'Copy existing game folder',
-          },
-          {
-            value: GameOperation.MOVE_GAME,
-            title: 'Move existing game folder',
-          },
-          {
-            value: GameOperation.SYMLINK_GAME,
-            title: 'Symlink to an existing game folder',
-          },
-          {
-            value: GameOperation.IMPORT_LINK,
-            title: 'Import game from *.lnk file',
-          },
-        ]}
+        {items}
         paddingIndent={0}
         headersDummy={5}
         itemSize={35}
-        itemSpace={25}
+        itemSpace={30}
         horizontal={false}
         itemCenter={true}
         extendItemClass="vertical-item"

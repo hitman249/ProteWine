@@ -14,7 +14,7 @@
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
-  <div class="icon">
+  <div class="icon" style:transform="scale({1 + (0.3 * percent / 100)})">
     {#if item}
       <Icon
         icon={item?.getType()}

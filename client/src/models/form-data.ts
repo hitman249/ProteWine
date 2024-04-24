@@ -19,13 +19,18 @@ export default class FormData<T> {
   public data: T;
   public fileManagerMode: FileManagerMode;
   public fileManagerRootPath: string;
+  public fileManagerExecutable: boolean = false;
 
 
   constructor(data: T) {
     this.data = data;
   }
 
-  public setOperation(operation: GameOperation): void {
+  public getAdditionalData(): T {
+    return this.data;
+  }
+
+  public setOperation(operation: GameOperation): this {
     this.operation = operation;
 
     if (GameOperation.INSTALL_FILE === operation) {
@@ -37,6 +42,8 @@ export default class FormData<T> {
     } else {
       this.fileManagerMode = undefined;
     }
+
+    return this;
   }
 
   public getOperation(): GameOperation {
@@ -54,5 +61,14 @@ export default class FormData<T> {
   public setFileManagerRootPath(path: string): this {
     this.fileManagerRootPath = path;
     return this;
+  }
+
+  public setFileManagerExecutable(value: boolean): this {
+    this.fileManagerExecutable = Boolean(value);
+    return this;
+  }
+
+  public isFileManagerExecutable(): boolean {
+    return this.fileManagerExecutable;
   }
 }

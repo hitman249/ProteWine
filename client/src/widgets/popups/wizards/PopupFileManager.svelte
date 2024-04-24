@@ -2,15 +2,20 @@
   import {onDestroy, onMount} from 'svelte';
   import {StickerType} from '../../stickers';
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
-  import Menu from '../../../modules/menu';
+  import Menu, {type MenuItem} from '../../../modules/menu';
   import List from '../../../components/list/List.svelte';
   import File from '../../../models/file';
   import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
+  import FormData, {FileManagerMode} from '../../../models/form-data';
+  import Loader from '../../Loader.svelte';
 
   let list: List;
   let data: File[] = undefined;
   let currentPath: string = '';
   let pathIndices: {[path: string]: number} = {};
+
+  const popupData: FormData<MenuItem> = window.$app.getPopup().getData();
+  const mode: FileManagerMode = popupData.getFileManagerMode();
 
   const value: Value = new Value({
     value: 'select',
@@ -49,7 +54,15 @@
         window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
           currentPath = item.path;
           list.changeIndex(pathIndices?.[currentPath] || 0);
-          data = files;
+          data = files.filter((file: File) => {
+            if (FileManagerMode.EXECUTABLE === mode) {
+              return file.isDirectory() || file.isExecutable();
+            } else if (FileManagerMode.DIRECTORY === mode) {
+              return file.isDirectory();
+            } else if (FileManagerMode.IMAGE === mode) {
+              return file.isDirectory() || file.isDiskImage();
+            }
+          });
         });
       } else if (item && !item.isDirectory()) {
         key = KeyboardKey.RIGHT;
@@ -95,7 +108,15 @@
       (currentPath ? window.$app.getApi().getFileSystemLs(currentPath) : window.$app.getApi().getFileSystemStorages())
         .then((files: File[]) => {
           list.changeIndex(pathIndices?.[currentPath] || 0);
-          data = files;
+          data = files.filter((file: File) => {
+            if (FileManagerMode.EXECUTABLE === mode) {
+              return file.isDirectory() || file.isExecutable();
+            } else if (FileManagerMode.DIRECTORY === mode) {
+              return file.isDirectory();
+            } else if (FileManagerMode.IMAGE === mode) {
+              return file.isDirectory() || file.isDiskImage();
+            }
+          });
         });
     }
   };
@@ -121,7 +142,17 @@
 <div class="popup">
   <div class="header">
     <div class="left">{currentPath}</div>
-    <div class="right">File Manager</div>
+    <div class="right">
+      {#if FileManagerMode.EXECUTABLE === mode}
+        Select installation file
+      {:else if FileManagerMode.DIRECTORY === mode}
+        Select the game folder
+      {:else if FileManagerMode.IMAGE === mode}
+        Select disk image
+      {:else}
+        File Manager
+      {/if}
+    </div>
   </div>
   <div class="content">
     <div class="center">
@@ -130,18 +161,25 @@
           bind:this={list}
           items={data}
           headersDummy={2}
-          paddingIndent={-50}
-          itemSize={Menu.ITEM_HEIGHT}
+          paddingIndent={-30}
+          itemSize={Menu.ITEM_HEIGHT - 20}
           itemSpace={40}
           itemCenter={true}
           horizontal={false}
           extendItemClass="vertical-item"
           type={StickerType.FILE}
+          style="opacity: {data.length > 0 ? 1 : 0};"
         />
+
+        <div class="empty-folder" style:opacity={data.length > 0 ? 0 : 1}>
+          This folder is empty
+        </div>
       {/if}
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer">
+    <Loader/>
+  </div>
 
   {#if selectListItems}
     <div class="select-list" class:open={isSelectList}>
@@ -210,6 +248,8 @@
       right: 0;
       margin: 0 auto;
       border-top: rgb(255 255 255 / 80%) solid 1px;
+      justify-content: end;
+      padding-top: 10px;
     }
 
     .content {
@@ -228,6 +268,19 @@
         bottom: 0;
         left: 0;
         right: 0;
+
+        .empty-folder {
+          display: flex;
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          font-size: 20px;
+          filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+        }
       }
     }
 

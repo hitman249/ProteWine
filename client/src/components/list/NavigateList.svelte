@@ -7,6 +7,7 @@
   import fastdom, {type Fastdom} from "../../modules/fastdom";
   import {StickerType} from '../../widgets/stickers';
 
+  export let style: string = undefined;
   export let items: any = [];
   export let type: StickerType;
   export let itemSpace: number = 0;
@@ -169,7 +170,7 @@
   });
 </script>
 
-<div class="list" bind:this={container}>
+<div class="list" bind:this={container} style={style || ''}>
   {#if (horizontal ? containerWidth : containerHeight) > 0}
     <VirtualList
       bind:this={list}
