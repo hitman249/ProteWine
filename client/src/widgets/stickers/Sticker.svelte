@@ -72,6 +72,14 @@
 
     return StickerType.FILE === type;
   }
+
+  function isOperation(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.OPERATION === type;
+  }
 </script>
 <script lang="ts">
   import type {MenuItem} from '../../modules/menu';
@@ -81,13 +89,14 @@
   import SelectCenter from './SelectCenter.svelte';
   import Item from './Item.svelte';
   import File from './File.svelte';
+  import Operation from './Operation.svelte';
 
   export let active: boolean;
   export let index: number;
   export let dummy: boolean;
   export let percent: number;
   export let type: StickerType;
-  export let item: MenuItem;
+  export let item: MenuItem | any;
   export let itemClass: string = '';
   export let itemStyle: {};
 
@@ -152,6 +161,16 @@
   />
 {:else if isFile(type)}
   <File
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+    {index}
+  />
+{:else if isOperation(type)}
+  <Operation
     {active}
     {dummy}
     {itemClass}

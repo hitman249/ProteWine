@@ -6,7 +6,7 @@
   import List from '../../../components/list/List.svelte';
   import File from '../../../models/file';
   import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
-  import FormData, {FileManagerMode} from '../../../models/form-data';
+  import FormData, {FileManagerMode, GameOperation} from '../../../models/form-data';
   import Loader from '../../Loader.svelte';
 
   let list: List;
@@ -25,6 +25,7 @@
   let selectList: List;
   let isSelectList: boolean = false;
   let selectListItems: ValueType[] = [];
+  let loading: boolean = true;
 
   const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key && list) {
@@ -51,9 +52,10 @@
       const item: File = list?.getItem();
 
       if (item && item.isDirectory()) {
+        loading = true;
+
         window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
           currentPath = item.path;
-          list.changeIndex(pathIndices?.[currentPath] || 0);
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {
               return file.isDirectory() || file.isExecutable();
@@ -63,6 +65,8 @@
               return file.isDirectory() || file.isDiskImage();
             }
           });
+          list.changeIndex(pathIndices?.[currentPath] || 0);
+          loading = false;
         });
       } else if (item && !item.isDirectory()) {
         key = KeyboardKey.RIGHT;
@@ -80,14 +84,20 @@
         return;
       }
 
-      selectListItems = value.getList().filter((value: ValueType) => {
-        if ('execute' === value.value) {
-          return item.isExecutable();
-        }
+      const operation: GameOperation = popupData.getOperation();
 
-        return true;
-      });
-      isSelectList = true;
+      if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_IMAGE === operation)) {
+        return keyboardWatch(event, KeyboardKey.ENTER);
+      } else {
+        selectListItems = value.getList().filter((value: ValueType) => {
+          if ('execute' === value.value) {
+            return item.isExecutable() && popupData.isFileManagerExecutable();
+          }
+
+          return true;
+        });
+        isSelectList = true;
+      }
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
@@ -104,10 +114,10 @@
       }
 
       currentPath = path.join('/');
+      loading = true;
 
       (currentPath ? window.$app.getApi().getFileSystemLs(currentPath) : window.$app.getApi().getFileSystemStorages())
         .then((files: File[]) => {
-          list.changeIndex(pathIndices?.[currentPath] || 0);
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {
               return file.isDirectory() || file.isExecutable();
@@ -117,6 +127,8 @@
               return file.isDirectory() || file.isDiskImage();
             }
           });
+          list.changeIndex(pathIndices?.[currentPath] || 0);
+          loading = false;
         });
     }
   };
@@ -131,7 +143,10 @@
 
   onMount(() => {
     bindEvents();
-    window.$app.getApi().getFileSystemStorages().then((files: File[]) => data = files);
+    window.$app.getApi().getFileSystemStorages().then((files: File[]) => {
+      data = files;
+      loading = false;
+    });
   });
 
   onDestroy(() => {
@@ -178,7 +193,9 @@
     </div>
   </div>
   <div class="footer">
-    <Loader/>
+    {#if loading}
+      <Loader style="margin-top: 10px;"/>
+    {/if}
   </div>
 
   {#if selectListItems}
@@ -186,10 +203,10 @@
       <List
         bind:this={selectList}
         items={selectListItems}
-        paddingIndent={-22}
+        paddingIndent={-30}
         headersDummy={9}
         itemSize={35}
-        itemSpace={15}
+        itemSpace={30}
         horizontal={false}
         itemCenter={true}
         extendItemClass="vertical-item"
@@ -249,7 +266,6 @@
       margin: 0 auto;
       border-top: rgb(255 255 255 / 80%) solid 1px;
       justify-content: end;
-      padding-top: 10px;
     }
 
     .content {
@@ -260,7 +276,7 @@
       justify-content: center;
 
       .center {
-        width: calc(100% - 300px);
+        width: 600px;
         height: 100%;
         position: absolute;
         margin: auto;
@@ -309,11 +325,23 @@
         position: absolute;
         display: block;
         content: '';
-        top: -50px;
+        top: 0;
         left: 0;
-        width: 100%;
-        height: calc(100% + 100px);
-        box-shadow: inset 0 0 50px 0 rgba(255, 255, 255, 30%);
+        width: 30px;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 0, 0) 100%);
+      }
+      &:after {
+        position: absolute;
+        display: block;
+        content: '';
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 100%;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-right: transparent;
       }
     }
   }

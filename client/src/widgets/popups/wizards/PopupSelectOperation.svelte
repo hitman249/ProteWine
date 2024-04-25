@@ -6,7 +6,7 @@
   import {PopupNames} from '../../../modules/popup';
   import FormData, {GameOperation} from '../../../models/form-data';
   import type {ValueType} from '../../../modules/value';
-  import type {MenuItem} from '../../../modules/menu';
+  import Menu, {type MenuItem} from '../../../modules/menu';
 
   let list: List;
   const data: FormData<MenuItem> = window.$app.getPopup().getData();
@@ -14,11 +14,11 @@
   const items: ValueType[] = [
     {
       value: GameOperation.INSTALL_FILE,
-      title: 'Install game from file',
+      title: 'Install file',
     },
     {
       value: GameOperation.INSTALL_IMAGE,
-      title: 'Install game from the image',
+      title: 'Install file from disk image',
     },
     {
       value: GameOperation.COPY_GAME,
@@ -36,6 +36,10 @@
       value: GameOperation.IMPORT_LINK,
       title: 'Import game link from *.lnk file',
     },
+    {
+      value: GameOperation.WINETRICKS,
+      title: 'Winetricks',
+    },
   ];
 
   const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
@@ -50,6 +54,7 @@
     if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key) {
       unbindEvents();
       data.setOperation(list?.getItem()?.value);
+      data.setFileManagerExecutable(false);
       window.$app.getPopup().open(PopupNames.FILE_MANAGER, data);
 
       return;
@@ -96,21 +101,21 @@
 
 <div class="popup">
   <div class="header">
-    Add game wizard
+    Install wizard
   </div>
   <div class="content">
     <div class="center">
       <List
         bind:this={list}
         {items}
-        paddingIndent={0}
-        headersDummy={5}
-        itemSize={35}
-        itemSpace={30}
-        horizontal={false}
+        headersDummy={2}
+        paddingIndent={-30}
+        itemSize={Menu.ITEM_HEIGHT - 20}
+        itemSpace={40}
         itemCenter={true}
+        horizontal={false}
         extendItemClass="vertical-item"
-        type={StickerType.SELECT_CENTER}
+        type={StickerType.OPERATION}
       />
     </div>
   </div>
@@ -164,8 +169,8 @@
       justify-content: center;
 
       .center {
-        width: 400px;
-        height: 450px;
+        width: 600px;
+        height: 100%;
         position: absolute;
         margin: auto;
         top: 0;

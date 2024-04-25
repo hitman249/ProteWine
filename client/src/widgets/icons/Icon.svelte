@@ -31,6 +31,10 @@
   import Video from './Video.svelte';
   import Music from './Music.svelte';
   import DiskImage from './DiskImage.svelte';
+  import Symlink from './Symlink.svelte';
+  import Copy from './Copy.svelte';
+  import Move from './Move.svelte';
+  import Link from './Link.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -104,4 +108,12 @@
   <Music {status} {style} />
 {:else if 'disk-image' === icon}
   <DiskImage {status} {style} />
+{:else if 'symlink' === icon}
+  <Symlink {status} {style} />
+{:else if 'copy' === icon}
+  <Copy {status} {style} />
+{:else if 'move' === icon}
+  <Move {status} {style} />
+{:else if 'link' === icon}
+  <Link {status} {style} />
 {/if}

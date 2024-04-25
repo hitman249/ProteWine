@@ -133,6 +133,22 @@
 
     if (KeyboardKey.RIGHT === key) {
       if (isInnerList || isSelectList) {
+        if (isInnerList && !isSelectList) {
+          const item: MenuItem = menu.getFocusedItem();
+
+          if (!item?.value) {
+            return;
+          }
+
+          selectListItems = item.value.getList();
+
+          tick().then(() => {
+            const index: number = item.value.getIndexValue();
+            selectList.changeIndex(index);
+            isSelectList = true;
+          });
+        }
+
         return;
       } else {
         keyRight();
@@ -296,10 +312,10 @@
       <List
         bind:this={selectList}
         items={selectListItems}
-        paddingIndent={-22}
+        paddingIndent={-40}
         headersDummy={9}
         itemSize={35}
-        itemSpace={15}
+        itemSpace={30}
         horizontal={false}
         itemCenter={true}
         extendItemClass="vertical-item"
@@ -369,11 +385,23 @@
       position: absolute;
       display: block;
       content: '';
-      top: -50px;
+      top: 0;
       left: 0;
-      width: 100%;
-      height: calc(100% + 100px);
-      box-shadow: inset 0 0 50px 0 rgba(255, 255, 255, 30%);
+      width: 30px;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 0, 0) 100%);
+    }
+    &:after {
+      position: absolute;
+      display: block;
+      content: '';
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-right: transparent;
     }
   }
 </style>

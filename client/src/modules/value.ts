@@ -119,8 +119,8 @@ export default class Value {
     ],
     fileManager: [
       {
-        value: 'select',
-        title: 'Select',
+        value: 'next',
+        title: 'Next',
       },
       {
         value: 'execute',

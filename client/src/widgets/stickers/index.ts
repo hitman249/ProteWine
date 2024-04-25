@@ -5,4 +5,5 @@ export enum StickerType {
   MENU = 'menu',
   ITEM = 'item',
   FILE = 'file',
+  OPERATION = 'operation',
 }

@@ -5,6 +5,7 @@ export enum GameOperation {
   MOVE_GAME = 'move-game',
   SYMLINK_GAME = 'symlink-game',
   IMPORT_LINK = 'import-link',
+  WINETRICKS = 'winetricks',
 }
 
 export enum FileManagerMode {
