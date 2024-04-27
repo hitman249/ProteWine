@@ -21,7 +21,7 @@ export default class Utils {
   public static jsonEncode(object: Object): string {
     return JSON.stringify(object, null, 4);
   }
-  public static jsonDecode(text: string): Object {
+  public static jsonDecode(text: string): any {
     if (!text || 'string' !== typeof text || '' === text.trim()) {
       return undefined;
     }

@@ -51,6 +51,15 @@ export default class FormData<T> {
     return this.operation;
   }
 
+  public setPath(path: string): this {
+    this.path = path;
+    return this;
+  }
+
+  public getPath(): string {
+    return this.path;
+  }
+
   public getFileManagerMode(): FileManagerMode {
     return this.fileManagerMode;
   }

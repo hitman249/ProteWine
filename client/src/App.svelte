@@ -6,6 +6,7 @@
   import {PopupEvents, PopupNames} from './modules/popup';
   import PopupSelectOperation from './widgets/popups/wizards/PopupSelectOperation.svelte';
   import PopupFileManager from './widgets/popups/wizards/PopupFileManager.svelte';
+  import PopupExecuting from './widgets/popups/PopupExecuting.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -47,6 +48,8 @@
       <PopupSelectOperation bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.FILE_MANAGER}
       <PopupFileManager bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.EXECUTING}
+      <PopupExecuting bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

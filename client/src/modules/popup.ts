@@ -1,9 +1,10 @@
-import EventListener from '../../../server/helpers/event-listener';
+import {AbstractModule} from '../../../server/modules/abstract-module';
 
 export enum PopupNames {
   RUN_GAME = 'run-game',
   GAME_OPERATION = 'game-operation',
   FILE_MANAGER = 'file-manager',
+  EXECUTING = 'executing',
 }
 
 export enum PopupEvents {
@@ -24,7 +25,7 @@ type PopupItem = {
   arguments: any,
 };
 
-export default class Popup extends EventListener {
+export default class Popup extends AbstractModule {
   private opened: PopupNames;
   private data: any;
   private arguments: any;
@@ -36,6 +37,9 @@ export default class Popup extends EventListener {
 
     this.getData = this.getData.bind(this);
     this.getArguments = this.getArguments.bind(this);
+  }
+
+  public async init(): Promise<any> {
   }
 
   public getData(): any {

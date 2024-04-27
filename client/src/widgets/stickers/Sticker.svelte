@@ -80,6 +80,14 @@
 
     return StickerType.OPERATION === type;
   }
+
+  function isLog(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.LOG === type;
+  }
 </script>
 <script lang="ts">
   import type {MenuItem} from '../../modules/menu';
@@ -90,9 +98,9 @@
   import Item from './Item.svelte';
   import File from './File.svelte';
   import Operation from './Operation.svelte';
+  import Log from './Log.svelte';
 
   export let active: boolean;
-  export let index: number;
   export let dummy: boolean;
   export let percent: number;
   export let type: StickerType;
@@ -137,7 +145,6 @@
     {item}
     {percent}
     {style}
-    {index}
   />
 {:else if isSelectCenter(type)}
   <SelectCenter
@@ -147,7 +154,6 @@
     {item}
     {percent}
     {style}
-    {index}
   />
 {:else if isItem(type)}
   <Item
@@ -157,7 +163,6 @@
     {item}
     {percent}
     {style}
-    {index}
   />
 {:else if isFile(type)}
   <File
@@ -167,7 +172,6 @@
     {item}
     {percent}
     {style}
-    {index}
   />
 {:else if isOperation(type)}
   <Operation
@@ -177,6 +181,13 @@
     {item}
     {percent}
     {style}
-    {index}
+  />
+{:else if isLog(type)}
+  <Log
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
   />
 {/if}

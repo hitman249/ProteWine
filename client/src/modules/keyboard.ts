@@ -1,4 +1,4 @@
-import EventListener from '../../../server/helpers/event-listener';
+import {AbstractModule} from '../../../server/modules/abstract-module';
 
 export enum KeyboardKey {
   UP = 'ArrowUp',
@@ -15,13 +15,15 @@ export enum KeyboardPressEvent {
   KEY_DOWN = 'down',
 }
 
-export default class Keyboard extends EventListener {
+export default class Keyboard extends AbstractModule {
   constructor() {
     super();
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+  }
 
+  public async init(): Promise<any> {
     this.bind();
   }
 

@@ -1,3 +1,4 @@
+import {screen} from 'electron';
 import _, {type Dictionary} from 'lodash';
 import Utils from '../helpers/utils';
 import AppFolders from './app-folders';
@@ -96,6 +97,20 @@ export default class Monitor extends AbstractModule {
       monitor = _.head(monitors);
     }
 
+    if (!monitor) {
+      const display: Electron.Display = screen.getPrimaryDisplay();
+
+      if (display) {
+        return {
+          gamma: undefined,
+          brightness: undefined,
+          name: undefined,
+          status: undefined,
+          resolution: `${display.size.width}x${display.size.height}`,
+        };
+      }
+    }
+
     return monitor;
   }
 
@@ -135,19 +150,17 @@ export default class Monitor extends AbstractModule {
         continue;
       }
 
-      // const wine = window.app.getKernel();
-      //
-      // if (current.gamma !== monitor.gamma) {
-      //   await wine.boot(`xrandr --output ${monitor.name} --gamma ${monitor.gamma}`);
-      // }
-      //
-      // if (current.brightness !== monitor.brightness) {
-      //   await wine.boot(`xrandr --output ${monitor.name} --brightness ${monitor.brightness}`);
-      // }
-      //
-      // if (current.resolution !== monitor.resolution) {
-      //   await wine.boot(`xrandr --output ${monitor.name} --mode ${monitor.resolution}`);
-      // }
+      if (current.gamma !== monitor.gamma && undefined !== monitor.gamma) {
+        await this.command.exec(`xrandr --output ${monitor.name} --gamma ${monitor.gamma}`);
+      }
+
+      if (current.brightness !== monitor.brightness && undefined !== monitor.brightness) {
+        await this.command.exec(`xrandr --output ${monitor.name} --brightness ${monitor.brightness}`);
+      }
+
+      if (current.resolution !== monitor.resolution && undefined !== monitor.resolution) {
+        await this.command.exec(`xrandr --output ${monitor.name} --mode ${monitor.resolution}`);
+      }
     }
 
     const path: string = await this.appFolders.getResolutionsFile();

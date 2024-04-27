@@ -1,12 +1,16 @@
-import File, {type FileInfo, FileType} from '../models/file';
-import {ApiFileSystem} from '../../../server/routes/rules';
+import {AbstractModule} from '../../../../server/modules/abstract-module';
+import File, {type FileInfo, FileType} from '../../models/file';
+import {ApiFileSystem} from '../../../../server/routes/modules/file-system';
 
-export default class Api {
-  public async getFileSystemLs(path: string): Promise<File[]> {
+export default class FileSystem extends AbstractModule {
+  public async init(): Promise<void> {
+  }
+
+  public async ls(path: string): Promise<File[]> {
     return (await window.electronAPI.invoke(ApiFileSystem.LS, path)).map((file: FileInfo) => new File(file));
   }
 
-  public async getFileSystemStorages(): Promise<File[]> {
+  public async getStorages(): Promise<File[]> {
     return (await window.electronAPI.invoke(ApiFileSystem.STORAGES)).map((file: FileInfo) => {
       const storage: File = new File(file);
       storage.setStorage(true);
@@ -21,15 +25,5 @@ export default class Api {
 
       return storage;
     });
-  }
-}
-
-declare global {
-  interface Window {
-    electronAPI: {
-      invoke: (channel: string, ...args: any[]) => Promise<any>,
-      receive: (channel: string, listener: (...args: any[]) => void) => void,
-      send: (channel: string, ...args: any[]) => void,
-    };
   }
 }

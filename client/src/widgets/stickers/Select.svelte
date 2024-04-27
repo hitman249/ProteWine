@@ -6,7 +6,6 @@
   export let active: boolean = false;
   export let item: any | ValueType = undefined;
   export let percent: number;
-  export let index: number;
   export let dummy: boolean = false;
 </script>
 

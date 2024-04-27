@@ -3,7 +3,6 @@
   import Icon from '../icons/Icon.svelte';
 
   export let style: string;
-  export let index: number;
   export let itemClass: string;
   export let active: boolean = false;
   export let dummy: boolean = false;

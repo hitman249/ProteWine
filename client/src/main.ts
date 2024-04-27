@@ -3,11 +3,26 @@ import App from './App.svelte';
 import Keyboard from './modules/keyboard';
 import Popup from './modules/popup';
 import Api from './modules/api';
+import {AbstractModule} from '../../server/modules/abstract-module';
 
-export class Application {
+export class Application extends AbstractModule {
+  public instance: App;
+
   private readonly KEYBOARD: Keyboard = new Keyboard();
   private readonly POPUP: Popup = new Popup();
   private readonly API: Api = new Api();
+
+  private readonly modules: AbstractModule[] = [
+    this.KEYBOARD,
+    this.POPUP,
+    this.API,
+  ];
+
+  public async init(): Promise<any> {
+    for await (const module of this.modules) {
+      await module.init();
+    }
+  }
 
   public getKeyboard(): Keyboard {
     return this.KEYBOARD;
@@ -33,8 +48,8 @@ window.$app = $app;
 
 export {$app};
 
-const app: App = new App({
-  target: document.getElementById('app') as HTMLElement,
+$app.init().then(() => {
+  $app.instance = new App({
+    target: document.getElementById('app') as HTMLElement,
+  });
 });
-
-export default app;

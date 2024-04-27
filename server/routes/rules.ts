@@ -1,11 +1,5 @@
-export enum ApiKernel {
-  VERSION = 'kernel:version',
-}
-
-export enum ApiFileSystem {
-  LS = 'fs:ls',
-  STORAGES = 'fs:storages',
-}
+import {ApiKernel, ApiKernelEvent} from './modules/kernel';
+import {ApiFileSystem} from './modules/file-system';
 
 export default {
   invoke: [
@@ -14,9 +8,9 @@ export default {
     ApiFileSystem.STORAGES,
   ] as string[],
   send: [
-
+    ApiKernelEvent.LOG,
   ] as string[],
   receive: [
-
+    ApiKernelEvent.LOG,
   ] as string[],
 };

@@ -34,7 +34,7 @@
     },
     {
       value: GameOperation.IMPORT_LINK,
-      title: 'Import game link from *.lnk file',
+      title: 'Import game link from *.lnk files',
     },
     {
       value: GameOperation.WINETRICKS,
@@ -169,7 +169,7 @@
       justify-content: center;
 
       .center {
-        width: 600px;
+        width: 800px;
         height: 100%;
         position: absolute;
         margin: auto;

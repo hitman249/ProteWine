@@ -8,6 +8,7 @@
   import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
   import FormData, {FileManagerMode, GameOperation} from '../../../models/form-data';
   import Loader from '../../Loader.svelte';
+  import {PopupNames} from '../../../modules/popup';
 
   let list: List;
   let data: File[] = undefined;
@@ -51,10 +52,22 @@
     if (KeyboardKey.ENTER === key) {
       const item: File = list?.getItem();
 
+      if (isSelectList) {
+        if (item && !item.isDirectory()) {
+          const select: ValueType = selectList.getItem();
+
+          if ('next' === select.value) {
+            window.$app.getPopup().open(PopupNames.EXECUTING, popupData);
+          }
+        }
+
+        return;
+      }
+
       if (item && item.isDirectory()) {
         loading = true;
 
-        window.$app.getApi().getFileSystemLs(item.path).then((files: File[]) => {
+        window.$app.getApi().getFileSystem().ls(item.path).then((files: File[]) => {
           currentPath = item.path;
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {
@@ -116,7 +129,7 @@
       currentPath = path.join('/');
       loading = true;
 
-      (currentPath ? window.$app.getApi().getFileSystemLs(currentPath) : window.$app.getApi().getFileSystemStorages())
+      (currentPath ? window.$app.getApi().getFileSystem().ls(currentPath) : window.$app.getApi().getFileSystemStorages())
         .then((files: File[]) => {
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {
@@ -143,7 +156,7 @@
 
   onMount(() => {
     bindEvents();
-    window.$app.getApi().getFileSystemStorages().then((files: File[]) => {
+    window.$app.getApi().getFileSystem().getStorages().then((files: File[]) => {
       data = files;
       loading = false;
     });
@@ -276,7 +289,7 @@
       justify-content: center;
 
       .center {
-        width: 600px;
+        width: 800px;
         height: 100%;
         position: absolute;
         margin: auto;

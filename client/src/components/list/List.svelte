@@ -48,8 +48,8 @@
     list?.setIndex(index);
   }
 
-  export function changeIndex(index: number): void {
-    list?.changeIndex(index);
+  export function changeIndex(index: number, animated: boolean = false): void {
+    list?.changeIndex(index, animated);
   }
 
   export function getItem(): any {
@@ -116,7 +116,6 @@
     let:percent
     let:type
 
-    {index}
     {active}
     {dummy}
     {itemStyle}
