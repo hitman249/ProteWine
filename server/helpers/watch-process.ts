@@ -8,9 +8,11 @@ type RejectType = (err: Error) => void;
 export enum WatchProcessEvent {
   STDOUT = 'stdout',
   STDERR = 'stderr',
+  LOG = 'log',
 }
 
 export default class WatchProcess extends EventListener {
+  private finish: boolean = false;
   private readonly promise: Promise<string>;
   private resolve: ResolveType;
   private reject: RejectType;
@@ -33,8 +35,15 @@ export default class WatchProcess extends EventListener {
     this.gid = -watch.pid;
 
     this.promise = new Promise((resolve: ResolveType, reject: RejectType): void => {
-      this.resolve = resolve;
-      this.reject = reject;
+      this.resolve = (text: string): void => {
+        this.finish = true;
+        resolve(text);
+      };
+
+      this.reject = (err: Error): void => {
+        this.finish = true;
+        reject(err);
+      };
     });
 
     this.watch = watch;
@@ -59,20 +68,23 @@ export default class WatchProcess extends EventListener {
     const line: string =  Utils.normalize(data);
     this.outChunks.push(line);
     this.fireEvent(WatchProcessEvent.STDOUT, line);
+    this.fireEvent(WatchProcessEvent.LOG, line);
   }
 
   private onStderr(data: Buffer): void {
     const line: string =  Utils.normalize(data);
     this.errorChunks.push(line);
     this.fireEvent(WatchProcessEvent.STDERR, line);
+    this.fireEvent(WatchProcessEvent.LOG, line);
   }
 
   public kill(): void {
+    this.finish = true;
     this.watch.kill('SIGKILL');
   }
 
   public async wait(): Promise<void> {
-    return this.promise.then(() => undefined);
+    return this.promise.then(() => undefined, () => undefined);
   }
 
   public async text(): Promise<string> {
@@ -81,5 +93,9 @@ export default class WatchProcess extends EventListener {
 
   public async error(): Promise<string> {
     return this.promise.then(() => this.errorChunks.join('\n'));
+  }
+
+  public isFinish(): boolean {
+    return this.finish;
   }
 }

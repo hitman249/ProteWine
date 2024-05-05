@@ -21,6 +21,27 @@ export type Progress = {
   event?: 'copy' | 'extract' | 'packing' | 'download',
 };
 
+const ARCHIVES: string[] = [
+  '.7z',
+  '.bz',
+  '.bz2',
+  '.exe',
+  '.gz',
+  '.jar',
+  '.pol',
+  '.rar',
+  '.tar',
+  '.tar.bz2',
+  '.tar.gz',
+  '.tar.xz',
+  '.tar.zst',
+  '.tbz2',
+  '.tgz',
+  '.xz',
+  '.zip',
+  '.zst',
+];
+
 export default class Archiver extends EventListener {
   private readonly fs: FileSystem;
   private readonly appFolders: AppFolders;
@@ -28,6 +49,7 @@ export default class Archiver extends EventListener {
   private readonly src: string;
   private readonly dest: string;
   private tempDir: string;
+  private process: WatchProcess;
 
   private static readonly SKIP_PROGRESS: string[] = [
     'unrar',
@@ -45,22 +67,25 @@ export default class Archiver extends EventListener {
   }
 
   public async unpack(): Promise<this> {
-    if (_.endsWith(this.src, '.tar.gz') || _.endsWith(this.src, '.tgz')) {
+    if (Utils.endsWith(this.src, ['.tar.gz', '.tgz'])) {
       return await this.extract('tar', 'xzpf -');
     }
-    if (_.endsWith(this.src, '.tar.xz')) {
+    if (Utils.endsWith(this.src, ['.tar.bz2', '.tbz2', '.tar.bz', '.tbz'])) {
+      return await this.extract('tar', '-xvjf');
+    }
+    if (Utils.endsWith(this.src, ['.tar.xz', '.xz'])) {
       return await this.extract('tar', 'xJf -');
     }
-    if (_.endsWith(this.src, '.tar.zst')) {
+    if (Utils.endsWith(this.src, ['.tar.zst', '.zst'])) {
       return await this.extract('tar', '-I zstd -xf -');
     }
     if (_.endsWith(this.src, '.pol')) {
       return await this.extract('tar', 'xjf -');
     }
-    if (_.endsWith(this.src, '.exe') || _.endsWith(this.src, '.rar')) {
+    if (Utils.endsWith(this.src, ['.exe', '.rar'])) {
       return await this.extract('unrar', 'x');
     }
-    if (_.endsWith(this.src, '.zip')) {
+    if (Utils.endsWith(this.src, ['.zip', '.jar'])) {
       return await this.extract('unzip', '');
     }
     if (_.endsWith(this.src, '.7z')) {
@@ -110,12 +135,12 @@ export default class Archiver extends EventListener {
     const skipProgress: boolean = Archiver.SKIP_PROGRESS.includes(archiver);
 
     const bar: string = skipProgress ? '' : `"${await this.appFolders.getBarFile()}" -w 100 -n "${fileName}" |`;
-    const process: WatchProcess = await this.watch(`cd "${this.tempDir}" && ${bar} ${archiver} ${args}`);
+    this.process = await this.watch(`cd "${this.tempDir}" && ${bar} ${archiver} ${args}`);
 
     if (!skipProgress) {
       let prevPercent: string = undefined;
 
-      process.on(WatchProcessEvent.STDERR, (event: WatchProcessEvent.STDERR, line: string) => {
+      this.process.on(WatchProcessEvent.STDERR, (event: WatchProcessEvent.STDERR, line: string) => {
         const percent: string = Array.from(line.matchAll(/ ([0-9]{1,2})% \[/gm))[0]?.[1];
 
         if (undefined === percent || prevPercent === percent) {
@@ -137,8 +162,7 @@ export default class Archiver extends EventListener {
       });
     }
 
-    await process.wait();
-    await this.fs.rm(mvFile);
+    this.process.wait().then(() => this.fs.rm(mvFile));
 
     return this;
   }
@@ -156,17 +180,7 @@ export default class Archiver extends EventListener {
   }
 
   public static isArchive(path: string): boolean {
-    return Utils.endsWith(path, [
-      '.tar.xz',
-      '.tar.gz',
-      '.tar.zst',
-      '.tgz',
-      '.exe',
-      '.rar',
-      '.zip',
-      '.7z',
-      '.pol',
-    ]);
+    return Utils.endsWith(path, ARCHIVES);
   }
 
   public async pack(): Promise<this> {
@@ -194,11 +208,11 @@ export default class Archiver extends EventListener {
       ? `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp lz4 -Xhc -percentage`
       : `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp xz -Xdict-size 100% -percentage`;
 
-    const process: WatchProcess = await this.watch(`cd "${this.src}" && ${cmd}`);
+    this.process = await this.watch(`cd "${this.src}" && ${cmd}`);
 
     let prevPercent: string = undefined;
 
-    process.on(WatchProcessEvent.STDOUT, (event: WatchProcessEvent.STDOUT, line: string) => {
+    this.process.on(WatchProcessEvent.STDOUT, (event: WatchProcessEvent.STDOUT, line: string) => {
       const percent: string = Array.from(line.matchAll(/^([0-9]{1,2})$/gm))[0]?.[1];
 
       if (undefined === percent || prevPercent === percent) {
@@ -219,8 +233,10 @@ export default class Archiver extends EventListener {
       } as Progress);
     });
 
-    await process.wait();
-
     return this;
+  }
+
+  public getProcess(): WatchProcess {
+    return this.process;
   }
 }

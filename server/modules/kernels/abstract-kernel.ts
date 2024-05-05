@@ -14,6 +14,12 @@ export enum KernelEvent {
   EXIT = 'exit',
 }
 
+export enum KernelOperation {
+  RUN = 'run',
+  REGISTER = 'regedit',
+  LIBRARY = 'regsvr32',
+}
+
 export default abstract class AbstractKernel extends EventListener {
   private readonly memory: Memory = new Memory();
   protected declare kernelVersion: string;
