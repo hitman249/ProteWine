@@ -1,11 +1,13 @@
-import AbstractTask, {TaskEvent} from './abstract-task';
+import AbstractTask, {TaskEvent, TaskType} from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
 import {WatchProcessEvent} from '../../helpers/watch-process';
 import type Command from '../command';
 import type Kernels from '../kernels';
 import type FileSystem from '../file-system';
 
-export default class KernelTask extends AbstractTask {
+export default class WatchProcessTask extends AbstractTask {
+  protected type: TaskType = TaskType.WATCH_PROCESS;
+
   constructor(command: Command, kernels: Kernels, fs: FileSystem) {
     super(command, kernels, fs);
 

@@ -1,4 +1,4 @@
-import AbstractTask, {TaskEvent} from './abstract-task';
+import AbstractTask, {TaskEvent, TaskType} from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
 import {KernelEvent, KernelOperation} from '../kernels/abstract-kernel';
 import Kernels, {type Kernel} from '../kernels';
@@ -6,6 +6,8 @@ import type Command from '../command';
 import type FileSystem from '../file-system';
 
 export default class KernelTask extends AbstractTask {
+  protected type: TaskType = TaskType.KERNEL;
+
   private cmd: string;
   private kernel: Kernel;
 

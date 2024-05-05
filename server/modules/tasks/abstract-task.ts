@@ -11,8 +11,15 @@ export enum TaskEvent {
   EXIT = 'exit',
 }
 
+export enum TaskType {
+  ARCHIVER = 'archiver',
+  KERNEL = 'kernel',
+  WATCH_PROCESS = 'watch-process',
+}
+
 export default abstract class AbstractTask extends EventListener {
   protected task: WatchProcess;
+  protected abstract type: TaskType;
 
   protected readonly command: Command;
   protected readonly kernels: Kernels;
@@ -29,5 +36,19 @@ export default abstract class AbstractTask extends EventListener {
 
   public getTask(): WatchProcess {
     return this.task;
+  }
+
+  public getType(): TaskType {
+    return this.type;
+  }
+
+  public isFinish(): boolean {
+    const task: WatchProcess = this.getTask();
+
+    if (!task) {
+      return true;
+    }
+
+    return task.isFinish();
   }
 }

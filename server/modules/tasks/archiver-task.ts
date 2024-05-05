@@ -1,4 +1,4 @@
-import AbstractTask, {TaskEvent} from './abstract-task';
+import AbstractTask, {TaskEvent, TaskType} from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
 import type Command from '../command';
 import type Kernels from '../kernels';
@@ -6,6 +6,7 @@ import type FileSystem from '../file-system';
 import Archiver, {ArchiverEvent, type Progress} from '../archiver';
 
 export default class ArchiverTask extends AbstractTask {
+  protected type: TaskType = TaskType.ARCHIVER;
   private archiver: Archiver;
 
   constructor(command: Command, kernels: Kernels, fs: FileSystem) {
