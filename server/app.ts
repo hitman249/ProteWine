@@ -12,8 +12,9 @@ import Kernels from './modules/kernels';
 import Settings from './modules/settings';
 import Mount from './modules/mount';
 import LinkInfo from './modules/link-info';
+import Tasks from './modules/tasks';
 
-class App {
+export class App {
   private readonly initOrder: AbstractModule[];
 
   private readonly COMMAND: Command;
@@ -28,6 +29,7 @@ class App {
   private readonly KERNELS: Kernels;
   private readonly SETTINGS: Settings;
   private readonly LINK_INFO: LinkInfo;
+  private readonly TASKS: Tasks;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -45,6 +47,7 @@ class App {
     this.KERNELS = new Kernels(this.SYSTEM);
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM, this.KERNELS);
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM);
+    this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM);
 
     this.initOrder = [
       this.COMMAND,
@@ -59,6 +62,7 @@ class App {
       this.KERNELS,
       this.SETTINGS,
       this.LINK_INFO,
+      this.TASKS,
     ];
   }
 
@@ -124,6 +128,10 @@ class App {
 
   public getLinkInfo(): LinkInfo {
     return this.LINK_INFO;
+  }
+
+  public getTasks(): Tasks {
+    return this.TASKS;
   }
 
   public getMountWine(): Mount {

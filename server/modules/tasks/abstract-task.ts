@@ -4,13 +4,6 @@ import type Kernels from '../kernels';
 import type FileSystem from '../file-system';
 import type WatchProcess from '../../helpers/watch-process';
 
-export enum TaskEvent {
-  LOG = 'log',
-  RUN = 'run',
-  PROGRESS = 'progress',
-  EXIT = 'exit',
-}
-
 export enum TaskType {
   ARCHIVER = 'archiver',
   KERNEL = 'kernel',

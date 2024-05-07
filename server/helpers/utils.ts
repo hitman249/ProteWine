@@ -5,6 +5,16 @@ import fs from 'fs';
 import iconv from 'iconv-lite';
 import type {ReadStream} from 'fs';
 
+type CounterType = {count: number, codepage: string, str: string};
+
+const SYMBOLS: string[] = (
+  '0123456789' +
+  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+  'абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+).split('');
+
+const CODEPAGES: string[] = ['utf-8', 'cp1251', 'cp866', 'koi8-r'];
+
 export default class Utils {
   private static readonly objectPrototype: any = Object.getPrototypeOf({});
 
@@ -86,18 +96,41 @@ export default class Utils {
     return (str.match(/\x00/g) || []).length / str.length > 0.1;
   }
 
-  public static isCyrilic(buffer: Buffer): boolean {
-    return buffer.toString() === iconv.encode(iconv.decode(buffer, 'utf8'), 'cp1251').toString();
-  }
-
   public static normalize(buffer: Buffer): string {
     if (Utils.isUtf16(buffer)) {
-      return iconv.decode(buffer, 'utf-16');
-    } else if (Utils.isCyrilic(buffer)) {
-      return iconv.decode(buffer, 'cp1251');
+      return _.trim(iconv.decode(buffer, 'utf-16'), '\r\n\t ');
     }
 
-    return buffer.toString();
+    const result: CounterType[] = [];
+
+    for (const codepage of CODEPAGES) {
+      const str: string = iconv.decode(buffer, codepage).toString();
+      const counter: CounterType = {
+        codepage,
+        count: 0,
+        str,
+      };
+
+      for (const char of SYMBOLS) {
+        counter.count += str.split(char).length;
+      }
+
+      result.push(counter);
+    }
+
+    result.sort((a: CounterType, b: CounterType): number => {
+      if (a.count < b.count) {
+        return 1;
+      }
+
+      if (a.count > b.count) {
+        return -1;
+      }
+
+      return 0;
+    });
+
+    return _.trim(result[0].str.split('\r').join(''), '\r\n\t ');
   }
 
   public static encode(buffer: Buffer | string, encoding: string = 'utf-8'): Buffer {

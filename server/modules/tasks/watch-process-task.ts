@@ -1,9 +1,10 @@
-import AbstractTask, {TaskEvent, TaskType} from './abstract-task';
+import AbstractTask, {TaskType} from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
 import {WatchProcessEvent} from '../../helpers/watch-process';
 import type Command from '../command';
 import type Kernels from '../kernels';
 import type FileSystem from '../file-system';
+import {RoutesTaskEvent} from '../../routes/routes';
 
 export default class WatchProcessTask extends AbstractTask {
   protected type: TaskType = TaskType.WATCH_PROCESS;
@@ -30,7 +31,7 @@ export default class WatchProcessTask extends AbstractTask {
   }
 
   private onLog(event: WatchProcessEvent.LOG, line: string): void {
-    this.fireEvent(TaskEvent.LOG, line);
+    this.fireEvent(RoutesTaskEvent.LOG, line);
   }
 
   private unbindEvents(): void {

@@ -1,16 +1,17 @@
-import EventListener from '../../helpers/event-listener';
+import {AbstractModule} from '../abstract-module';
 import type Command from '../command';
 import type Kernels from '../kernels';
 import type FileSystem from '../file-system';
 import type WatchProcess from '../../helpers/watch-process';
 import type {Progress} from '../archiver';
 import type {KernelOperation} from '../kernels/abstract-kernel';
-import {TaskEvent, type TaskType} from './abstract-task';
+import type {TaskType} from './abstract-task';
 import KernelTask from './kernel-task';
 import ArchiverTask from './archiver-task';
 import WatchProcessTask from './watch-process-task';
+import {RoutesTaskEvent} from '../../routes/routes';
 
-export default class Tasks extends EventListener {
+export default class Tasks extends AbstractModule {
   private readonly command: Command;
   private readonly kernels: Kernels;
   private readonly fs: FileSystem;
@@ -30,6 +31,9 @@ export default class Tasks extends EventListener {
     this.onExit = this.onExit.bind(this);
   }
 
+  public async init(): Promise<any> {
+  }
+
   private getTask(): WatchProcess {
     return this.current?.getTask();
   }
@@ -43,10 +47,10 @@ export default class Tasks extends EventListener {
       return;
     }
 
-    this.current.off(TaskEvent.RUN, this.onRun);
-    this.current.off(TaskEvent.LOG, this.onLog);
-    this.current.off(TaskEvent.PROGRESS, this.onProgress);
-    this.current.off(TaskEvent.EXIT, this.onExit);
+    this.current.off(RoutesTaskEvent.RUN, this.onRun);
+    this.current.off(RoutesTaskEvent.LOG, this.onLog);
+    this.current.off(RoutesTaskEvent.PROGRESS, this.onProgress);
+    this.current.off(RoutesTaskEvent.EXIT, this.onExit);
   }
 
   private bindEvents(): void {
@@ -56,26 +60,26 @@ export default class Tasks extends EventListener {
       return;
     }
 
-    this.current.on(TaskEvent.RUN, this.onRun);
-    this.current.on(TaskEvent.LOG, this.onLog);
-    this.current.on(TaskEvent.PROGRESS, this.onProgress);
-    this.current.on(TaskEvent.EXIT, this.onExit);
+    this.current.on(RoutesTaskEvent.RUN, this.onRun);
+    this.current.on(RoutesTaskEvent.LOG, this.onLog);
+    this.current.on(RoutesTaskEvent.PROGRESS, this.onProgress);
+    this.current.on(RoutesTaskEvent.EXIT, this.onExit);
   }
 
-  private onRun(event: TaskEvent.RUN, cmd: string): void {
-    this.fireEvent(TaskEvent.RUN, cmd);
+  private onRun(event: RoutesTaskEvent.RUN, cmd: string): void {
+    this.fireEvent(RoutesTaskEvent.RUN, cmd);
   }
 
-  private onLog(event: TaskEvent.LOG, line: string): void {
-    this.fireEvent(TaskEvent.LOG, line);
+  private onLog(event: RoutesTaskEvent.LOG, line: string): void {
+    this.fireEvent(RoutesTaskEvent.LOG, line);
   }
 
-  private onProgress(event: TaskEvent.PROGRESS, progress: Progress): void {
-    this.fireEvent(TaskEvent.PROGRESS, progress);
+  private onProgress(event: RoutesTaskEvent.PROGRESS, progress: Progress): void {
+    this.fireEvent(RoutesTaskEvent.PROGRESS, progress);
   }
 
   private onExit(): void {
-    this.fireEvent(TaskEvent.EXIT);
+    this.fireEvent(RoutesTaskEvent.EXIT);
   }
 
   private before(): void {

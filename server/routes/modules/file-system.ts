@@ -3,20 +3,19 @@ import System from '../../modules/system';
 import type FileSystem from '../../modules/file-system';
 import {AbstractModule} from '../../modules/abstract-module';
 import _ from 'lodash';
-
-export enum ApiFileSystem {
-  LS = 'fs:ls',
-  STORAGES = 'fs:storages',
-}
+import type {App} from '../../app';
+import {RoutesFileSystem} from '../routes';
 
 export default class FileSystemRoutes extends AbstractModule {
+  private readonly app: App;
   private readonly ipc: IpcMain;
   private readonly window: BrowserWindow;
 
-  constructor(ipcMain: IpcMain, window: BrowserWindow) {
+  constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
     super();
     this.ipc = ipcMain;
     this.window = window;
+    this.app = app;
   }
 
   public async init(): Promise<any> {
@@ -26,7 +25,7 @@ export default class FileSystemRoutes extends AbstractModule {
 
   private bindLs(): void {
     this.ipc.handle(
-      ApiFileSystem.LS,
+      RoutesFileSystem.LS,
       async (event: IpcMainInvokeEvent, path: string): Promise<any> => {
         const safePath: string = _.trimEnd(path, '/')
           .split('[').join('\\[').split(']').join('\\]')
@@ -77,7 +76,7 @@ export default class FileSystemRoutes extends AbstractModule {
 
   private bindStorages(): void {
     this.ipc.handle(
-      ApiFileSystem.STORAGES,
+      RoutesFileSystem.STORAGES,
       async (): Promise<any> => {
         const fs: FileSystem = global.$app.getFileSystem();
         const system: System = global.$app.getSystem();

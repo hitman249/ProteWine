@@ -44,6 +44,7 @@ declare global {
 
 const $app: Application = window.$app || new Application();
 
+// @ts-ignore
 window.$app = $app;
 
 export {$app};

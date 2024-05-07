@@ -65,17 +65,23 @@ export default class WatchProcess extends EventListener {
   }
 
   private onStdout(data: Buffer): void {
-    const line: string =  Utils.normalize(data);
-    this.outChunks.push(line);
-    this.fireEvent(WatchProcessEvent.STDOUT, line);
-    this.fireEvent(WatchProcessEvent.LOG, line);
+    const line: string[] = Utils.normalize(data).split('\n');
+    this.outChunks.push(...line);
+
+    for (const chunk of line) {
+      this.fireEvent(WatchProcessEvent.STDOUT, chunk);
+      this.fireEvent(WatchProcessEvent.LOG, chunk);
+    }
   }
 
   private onStderr(data: Buffer): void {
-    const line: string =  Utils.normalize(data);
-    this.errorChunks.push(line);
-    this.fireEvent(WatchProcessEvent.STDERR, line);
-    this.fireEvent(WatchProcessEvent.LOG, line);
+    const line: string[] = Utils.normalize(data).split('\n');
+    this.errorChunks.push(...line);
+
+    for (const chunk of line) {
+      this.fireEvent(WatchProcessEvent.STDERR, chunk);
+      this.fireEvent(WatchProcessEvent.LOG, chunk);
+    }
   }
 
   public kill(): void {

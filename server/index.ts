@@ -1,10 +1,10 @@
 import {app, BrowserWindow, protocol, net, ipcMain} from 'electron';
+import process from 'process';
 import path from 'path';
 import $app from './app';
 import Routes from './routes';
-import {KernelEvent} from './modules/kernels/abstract-kernel';
-import type {Kernel} from './modules/kernels';
-import process from 'process';
+// import {KernelEvent} from './modules/kernels/abstract-kernel';
+// import type {Kernel} from './modules/kernels';
 // import Archiver, {ArchiverEvent, Progress} from './modules/archiver';
 // import process from 'process';
 // import CopyDir, {CopyDirEvent} from './helpers/copy-dir';
@@ -37,15 +37,19 @@ function createWindow(): void {
 
   win.removeMenu();
 
-  routes = new Routes(ipcMain, win);
-  routes.init().then(() => {
-    win.loadFile('cache/client/loader.html');
+  $app.init()
+    .then(() => {
+      routes = new Routes(ipcMain, win, $app);
+      return routes.init();
+    })
+    .then(() => {
+      win.loadFile('cache/client/loader.html');
 
-    if (process.env.debug === '1') {
-      // Open the DevTools.
-      win.webContents.openDevTools();
-    }
-  });
+      if (process.env.debug === '1') {
+        // Open the DevTools.
+        win.webContents.openDevTools();
+      }
+    });
 }
 
 app.whenReady().then((): void => {
@@ -53,6 +57,7 @@ app.whenReady().then((): void => {
   createWindow();
 });
 
+/*
 $app.init().then(() => {
 
   const kernel: Kernel = $app.getKernels().getKernel();
@@ -63,37 +68,37 @@ $app.init().then(() => {
     console.log('Wine EXIT');
   });
 
-  // kernel.createPrefix();
+  kernel.createPrefix();
 
-  // kernel.version().then((version: string) => {
-  //   console.log('Version:', version);
-  // });
+  kernel.version().then((version: string) => {
+    console.log('Version:', version);
+  });
 
-  // const cpDir: CopyDir = new CopyDir(
-  //   $app.getFileSystem(),
-  //   '/media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/prefix/',
-  //   '/media/neiron/6_STORAGE_2730/Soft/test/prefix',
-  // );
-  //
-  // cpDir.on(CopyDirEvent.PROGRESS, (event: CopyDirEvent.PROGRESS, progress: Progress) => {
-  //   console.log(`Progress: ${progress.progress}, ${progress.itemsComplete}/${progress.itemsCount}, ${progress.transferredBytes}/${progress.totalBytes}`);
-  // });
-  //
-  // cpDir.copy().then(() => {
-  //   app.exit();
-  // });
+  const cpDir: CopyDir = new CopyDir(
+    $app.getFileSystem(),
+    '/media/neiron/6_STORAGE_2730/Games/LineAge2_Interlude/prefix/',
+    '/media/neiron/6_STORAGE_2730/Soft/test/prefix',
+  );
 
-  // const archiver: Archiver = new Archiver(
-  //   $app.getFileSystem(),
-  //   '/media/neiron/6_STORAGE_2730/Soft/dbForgeMySQL',
-  //   // '/media/neiron/6_STORAGE_2730/Soft/test/test2/',
-  // );
-  //
-  // archiver.on(ArchiverEvent.PROGRESS, (event: ArchiverEvent.PROGRESS, progress: Progress) => {
-  //   console.log(`Progress: ${progress.progress}`);
-  // });
-  //
-  // return archiver.packSquashfs(true).then(() => {
-  //   app.exit();
-  // });
-});
+  cpDir.on(CopyDirEvent.PROGRESS, (event: CopyDirEvent.PROGRESS, progress: Progress) => {
+    console.log(`Progress: ${progress.progress}, ${progress.itemsComplete}/${progress.itemsCount}, ${progress.transferredBytes}/${progress.totalBytes}`);
+  });
+
+  cpDir.copy().then(() => {
+    app.exit();
+  });
+
+  const archiver: Archiver = new Archiver(
+    $app.getFileSystem(),
+    '/media/neiron/6_STORAGE_2730/Soft/dbForgeMySQL',
+    // '/media/neiron/6_STORAGE_2730/Soft/test/test2/',
+  );
+
+  archiver.on(ArchiverEvent.PROGRESS, (event: ArchiverEvent.PROGRESS, progress: Progress) => {
+    console.log(`Progress: ${progress.progress}`);
+  });
+
+  return archiver.packSquashfs(true).then(() => {
+    app.exit();
+  });
+});*/
