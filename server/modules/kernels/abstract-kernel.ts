@@ -21,6 +21,12 @@ export enum KernelOperation {
   LIBRARY = 'regsvr32',
 }
 
+export enum FileType {
+  EXE = 'exe',
+  MSI = 'msi',
+  BAT = 'bat',
+}
+
 export default abstract class AbstractKernel extends EventListener {
   private readonly memory: Memory = new Memory();
   protected declare kernelVersion: string;
@@ -65,6 +71,23 @@ export default abstract class AbstractKernel extends EventListener {
     }
 
     return cmd;
+  }
+
+  public getLauncherByFileType(type?: FileType): string {
+    if (!type) {
+      return '';
+    }
+
+    switch (type) {
+      case FileType.EXE:
+        return 'start /unix';
+      case FileType.BAT:
+        return 'cmd /c';
+      case FileType.MSI:
+        return 'msiexec /i';
+      default:
+        return '';
+    }
   }
 
   public abstract createPrefix(): Promise<WatchProcess>;

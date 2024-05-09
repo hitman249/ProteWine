@@ -183,6 +183,10 @@ export default class File {
     return this.extension;
   }
 
+  public getPath(): string {
+    return this.path;
+  }
+
   public setType(type: FileType): void {
     this.type = type;
   }

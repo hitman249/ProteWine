@@ -10,6 +10,7 @@
   import {RoutesTaskEvent} from '../../../../server/routes/routes';
   import {TaskType} from '../../../../server/modules/tasks/types';
   import {PopupNames} from '../../modules/popup';
+  import Kernel from '../../modules/api/modules/kernel';
 
   let list: List;
   const data: FormData<MenuItem> = window.$app.getPopup().getData();
@@ -91,11 +92,12 @@
     tasks.off(RoutesTaskEvent.EXIT, onExit);
   }
 
-  onMount(() => {
+  onMount(async () => {
     bindEvents();
 
     if (GameOperation.INSTALL_FILE === data.getOperation() && FileManagerMode.EXECUTABLE === data.getFileManagerMode()) {
-      window.$app.getApi().getKernel().install(`"${data.getPath()}"`);
+      const kernel: Kernel = window.$app.getApi().getKernel();
+      await kernel.install(`${await kernel.getLauncherByFileType(data.getExtension())} "${data.getPath()}"`);
     }
   });
 

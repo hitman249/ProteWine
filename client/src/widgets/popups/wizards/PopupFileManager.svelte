@@ -56,8 +56,9 @@
         if (item && !item.isDirectory()) {
           const select: ValueType = selectList.getItem();
 
-          if ('next' === select.value) {
-            popupData.setPath(item.path);
+          if ('execute' === select.value) {
+            popupData.setExtension(item.getExtension());
+            popupData.setPath(item.getPath());
             window.$app.getPopup().open(PopupNames.EXECUTING, popupData);
           }
         }
@@ -108,7 +109,7 @@
             return item.isExecutable() && popupData.isFileManagerExecutable();
           }
 
-          return true;
+          return false;
         });
         isSelectList = true;
       }
@@ -130,7 +131,7 @@
       currentPath = path.join('/');
       loading = true;
 
-      (currentPath ? window.$app.getApi().getFileSystem().ls(currentPath) : window.$app.getApi().getFileSystemStorages())
+      (currentPath ? window.$app.getApi().getFileSystem().ls(currentPath) : window.$app.getApi().getFileSystem().getStorages())
         .then((files: File[]) => {
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {

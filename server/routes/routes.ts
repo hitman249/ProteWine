@@ -2,6 +2,7 @@ export enum RoutesKernel {
   VERSION = 'kernel:version',
   RUN = 'kernel:run',
   INSTALL = 'kernel:install',
+  LAUNCHER = 'kernel:launcher',
 }
 
 export enum RoutesFileSystem {
@@ -29,6 +30,7 @@ export enum RoutesTaskEvent {
 export default {
   invoke: [
     RoutesKernel.RUN,
+    RoutesKernel.LAUNCHER,
     RoutesKernel.INSTALL,
     RoutesKernel.VERSION,
     RoutesFileSystem.LS,

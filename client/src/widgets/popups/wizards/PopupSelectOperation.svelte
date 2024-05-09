@@ -54,7 +54,7 @@
     if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key) {
       unbindEvents();
       data.setOperation(list?.getItem()?.value);
-      data.setFileManagerExecutable(false);
+      data.setFileManagerExecutable(true);
       window.$app.getPopup().open(PopupNames.FILE_MANAGER, data);
 
       return;

@@ -21,7 +21,7 @@ export default class FormData<T> {
   public fileManagerMode: FileManagerMode;
   public fileManagerRootPath: string;
   public fileManagerExecutable: boolean = false;
-
+  public extension: string;
 
   constructor(data: T) {
     this.data = data;
@@ -49,6 +49,14 @@ export default class FormData<T> {
 
   public getOperation(): GameOperation {
     return this.operation;
+  }
+
+  public setExtension(ext: string): void {
+    this.extension = ext;
+  }
+
+  public getExtension(): string {
+    return this.extension;
   }
 
   public setPath(path: string): this {
