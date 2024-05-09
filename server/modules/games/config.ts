@@ -4,13 +4,36 @@ import type FileSystem from '../file-system';
 import type Settings from '../settings';
 import Utils from '../../helpers/utils';
 
+export type ConfigType = {
+  id: number,
+  game: {
+    path: string,
+    exe: string,
+    arguments: string,
+    name: string,
+    sort: number,
+    time: number,
+  },
+  env: {
+    [field: string]: string,
+  },
+  kernel: {
+    nod3d12: boolean,
+    nod3d11: boolean,
+    nod3d10: boolean,
+    nod3d9: boolean,
+    nod3d8: boolean,
+    nvapi: boolean,
+  },
+}
+
 export default class Config extends AbstractModule {
   private readonly path: string;
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly settings: Settings;
 
-  private config: any;
+  private config: ConfigType;
 
   constructor(path: string, appFolders: AppFolders, fs: FileSystem, settings: Settings) {
     super();
@@ -52,6 +75,10 @@ export default class Config extends AbstractModule {
 
   public get sort(): number {
     return this.config?.game.sort ?? 500;
+  }
+
+  public getConfig(): ConfigType {
+    return this.config;
   }
 
   public getDefaultConfig(): any {

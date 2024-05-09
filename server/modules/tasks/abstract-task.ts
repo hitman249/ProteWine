@@ -3,12 +3,7 @@ import type Command from '../command';
 import type Kernels from '../kernels';
 import type FileSystem from '../file-system';
 import type WatchProcess from '../../helpers/watch-process';
-
-export enum TaskType {
-  ARCHIVER = 'archiver',
-  KERNEL = 'kernel',
-  WATCH_PROCESS = 'watch-process',
-}
+import type {TaskType} from './types';
 
 export default abstract class AbstractTask extends EventListener {
   protected task: WatchProcess;

@@ -1,4 +1,5 @@
 import type {ChildProcessWithoutNullStreams} from 'child_process';
+import killer from 'tree-kill';
 import EventListener from './event-listener';
 import Utils from './utils';
 
@@ -17,8 +18,8 @@ export default class WatchProcess extends EventListener {
   private resolve: ResolveType;
   private reject: RejectType;
 
-  private pid: number;
-  private gid: number;
+  private readonly pid: number;
+  private readonly gid: number;
 
   private readonly watch: ChildProcessWithoutNullStreams;
 
@@ -86,7 +87,7 @@ export default class WatchProcess extends EventListener {
 
   public kill(): void {
     this.finish = true;
-    this.watch.kill('SIGKILL');
+    killer(this.getPID(), 'SIGKILL');
   }
 
   public async wait(): Promise<void> {

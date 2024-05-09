@@ -3,7 +3,7 @@ import {AbstractModule} from '../abstract-module';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Settings from '../settings';
-import Config from './config';
+import Config, {type ConfigType} from './config';
 
 export default class Games extends AbstractModule {
   private readonly appFolders: AppFolders;
@@ -20,7 +20,7 @@ export default class Games extends AbstractModule {
   }
 
   public async init(): Promise<any> {
-
+    await this.load();
   }
 
   public async load(): Promise<void> {
@@ -41,5 +41,9 @@ export default class Games extends AbstractModule {
       configs,
       'sort',
     );
+  }
+
+  public async getList(): Promise<ConfigType[]> {
+    return this.configs.map((config: Config) => config.getConfig());
   }
 }

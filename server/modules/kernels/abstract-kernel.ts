@@ -16,6 +16,7 @@ export enum KernelEvent {
 
 export enum KernelOperation {
   RUN = 'run',
+  INSTALL = 'install',
   REGISTER = 'regedit',
   LIBRARY = 'regsvr32',
 }

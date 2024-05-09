@@ -13,6 +13,7 @@ import Settings from './modules/settings';
 import Mount from './modules/mount';
 import LinkInfo from './modules/link-info';
 import Tasks from './modules/tasks';
+import Games from './modules/games';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -30,6 +31,7 @@ export class App {
   private readonly SETTINGS: Settings;
   private readonly LINK_INFO: LinkInfo;
   private readonly TASKS: Tasks;
+  private readonly GAMES: Games;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -48,6 +50,7 @@ export class App {
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM, this.KERNELS);
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM);
     this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM);
+    this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS);
 
     this.initOrder = [
       this.COMMAND,
@@ -63,6 +66,7 @@ export class App {
       this.SETTINGS,
       this.LINK_INFO,
       this.TASKS,
+      this.GAMES,
     ];
   }
 
@@ -132,6 +136,10 @@ export class App {
 
   public getTasks(): Tasks {
     return this.TASKS;
+  }
+
+  public getGames(): Games {
+    return this.GAMES;
   }
 
   public getMountWine(): Mount {

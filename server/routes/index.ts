@@ -1,9 +1,10 @@
-import {BrowserWindow, IpcMain} from 'electron';
-import FileSystemRoutes from './modules/file-system';
-import {AbstractModule} from '../modules/abstract-module';
-import KernelRoutes from './modules/kernel';
+import type {BrowserWindow, IpcMain} from 'electron';
 import type {App} from '../app';
+import {AbstractModule} from '../modules/abstract-module';
+import FileSystemRoutes from './modules/file-system';
+import KernelRoutes from './modules/kernel';
 import TasksRoutes from './modules/tasks';
+import GamesRoutes from './modules/games';
 
 export default class Index {
   private readonly app: App;
@@ -13,6 +14,7 @@ export default class Index {
   private readonly FILE_SYSTEM: FileSystemRoutes;
   private readonly KERNEL: KernelRoutes;
   private readonly TASKS: TasksRoutes;
+  private readonly GAMES: GamesRoutes;
 
   private readonly modules: AbstractModule[] = [];
 
@@ -24,11 +26,13 @@ export default class Index {
     this.FILE_SYSTEM = new FileSystemRoutes(ipcMain, window, app);
     this.KERNEL = new KernelRoutes(ipcMain, window, app);
     this.TASKS = new TasksRoutes(ipcMain, window, app);
+    this.GAMES = new GamesRoutes(ipcMain, window, app);
 
     this.modules.push(
       this.FILE_SYSTEM,
       this.KERNEL,
       this.TASKS,
+      this.GAMES,
     );
   }
 

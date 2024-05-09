@@ -53,14 +53,14 @@ export default class Wine extends AbstractKernel {
     return this.run('sc');
   }
 
-  public async run(cmd: string = '', session: string = 'run'): Promise<WatchProcess> {
+  public async run(cmd: string = '', session: string = 'run', env: {[field: string]: string} = {}): Promise<WatchProcess> {
     const wineFile: string = await this.getWineFile();
 
     if (!wineFile) {
       return Promise.reject('Wine not found.');
     }
 
-    const container: string = await this.container.getCmd(this.envToCmd(`"${wineFile}" ${cmd}`, this.env));
+    const container: string = await this.container.getCmd(this.envToCmd(`"${wineFile}" ${cmd}`, Object.assign({}, this.env, env)));
 
     this.fireEvent(KernelEvent.RUN, container);
 

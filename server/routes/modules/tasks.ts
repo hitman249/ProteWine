@@ -1,4 +1,4 @@
-import {BrowserWindow, IpcMain} from 'electron';
+import type {BrowserWindow, IpcMain} from 'electron';
 import {AbstractModule} from '../../modules/abstract-module';
 import type {Progress} from '../../modules/archiver';
 import type {App} from '../../app';
@@ -29,6 +29,31 @@ export default class TasksRoutes extends AbstractModule {
     tasks.on(RoutesTaskEvent.LOG, this.onLog);
     tasks.on(RoutesTaskEvent.PROGRESS, this.onProgress);
     tasks.on(RoutesTaskEvent.EXIT, this.onExit);
+
+    this.bindKill();
+    this.bindType();
+    this.bindFinish();
+  }
+
+  private bindKill(): void {
+    this.ipc.handle(
+      RoutesTaskEvent.KILL,
+      async (): Promise<any> => this.app.getTasks().kill(),
+    );
+  }
+
+  private bindType(): void {
+    this.ipc.handle(
+      RoutesTaskEvent.TYPE,
+      async (): Promise<any> => this.app.getTasks().getType(),
+    );
+  }
+
+  private bindFinish(): void {
+    this.ipc.handle(
+      RoutesTaskEvent.FINISH,
+      async (): Promise<any> => this.app.getTasks().isFinish(),
+    );
   }
 
   private onRun(event: RoutesTaskEvent.RUN, cmd: string): void {

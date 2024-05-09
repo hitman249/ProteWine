@@ -1,17 +1,20 @@
 import {AbstractModule} from '../../../../server/modules/abstract-module';
-import FileSystem from './file-system';
-import Kernel from './kernel';
-import Tasks from './tasks';
+import FileSystem from './modules/file-system';
+import Kernel from './modules/kernel';
+import Tasks from './modules/tasks';
+import Games from './modules/games';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
   private readonly KERNEL: Kernel = new Kernel();
   private readonly TASKS: Tasks = new Tasks();
+  private readonly GAMES: Games = new Games();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
     this.KERNEL,
     this.TASKS,
+    this.GAMES,
   ];
 
   public async init(): Promise<any> {
@@ -30,6 +33,10 @@ export default class Api extends AbstractModule {
 
   public getTasks(): Tasks {
     return this.TASKS;
+  }
+
+  public getGames(): Games {
+    return this.GAMES;
   }
 }
 

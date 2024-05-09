@@ -62,9 +62,9 @@ export default class Popup extends AbstractModule {
     return this.opened === name;
   }
 
-  public open(name: PopupNames, data?: any, args?: any): void {
+  public open(name: PopupNames, data?: any, args?: any): this {
     if (name === this.opened) {
-      return;
+      return this;
     }
 
     if (undefined !== this.opened) {
@@ -82,9 +82,16 @@ export default class Popup extends AbstractModule {
     this.fireEvent(PopupEvents.BEFORE_OPEN, name, this);
     this.fireEvent(PopupEvents.OPEN, name, this);
     this.fireEvent(PopupEvents.AFTER_OPEN, name, this);
+
+    return this;
   }
 
-  public back(): void {
+  public clearHistory(): this {
+    this.history = [];
+    return this;
+  }
+
+  public back(): this {
     if (this.history.length > 0) {
       const historyItem: PopupItem = this.history[this.history.length - 1];
       this.history = this.history.slice(0, -1);
@@ -93,6 +100,8 @@ export default class Popup extends AbstractModule {
     } else {
       this.close();
     }
+
+    return this;
   }
 
   private close(): void {

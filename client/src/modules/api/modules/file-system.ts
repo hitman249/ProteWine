@@ -1,6 +1,6 @@
-import {AbstractModule} from '../../../../server/modules/abstract-module';
-import File, {type FileInfo, FileType} from '../../models/file';
-import {RoutesFileSystem} from '../../../../server/routes/routes';
+import {AbstractModule} from '../../../../../server/modules/abstract-module';
+import File, {type FileInfo, FileType} from '../../../models/file';
+import {RoutesFileSystem} from '../../../../../server/routes/routes';
 
 export default class FileSystem extends AbstractModule {
   public async init(): Promise<void> {

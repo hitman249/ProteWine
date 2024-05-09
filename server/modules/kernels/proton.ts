@@ -26,6 +26,7 @@ export default class Proton extends AbstractKernel {
     this.env = {
       // SteamAppId: '',
       // SteamGameId: '',
+      WINEDEBUG: '-all',
       WINEPREFIX: prefix,
       STEAM_COMPAT_DATA_PATH: prefix,
       STEAM_COMPAT_CLIENT_INSTALL_PATH: await this.getSteamDir(),
@@ -55,9 +56,9 @@ export default class Proton extends AbstractKernel {
     return this.run('sc');
   }
 
-  public async run(cmd: string = '', session: string = 'run'): Promise<WatchProcess> {
+  public async run(cmd: string = '', session: string = 'run', env: {[field: string]: string} = {}): Promise<WatchProcess> {
     const proton: string = await this.appFolders.getProtonFile();
-    const container: string = await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${cmd}`, this.env));
+    const container: string = await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${cmd}`, Object.assign({}, this.env, env)));
 
     this.fireEvent(KernelEvent.RUN, container);
 

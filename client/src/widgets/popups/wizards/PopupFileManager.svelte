@@ -57,6 +57,7 @@
           const select: ValueType = selectList.getItem();
 
           if ('next' === select.value) {
+            popupData.setPath(item.path);
             window.$app.getPopup().open(PopupNames.EXECUTING, popupData);
           }
         }

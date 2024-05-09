@@ -1,7 +1,7 @@
-import {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
+import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
+import type {App} from '../../app';
 import {AbstractModule} from '../../modules/abstract-module';
 import {KernelOperation} from '../../modules/kernels/abstract-kernel';
-import type {App} from '../../app';
 import {RoutesKernel} from '../routes';
 
 
@@ -20,12 +20,13 @@ export default class KernelRoutes extends AbstractModule {
   public async init(): Promise<any> {
     this.bindVersion();
     this.bindRun();
+    this.bindInstall();
   }
 
   private bindVersion(): void {
     this.ipc.handle(
       RoutesKernel.VERSION,
-      async (): Promise<any> => global.$app.getKernels().getKernel().version(),
+      async (): Promise<any> => this.app.getKernels().getKernel().version(),
     );
   }
 
@@ -35,6 +36,16 @@ export default class KernelRoutes extends AbstractModule {
       async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
         this.app.getTasks()
           .kernel(cmd, KernelOperation.RUN)
+          .then(() => undefined),
+    );
+  }
+
+  private bindInstall(): void {
+    this.ipc.handle(
+      RoutesKernel.INSTALL,
+      async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
+        this.app.getTasks()
+          .kernel(cmd, KernelOperation.INSTALL)
           .then(() => undefined),
     );
   }

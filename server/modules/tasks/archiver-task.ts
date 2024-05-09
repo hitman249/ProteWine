@@ -1,10 +1,11 @@
-import AbstractTask, {TaskType} from './abstract-task';
+import AbstractTask from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
 import type Command from '../command';
 import type Kernels from '../kernels';
 import type FileSystem from '../file-system';
 import Archiver, {ArchiverEvent, type Progress} from '../archiver';
 import {RoutesTaskEvent} from '../../routes/routes';
+import {TaskType} from './types';
 
 export default class ArchiverTask extends AbstractTask {
   protected type: TaskType = TaskType.ARCHIVER;

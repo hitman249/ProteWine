@@ -1,10 +1,11 @@
-import AbstractTask, {TaskType} from './abstract-task';
+import AbstractTask from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
 import {KernelEvent, KernelOperation} from '../kernels/abstract-kernel';
 import Kernels, {type Kernel} from '../kernels';
 import type Command from '../command';
 import type FileSystem from '../file-system';
 import {RoutesTaskEvent} from '../../routes/routes';
+import {TaskType} from './types';
 
 export default class KernelTask extends AbstractTask {
   protected type: TaskType = TaskType.KERNEL;
@@ -30,6 +31,8 @@ export default class KernelTask extends AbstractTask {
 
     if (KernelOperation.RUN === operation) {
       this.task = await this.kernel.run(this.cmd);
+    } else if (KernelOperation.INSTALL === operation) {
+      this.task = await this.kernel.run(this.cmd, 'run',{WINEDEBUG: ''});
     } else if (KernelOperation.REGISTER === operation) {
       this.task = await this.kernel.register(this.cmd);
     } else if (KernelOperation.LIBRARY === operation) {

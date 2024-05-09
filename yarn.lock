@@ -4268,6 +4268,7 @@ __metadata:
     node-fetch: "npm:^3.3.2"
     sharp: "npm:^0.33.3"
     simple-vdf: "npm:^1.1.1"
+    tree-kill: "npm:^1.2.2"
     ts-loader: "npm:^9.5.1"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.4.5"
@@ -5030,6 +5031,15 @@ __metadata:
   dependencies:
     is-number: "npm:^7.0.0"
   checksum: 10c0/487988b0a19c654ff3e1961b87f471702e708fa8a8dd02a298ef16da7206692e8552a0250e8b3e8759270f62e9d8314616f6da274734d3b558b1fc7b7724e892
+  languageName: node
+  linkType: hard
+
+"tree-kill@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "tree-kill@npm:1.2.2"
+  bin:
+    tree-kill: cli.js
+  checksum: 10c0/7b1b7c7f17608a8f8d20a162e7957ac1ef6cd1636db1aba92f4e072dc31818c2ff0efac1e3d91064ede67ed5dc57c565420531a8134090a12ac10cf792ab14d2
   languageName: node
   linkType: hard
 

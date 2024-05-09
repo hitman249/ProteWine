@@ -1,4 +1,4 @@
-import {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
+import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
 import System from '../../modules/system';
 import type FileSystem from '../../modules/file-system';
 import {AbstractModule} from '../../modules/abstract-module';
@@ -31,7 +31,7 @@ export default class FileSystemRoutes extends AbstractModule {
           .split('[').join('\\[').split(']').join('\\]')
           .split('(').join('\\(').split(')').join('\\)');
 
-        const fs: FileSystem = global.$app.getFileSystem();
+        const fs: FileSystem = this.app.getFileSystem();
         const list: string[] = await fs.glob(`${safePath}/*`);
         const result: any[] = [];
 
@@ -78,8 +78,8 @@ export default class FileSystemRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesFileSystem.STORAGES,
       async (): Promise<any> => {
-        const fs: FileSystem = global.$app.getFileSystem();
-        const system: System = global.$app.getSystem();
+        const fs: FileSystem = this.app.getFileSystem();
+        const system: System = this.app.getSystem();
 
         const storages: string[] = [];
 

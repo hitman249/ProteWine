@@ -30,7 +30,7 @@
     },
     {
       value: GameOperation.SYMLINK_GAME,
-      title: 'Symlink to an existing game folder',
+      title: 'Symlink to existing game folder',
     },
     {
       value: GameOperation.IMPORT_LINK,

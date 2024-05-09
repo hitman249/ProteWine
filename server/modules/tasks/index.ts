@@ -5,11 +5,11 @@ import type FileSystem from '../file-system';
 import type WatchProcess from '../../helpers/watch-process';
 import type {Progress} from '../archiver';
 import type {KernelOperation} from '../kernels/abstract-kernel';
-import type {TaskType} from './abstract-task';
 import KernelTask from './kernel-task';
 import ArchiverTask from './archiver-task';
 import WatchProcessTask from './watch-process-task';
 import {RoutesTaskEvent} from '../../routes/routes';
+import type {TaskType} from './types';
 
 export default class Tasks extends AbstractModule {
   private readonly command: Command;
@@ -40,6 +40,10 @@ export default class Tasks extends AbstractModule {
 
   public getType(): TaskType {
     return this.current?.getType();
+  }
+
+  public isFinish(): boolean {
+    return Boolean(this.current?.isFinish());
   }
 
   private unbindEvents(): void {
@@ -83,19 +87,22 @@ export default class Tasks extends AbstractModule {
   }
 
   private before(): void {
+    this.kill();
+    this.unbindEvents();
+  }
+
+  private after(): void {
+    this.bindEvents();
+  }
+
+  public kill(): void {
     if (this.current) {
       const task: WatchProcess = this.current.getTask();
 
       if (!task.isFinish()) {
         task.kill();
       }
-
-      this.unbindEvents();
     }
-  }
-
-  private after(): void {
-    this.bindEvents();
   }
 
   public async kernel(cmd: string, operation: KernelOperation): Promise<WatchProcess> {
