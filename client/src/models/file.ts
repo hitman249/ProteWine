@@ -111,7 +111,7 @@ const TEXT: string[] = [
 ];
 
 const EXECUTION: string[] = [
-  'AppImage',
+  'appimage',
   'bat',
   'com',
   'deb',

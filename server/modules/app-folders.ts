@@ -259,7 +259,7 @@ export default class AppFolders extends AbstractModule {
     return await this.getRootDir() + this.buildDir;
   }
 
-  public async getWinetricksFile(): Promise<string> {
+  public async getWineTricksFile(): Promise<string> {
     return await this.getRootDir() + this.winetricksFile;
   }
 
@@ -267,11 +267,11 @@ export default class AppFolders extends AbstractModule {
     return await this.getRootDir() + this.linkInfoFile;
   }
 
-  public async getSquashfuseFile(): Promise<string> {
+  public async getSquashFuseFile(): Promise<string> {
     return await this.getRootDir() + this.squashfuseFile;
   }
 
-  public async getMksquashfsFile(): Promise<string> {
+  public async getMkSquashFsFile(): Promise<string> {
     return await this.getRootDir() + this.mksquashfsFile;
   }
 
@@ -283,11 +283,11 @@ export default class AppFolders extends AbstractModule {
     return await this.getRootDir() + this.dosboxFile;
   }
 
-  public async getFuseisoFile(): Promise<string> {
+  public async getFuseIsoFile(): Promise<string> {
     return await this.getRootDir() + this.fuseisoFile;
   }
 
-  public async getCabextractFile(): Promise<string> {
+  public async getCabExtractFile(): Promise<string> {
     return await this.getRootDir() + this.cabextractFile;
   }
 

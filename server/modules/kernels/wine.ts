@@ -1,9 +1,10 @@
-import AbstractKernel, {KernelEvent} from './abstract-kernel';
+import AbstractKernel, {KernelEvent, SessionType} from './abstract-kernel';
 import System from '../system';
 import WatchProcess, {WatchProcessEvent} from '../../helpers/watch-process';
 
 export default class Wine extends AbstractKernel {
   private env: {[env: string]: string};
+  protected innerPrefix: string = '';
 
   constructor(path: string, system: System) {
     super(path, system);
@@ -53,7 +54,7 @@ export default class Wine extends AbstractKernel {
     return this.run('sc');
   }
 
-  public async run(cmd: string = '', session: string = 'run', env: {[field: string]: string} = {}): Promise<WatchProcess> {
+  public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {
     const wineFile: string = await this.getWineFile();
 
     if (!wineFile) {
@@ -86,11 +87,11 @@ export default class Wine extends AbstractKernel {
   }
 
   public async register(path: string): Promise<WatchProcess> {
-    return await this.run(`regedit "${path}"`, 'runinprefix');
+    return await this.run(`regedit "${path}"`, SessionType.RUN_IN_PREFIX);
   }
 
   public async regsvr32(filename: string): Promise<WatchProcess> {
-    return await this.run(`regsvr32 "${filename}"`, 'runinprefix');
+    return await this.run(`regsvr32 "${filename}"`, SessionType.RUN_IN_PREFIX);
   }
 
   public async version(): Promise<string> {
@@ -98,7 +99,7 @@ export default class Wine extends AbstractKernel {
       return this.kernelVersion;
     }
 
-    const process: WatchProcess = await this.run('--version', 'runinprefix');
+    const process: WatchProcess = await this.run('--version', SessionType.RUN_IN_PREFIX);
     await process.wait();
 
     const version: string = (await process.text()).trim();

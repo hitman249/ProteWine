@@ -29,9 +29,9 @@ export default class Update extends AbstractModule {
   public async init(): Promise<any> {
   }
 
-  public async downloadWinetricks(progress: (value: Progress) => void): Promise<void> {
+  public async downloadWineTricks(progress: (value: Progress) => void): Promise<void> {
     const url: string = 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks';
-    const path: string = await this.appFolder.getWinetricksFile();
+    const path: string = await this.appFolder.getWineTricksFile();
 
     if (await this.fs.exists(path)) {
       const createAt: Date = await this.fs.getCreateDate(path);
@@ -45,9 +45,9 @@ export default class Update extends AbstractModule {
     }
   }
 
-  public async downloadSquashfuse(progress: (value: Progress) => void): Promise<void> {
+  public async downloadSquashFuse(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/squashfuse');
-    const path: string = await this.appFolder.getSquashfuseFile();
+    const path: string = await this.appFolder.getSquashFuseFile();
 
     if (!(await this.fs.exists(path)) || (await this.fs.size(path)) !== 548328) {
       return this.network.download(url, path, progress);
@@ -63,18 +63,18 @@ export default class Update extends AbstractModule {
     }
   }
 
-  public async downloadFuseiso(progress: (value: Progress) => void): Promise<void> {
+  public async downloadFuseIso(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/fuseiso');
-    const path: string = await this.appFolder.getFuseisoFile();
+    const path: string = await this.appFolder.getFuseIsoFile();
 
     if (!await this.fs.exists(path)) {
       return this.network.download(url, path, progress);
     }
   }
 
-  public async downloadCabextract(progress: (value: Progress) => void): Promise<void> {
+  public async downloadCabExtract(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/cabextract');
-    const path: string = await this.appFolder.getCabextractFile();
+    const path: string = await this.appFolder.getCabExtractFile();
 
     if (!await this.fs.exists(path)) {
       return this.network.download(url, path, progress);

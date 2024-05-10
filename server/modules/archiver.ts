@@ -202,7 +202,7 @@ export default class Archiver extends EventListener {
       throw new Error(`Error squashfs packing: "${this.src}"`);
     }
 
-    const mksquashfs: string = await this.fs.getAppFolders().getMksquashfsFile();
+    const mksquashfs: string = await this.fs.getAppFolders().getMkSquashFsFile();
 
     const cmd: string = maxLevel
       ? `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp lz4 -Xhc -percentage`

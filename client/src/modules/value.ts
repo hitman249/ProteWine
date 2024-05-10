@@ -119,8 +119,8 @@ export default class Value {
     ],
     fileManager: [
       {
-        value: 'next',
-        title: 'Next',
+        value: 'mount',
+        title: 'Mount',
       },
       {
         value: 'execute',

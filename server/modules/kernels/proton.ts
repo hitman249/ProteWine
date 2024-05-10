@@ -1,8 +1,9 @@
-import AbstractKernel, {KernelEvent} from './abstract-kernel';
+import AbstractKernel, {KernelEvent, SessionType} from './abstract-kernel';
 import System from '../system';
 import WatchProcess, {WatchProcessEvent} from '../../helpers/watch-process';
 
 export default class Proton extends AbstractKernel {
+  protected innerPrefix: string = '/pfx';
   private steamDirs: string[] = [
     '/.steam',
     '/.local/share/Steam',
@@ -56,7 +57,7 @@ export default class Proton extends AbstractKernel {
     return this.run('sc');
   }
 
-  public async run(cmd: string = '', session: string = 'run', env: {[field: string]: string} = {}): Promise<WatchProcess> {
+  public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {
     const proton: string = await this.appFolders.getProtonFile();
     const container: string = await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${cmd}`, Object.assign({}, this.env, env)));
 
@@ -84,11 +85,11 @@ export default class Proton extends AbstractKernel {
   }
 
   public async register(path: string): Promise<WatchProcess> {
-    return await this.run(`regedit "${path}"`, 'runinprefix');
+    return await this.run(`regedit "${path}"`, SessionType.RUN_IN_PREFIX);
   }
 
   public async regsvr32(filename: string): Promise<WatchProcess> {
-    return await this.run(`regsvr32 "${filename}"`, 'runinprefix');
+    return await this.run(`regsvr32 "${filename}"`, SessionType.RUN_IN_PREFIX);
   }
 
   public async version(): Promise<string> {
@@ -117,7 +118,7 @@ export default class Proton extends AbstractKernel {
       }
     }
 
-    const process: WatchProcess = await this.run('--version', 'runinprefix');
+    const process: WatchProcess = await this.run('--version', SessionType.RUN_IN_PREFIX);
     await process.wait();
 
     const version: string = (await process.text()).trim();

@@ -27,6 +27,21 @@ export enum FileType {
   BAT = 'bat',
 }
 
+export enum SessionType {
+  RUN = 'run',
+  RUN_IN_PREFIX = 'runinprefix',
+}
+
+export type PathsType = {
+  dosDevices: string,
+  system32: string,
+  system64: string,
+  logs: string,
+  dxvk: string,
+  info: string,
+  cache: string,
+}
+
 export default abstract class AbstractKernel extends EventListener {
   private readonly memory: Memory = new Memory();
   protected declare kernelVersion: string;
@@ -39,6 +54,18 @@ export default abstract class AbstractKernel extends EventListener {
   protected appFolders: AppFolders;
   protected process: WatchProcess;
   protected container: Container;
+
+  protected abstract innerPrefix: string;
+
+  protected paths: PathsType = {
+    dosDevices: '/dosdevices',
+    system64: '/drive_c/windows/system32',
+    system32: '/drive_c/windows/syswow64',
+    logs: '/drive_c/logs',
+    dxvk: '/drive_c/dxvk.conf',
+    info: '/drive_c/info',
+    cache: '/drive_c/cache',
+  };
 
   constructor(path: string, system: System) {
     super();
@@ -111,4 +138,37 @@ export default abstract class AbstractKernel extends EventListener {
   public abstract run(cmd: string): Promise<WatchProcess>;
 
   public abstract getUserName(): Promise<string>;
+
+  public async getPrefixDir(): Promise<string> {
+    const prefixDir: string = await this.appFolders.getPrefixDir();
+    return `${prefixDir}${this.innerPrefix}`;
+  }
+
+  public async getDosDevicesDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.dosDevices}`;
+  }
+
+  public async getSystem32Dir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.system32}`;
+  }
+
+  public async getSystem64Dir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.system64}`;
+  }
+
+  public async getCacheDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.cache}`;
+  }
+
+  public async getInfoDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.info}`;
+  }
+
+  public async getLogsDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.logs}`;
+  }
+
+  public async getDxvkFile(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.dxvk}`;
+  }
 }

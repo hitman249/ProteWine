@@ -60,6 +60,10 @@
             popupData.setExtension(item.getExtension());
             popupData.setPath(item.getPath());
             window.$app.getPopup().open(PopupNames.EXECUTING, popupData);
+          } else if ('mount' === select.value) {
+            popupData.setFileManagerImage(true);
+            popupData.setPath(item.getPath());
+
           }
         }
 

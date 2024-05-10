@@ -1,9 +1,9 @@
-import Utils      from '../helpers/utils';
+import Utils from '../helpers/utils';
 import FileSystem from './file-system';
 import AppFolders from './app-folders';
-import Command    from './command';
-import Update     from './update';
-import System     from './system';
+import Command from './command';
+import Update from './update';
+import System from './system';
 import {AbstractModule} from './abstract-module';
 import process from 'process';
 import type {Progress} from './archiver';
@@ -28,12 +28,12 @@ export default class Mount extends AbstractModule {
     super();
 
     this.appFolders = appFolders;
-    this.command    = command;
-    this.fs         = fs;
-    this.update     = update;
-    this.system     = system;
-    this.folder     = folder;
-    this.squashfs   = `${this.folder}.squashfs`;
+    this.command = command;
+    this.fs = fs;
+    this.update = update;
+    this.system = system;
+    this.folder = folder;
+    this.squashfs = `${this.folder}.squashfs`;
   }
 
   public async init(): Promise<any> {
@@ -77,7 +77,7 @@ export default class Mount extends AbstractModule {
 
       this.mounted = true;
 
-      return this.squashfuse((value: Progress) => {
+      return this.squashFuse((value: Progress) => {
         throw new Error(`Mount progress: ${JSON.stringify(value)}`);
       });
     });
@@ -101,7 +101,7 @@ export default class Mount extends AbstractModule {
 
       if (!this.isMounted() || (this.isMounted() && !(await this.fs.exists(this.folder)))) {
         this.mounted = false;
-        return ;
+        return;
       }
 
       if (await this.fs.exists(this.folder)) {
@@ -118,13 +118,13 @@ export default class Mount extends AbstractModule {
     return iterator();
   }
 
-  public async squashfuse(progress: (value: Progress) => void): Promise<void> {
-    return this.update.downloadSquashfuse(progress).then(async () => {
-      const squashfuse: string = Utils.quote(await this.appFolders.getSquashfuseFile());
-      const image: string      = Utils.quote(this.squashfs);
-      const dir: string        = Utils.quote(this.folder);
+  public async squashFuse(progress: (value: Progress) => void): Promise<void> {
+    return this.update.downloadSquashFuse(progress).then(async () => {
+      const squashfuse: string = await this.appFolders.getSquashFuseFile();
+      const image: string = this.squashfs;
+      const dir: string = this.folder;
 
-      await this.command.exec(`${squashfuse} ${image} ${dir}`);
+      await this.command.exec(`"${squashfuse}" "${image}" "${dir}"`);
     });
   }
 
@@ -160,7 +160,8 @@ export default class Mount extends AbstractModule {
         } catch (e) {
           try {
             process.kill(pid);
-          } catch (e) { /* empty */ }
+          } catch (e) {
+          }
         }
       }
     }
