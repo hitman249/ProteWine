@@ -58,6 +58,7 @@ export default class Wine extends AbstractKernel {
     const wineFile: string = await this.getWineFile();
 
     if (!wineFile) {
+      this.fireEvent(KernelEvent.ERROR, 'Wine not found.');
       return Promise.reject('Wine not found.');
     }
 

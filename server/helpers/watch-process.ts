@@ -15,7 +15,7 @@ export enum WatchProcessEvent {
 export default class WatchProcess extends EventListener {
   private finish: boolean = false;
   private readonly promise: Promise<string>;
-  private resolve: ResolveType;
+  public resolve: ResolveType;
   private reject: RejectType;
 
   private readonly pid: number;

@@ -12,6 +12,7 @@ export enum KernelEvent {
   LOG = 'log',
   RUN = 'run',
   EXIT = 'exit',
+  ERROR = 'error',
 }
 
 export enum KernelOperation {

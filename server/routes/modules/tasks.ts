@@ -3,7 +3,8 @@ import {AbstractModule} from '../../modules/abstract-module';
 import type {Progress} from '../../modules/archiver';
 import type {App} from '../../app';
 import type Tasks from '../../modules/tasks';
-import {RoutesTaskEvent} from '../routes';
+import {RoutesTaskEvent, RoutesTaskMethod} from '../routes';
+import type {BodyBus} from '../../modules/tasks/types';
 
 export default class TasksRoutes extends AbstractModule {
   private readonly app: App;
@@ -18,6 +19,8 @@ export default class TasksRoutes extends AbstractModule {
 
     this.onRun = this.onRun.bind(this);
     this.onLog = this.onLog.bind(this);
+    this.onError = this.onError.bind(this);
+    this.onBus = this.onBus.bind(this);
     this.onProgress = this.onProgress.bind(this);
     this.onExit = this.onExit.bind(this);
   }
@@ -27,6 +30,8 @@ export default class TasksRoutes extends AbstractModule {
 
     tasks.on(RoutesTaskEvent.RUN, this.onRun);
     tasks.on(RoutesTaskEvent.LOG, this.onLog);
+    tasks.on(RoutesTaskEvent.ERROR, this.onError);
+    tasks.on(RoutesTaskEvent.BUS, this.onBus);
     tasks.on(RoutesTaskEvent.PROGRESS, this.onProgress);
     tasks.on(RoutesTaskEvent.EXIT, this.onExit);
 
@@ -37,21 +42,21 @@ export default class TasksRoutes extends AbstractModule {
 
   private bindKill(): void {
     this.ipc.handle(
-      RoutesTaskEvent.KILL,
+      RoutesTaskMethod.KILL,
       async (): Promise<any> => this.app.getTasks().kill(),
     );
   }
 
   private bindType(): void {
     this.ipc.handle(
-      RoutesTaskEvent.TYPE,
+      RoutesTaskMethod.TYPE,
       async (): Promise<any> => this.app.getTasks().getType(),
     );
   }
 
   private bindFinish(): void {
     this.ipc.handle(
-      RoutesTaskEvent.FINISH,
+      RoutesTaskMethod.FINISH,
       async (): Promise<any> => this.app.getTasks().isFinish(),
     );
   }
@@ -66,6 +71,17 @@ export default class TasksRoutes extends AbstractModule {
   private onLog(event: RoutesTaskEvent.LOG, line: string): void {
     this.window.webContents.send(RoutesTaskEvent.LOG, {
       line,
+      type: this.app.getTasks().getType(),
+    });
+  }
+
+  private onBus(event: RoutesTaskEvent.BUS, body: BodyBus): void {
+    this.window.webContents.send(RoutesTaskEvent.BUS, body);
+  }
+
+  private onError(event: RoutesTaskEvent.ERROR, error: string): void {
+    this.window.webContents.send(RoutesTaskEvent.ERROR, {
+      error,
       type: this.app.getTasks().getType(),
     });
   }

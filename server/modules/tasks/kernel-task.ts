@@ -1,6 +1,6 @@
 import AbstractTask from './abstract-task';
 import type WatchProcess from '../../helpers/watch-process';
-import {KernelEvent, KernelOperation} from '../kernels/abstract-kernel';
+import {KernelEvent, KernelOperation, SessionType} from '../kernels/abstract-kernel';
 import Kernels, {type Kernel} from '../kernels';
 import type Command from '../command';
 import type FileSystem from '../file-system';
@@ -18,21 +18,21 @@ export default class KernelTask extends AbstractTask {
 
     this.onRun = this.onRun.bind(this);
     this.onLog = this.onLog.bind(this);
+    this.onError = this.onError.bind(this);
     this.onExit = this.onExit.bind(this);
   }
 
-  public async run(cmd: string, operation: KernelOperation): Promise<WatchProcess> {
+  public async run(cmd: string, operation: KernelOperation, session: SessionType = SessionType.RUN): Promise<WatchProcess> {
     this.cmd = cmd;
 
     this.unbindEvents();
     this.kernel = this.kernels.getKernel();
     this.bindEvents();
 
-
     if (KernelOperation.RUN === operation) {
-      this.task = await this.kernel.run(this.cmd);
+      this.task = await this.kernel.run(this.cmd, session);
     } else if (KernelOperation.INSTALL === operation) {
-      this.task = await this.kernel.run(this.cmd, 'run',{WINEDEBUG: ''});
+      this.task = await this.kernel.run(this.cmd, SessionType.RUN,{WINEDEBUG: ''});
     } else if (KernelOperation.REGISTER === operation) {
       this.task = await this.kernel.register(this.cmd);
     } else if (KernelOperation.LIBRARY === operation) {
@@ -49,6 +49,7 @@ export default class KernelTask extends AbstractTask {
 
     this.kernel.off(KernelEvent.RUN, this.onRun);
     this.kernel.off(KernelEvent.LOG, this.onLog);
+    this.kernel.off(KernelEvent.ERROR, this.onError);
     this.kernel.off(KernelEvent.EXIT, this.onExit);
   }
 
@@ -61,6 +62,7 @@ export default class KernelTask extends AbstractTask {
 
     this.kernel.on(KernelEvent.RUN, this.onRun);
     this.kernel.on(KernelEvent.LOG, this.onLog);
+    this.kernel.on(KernelEvent.ERROR, this.onError);
     this.kernel.on(KernelEvent.EXIT, this.onExit);
   }
 
@@ -70,6 +72,10 @@ export default class KernelTask extends AbstractTask {
 
   private onLog(event: KernelEvent.LOG, line: string): void {
     this.fireEvent(RoutesTaskEvent.LOG, line);
+  }
+
+  private onError(event: KernelEvent.ERROR, error: string): void {
+    this.fireEvent(RoutesTaskEvent.ERROR, error);
   }
 
   private onExit(): void {

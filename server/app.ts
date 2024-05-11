@@ -14,6 +14,7 @@ import Mount from './modules/mount';
 import LinkInfo from './modules/link-info';
 import Tasks from './modules/tasks';
 import Games from './modules/games';
+import Iso from './modules/iso';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -84,6 +85,13 @@ export class App {
     await this.APP_FOLDERS.create();
     await this.MOUNT_WINE.mount();
     await this.MOUNT_DATA.mount();
+  }
+
+  public async createIso(path: string): Promise<Iso> {
+    const iso: Iso = new Iso(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.UPDATE, this.SYSTEM, this.KERNELS, this.TASKS, path);
+    await iso.init();
+
+    return iso;
   }
 
   public getCommand(): Command {

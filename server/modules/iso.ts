@@ -1,20 +1,22 @@
 import process from 'process';
 import Utils from '../helpers/utils';
+import {AbstractModule} from './abstract-module';
 import FileSystem from './file-system';
 import AppFolders from './app-folders';
 import Command from './command';
 import Update from './update';
 import System from './system';
 import Kernels from './kernels';
-import {AbstractModule} from './abstract-module';
 import WatchProcess from '../helpers/watch-process';
-import {SessionType} from './kernels/abstract-kernel';
+import Tasks from './tasks';
+import {KernelOperation, SessionType} from './kernels/abstract-kernel';
+import type CallbackTask from './tasks/callback-task';
+import type {Progress} from './archiver';
 
 export enum IsoEvents {
   MOUNT = 'mount',
   UNMOUNT = 'unmount',
   ERROR_UNMOUNT = 'error_unmount',
-  PROGRESS = 'progress',
 }
 
 export default class Iso extends AbstractModule {
@@ -24,13 +26,14 @@ export default class Iso extends AbstractModule {
   private update: Update;
   private system: System;
   private kernels: Kernels;
+  private tasks: Tasks;
 
   private readonly image: string;
   private mounted: boolean = false;
   private folder: string;
   private folderMounted: string;
 
-  constructor(appFolders: AppFolders, command: Command, fs: FileSystem, update: Update, system: System, kernels: Kernels, image: string) {
+  constructor(appFolders: AppFolders, command: Command, fs: FileSystem, update: Update, system: System, kernels: Kernels, tasks: Tasks, image: string) {
     super();
 
     this.appFolders = appFolders;
@@ -39,6 +42,7 @@ export default class Iso extends AbstractModule {
     this.update = update;
     this.system = system;
     this.kernels = kernels;
+    this.tasks = tasks;
     this.image = image;
 
     this.doUnmount = this.doUnmount.bind(this);
@@ -95,8 +99,11 @@ export default class Iso extends AbstractModule {
       await this.fs.mkdir(this.folderMounted);
     }
 
-    const process: WatchProcess = await this.kernels.getKernel().run(
+    await this.tasks.wait();
+
+    const process: WatchProcess = await this.tasks.kernel(
       'reg add "HKEY_LOCAL_MACHINE\\Software\\Wine\\Drives" /v d: /d cdrom /f',
+      KernelOperation.RUN,
       SessionType.RUN_IN_PREFIX,
     );
 
@@ -119,8 +126,11 @@ export default class Iso extends AbstractModule {
       await this.fs.rm(this.folder);
     }
 
-    const process: WatchProcess = await this.kernels.getKernel().run(
+    await this.tasks.wait();
+
+    const process: WatchProcess = await this.tasks.kernel(
       'reg delete "HKEY_LOCAL_MACHINE\\Software\\Wine\\Drives" /v d: /f',
+      KernelOperation.RUN,
       SessionType.RUN_IN_PREFIX,
     );
 
@@ -168,14 +178,30 @@ export default class Iso extends AbstractModule {
     });
   }
 
-  public async fuseIso(): Promise<string> {
-    await this.update.downloadFuseIso(() => undefined);
+  public async fuseIso(): Promise<void> {
+    await this.tasks.wait();
 
-    const fuseIso: string = await this.appFolders.getFuseIsoFile();
-    const image: string = this.image;
-    const dir: string = this.folderMounted;
+    const process: WatchProcess = await this.tasks.callback(async (task: CallbackTask): Promise<void> => {
+      task.sendRun('Check "fuseiso".');
 
-    return this.command.exec(`"${fuseIso}" -p "${image}" "${dir}"`);
+      await this.update.downloadFuseIso((value: Progress) => {
+        task.sendProgress(value);
+      });
+
+      const fuseIso: string = await this.appFolders.getFuseIsoFile();
+      const image: string = this.image;
+      const dir: string = this.folderMounted;
+      const cmd: string = `"${fuseIso}" -p "${image}" "${dir}"`;
+
+      task.sendLog('Mount game image.');
+      task.sendLog(cmd);
+
+      await this.command.exec(cmd);
+
+      task.sendExit();
+    });
+
+    await process.wait();
   }
 
   public async size(): Promise<number> {

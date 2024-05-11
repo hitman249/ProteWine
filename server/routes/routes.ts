@@ -17,11 +17,21 @@ export enum RoutesGames {
   SAVE = 'games:save',
 }
 
+export enum RoutesIso {
+  MOUNT = 'iso:mount',
+  UNMOUNT = 'iso:unmount',
+}
+
 export enum RoutesTaskEvent {
-  LOG = 'task:log',
   RUN = 'task:run',
+  LOG = 'task:log',
+  ERROR = 'task:error',
   PROGRESS = 'task:progress',
+  BUS = 'task:bus',
   EXIT = 'task:exit',
+}
+
+export enum RoutesTaskMethod {
   KILL = 'task:kill',
   TYPE = 'task:type',
   FINISH = 'task:finish',
@@ -36,16 +46,18 @@ export default {
     RoutesFileSystem.LS,
     RoutesFileSystem.STORAGES,
     RoutesGames.LIST,
-    RoutesTaskEvent.KILL,
-    RoutesTaskEvent.TYPE,
-    RoutesTaskEvent.FINISH,
+    RoutesTaskMethod.KILL,
+    RoutesTaskMethod.TYPE,
+    RoutesTaskMethod.FINISH,
+    RoutesIso.MOUNT,
+    RoutesIso.UNMOUNT,
   ] as string[],
-  send: [
-
-  ] as string[],
+  send: [] as string[],
   receive: [
     RoutesTaskEvent.RUN,
     RoutesTaskEvent.LOG,
+    RoutesTaskEvent.ERROR,
+    RoutesTaskEvent.BUS,
     RoutesTaskEvent.PROGRESS,
     RoutesTaskEvent.EXIT,
   ] as string[],
