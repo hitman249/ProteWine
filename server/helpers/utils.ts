@@ -274,4 +274,20 @@ export default class Utils {
 
     return _.last(assets);
   }
+
+  public static convertBytes(bytes: number): string {
+    const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+    if (bytes === 0) {
+      return 'n/a';
+    }
+
+    const i: number = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))));
+
+    if (i === 0) {
+      return bytes + ' ' + sizes[i];
+    }
+
+    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+  }
 }

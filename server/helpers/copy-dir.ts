@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Utils from './utils';
 import fs from 'fs';
 import EventListener from './event-listener';
 import type {Progress} from '../modules/archiver';
@@ -88,6 +89,8 @@ export default class CopyDir extends EventListener {
         itemsComplete,
         totalBytes: this.size,
         transferredBytes: 0,
+        totalBytesFormatted: Utils.convertBytes(this.size),
+        transferredBytesFormatted: Utils.convertBytes(0),
       } as Progress);
     }
 
@@ -126,6 +129,8 @@ export default class CopyDir extends EventListener {
           itemsComplete,
           totalBytes: this.size,
           transferredBytes: transferredBytes,
+          totalBytesFormatted: Utils.convertBytes(this.size),
+          transferredBytesFormatted: Utils.convertBytes(transferredBytes),
         } as Progress);
       });
 

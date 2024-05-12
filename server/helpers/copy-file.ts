@@ -3,6 +3,7 @@ import EventListener from './event-listener';
 import type {Progress} from '../modules/archiver';
 import type FileSystem from '../modules/file-system';
 import type {Options} from './copy-dir';
+import Utils from './utils';
 
 export enum CopyFileEvent {
   PROGRESS = 'progress',
@@ -55,6 +56,8 @@ export default class CopyFile extends EventListener {
         progress: 100,
         totalBytes: 0,
         transferredBytes: 0,
+        totalBytesFormatted: Utils.convertBytes(0),
+        transferredBytesFormatted: Utils.convertBytes(0),
         path: this.src,
         itemsCount: 1,
         itemsComplete: 1,
@@ -72,6 +75,8 @@ export default class CopyFile extends EventListener {
           progress: 100,
           totalBytes: filesize,
           transferredBytes: filesize,
+          totalBytesFormatted: Utils.convertBytes(filesize),
+          transferredBytesFormatted: Utils.convertBytes(filesize),
           path: this.src,
           itemsCount: 1,
           itemsComplete: 1,
@@ -92,6 +97,8 @@ export default class CopyFile extends EventListener {
           progress: ((bytesCopied / filesize) * 100),
           totalBytes: filesize,
           transferredBytes: bytesCopied,
+          totalBytesFormatted: Utils.convertBytes(filesize),
+          transferredBytesFormatted: Utils.convertBytes(bytesCopied),
           path: this.src,
           itemsCount: 1,
           itemsComplete: 1,

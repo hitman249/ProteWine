@@ -32,7 +32,7 @@ export default class KernelTask extends AbstractTask {
     if (KernelOperation.RUN === operation) {
       this.task = await this.kernel.run(this.cmd, session);
     } else if (KernelOperation.INSTALL === operation) {
-      this.task = await this.kernel.run(this.cmd, SessionType.RUN,{WINEDEBUG: ''});
+      this.task = await this.kernel.run(this.cmd, SessionType.RUN,{WINEDEBUG: 'fixme-all'});
     } else if (KernelOperation.REGISTER === operation) {
       this.task = await this.kernel.register(this.cmd);
     } else if (KernelOperation.LIBRARY === operation) {

@@ -103,7 +103,7 @@ export default class Iso extends AbstractModule {
 
     const process: WatchProcess = await this.tasks.kernel(
       'reg add "HKEY_LOCAL_MACHINE\\Software\\Wine\\Drives" /v d: /d cdrom /f',
-      KernelOperation.RUN,
+      KernelOperation.INSTALL,
       SessionType.RUN_IN_PREFIX,
     );
 
@@ -130,7 +130,7 @@ export default class Iso extends AbstractModule {
 
     const process: WatchProcess = await this.tasks.kernel(
       'reg delete "HKEY_LOCAL_MACHINE\\Software\\Wine\\Drives" /v d: /f',
-      KernelOperation.RUN,
+      KernelOperation.INSTALL,
       SessionType.RUN_IN_PREFIX,
     );
 

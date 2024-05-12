@@ -15,6 +15,8 @@ export type Progress = {
   progress: number,
   totalBytes: number,
   transferredBytes: number,
+  totalBytesFormatted: string,
+  transferredBytesFormatted: string,
   path?: string,
   itemsCount?: number,
   itemsComplete?: number,
@@ -121,6 +123,8 @@ export default class Archiver extends EventListener {
         progress: progress.progress,
         totalBytes: progress.totalBytes,
         transferredBytes: progress.transferredBytes,
+        totalBytesFormatted: Utils.convertBytes(progress.totalBytes),
+        transferredBytesFormatted: Utils.convertBytes(progress.transferredBytes),
         itemsCount: progress.itemsCount,
         itemsComplete: progress.itemsComplete,
         path: progress.path,
@@ -149,11 +153,15 @@ export default class Archiver extends EventListener {
 
         prevPercent = percent;
 
+        const transferredBytes: number = size / 100 * Utils.toInt(percent);
+
         this.fireEvent(ArchiverEvent.PROGRESS, {
           success: true,
           progress: Utils.toInt(percent),
           totalBytes: size,
-          transferredBytes: size / 100 * Utils.toInt(percent),
+          transferredBytes,
+          totalBytesFormatted: Utils.convertBytes(size),
+          transferredBytesFormatted: Utils.convertBytes(transferredBytes),
           itemsCount: 1,
           itemsComplete: 1,
           path: this.src,
@@ -226,6 +234,8 @@ export default class Archiver extends EventListener {
         progress: Utils.toInt(percent),
         totalBytes: 0,
         transferredBytes: 0,
+        totalBytesFormatted: Utils.convertBytes(0),
+        transferredBytesFormatted: Utils.convertBytes(0),
         itemsCount: 1,
         itemsComplete: 1,
         path: this.src,

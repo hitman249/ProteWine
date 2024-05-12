@@ -5,6 +5,7 @@ import {AbstractModule} from '../../modules/abstract-module';
 import _ from 'lodash';
 import type {App} from '../../app';
 import {RoutesFileSystem} from '../routes';
+import Utils from '../../helpers/utils';
 
 export default class FileSystemRoutes extends AbstractModule {
   private readonly app: App;
@@ -43,7 +44,7 @@ export default class FileSystemRoutes extends AbstractModule {
             path: pathfile,
             directory,
             size,
-            sizeFormat: directory ? '' : fs.convertBytes(size),
+            sizeFormat: directory ? '' : Utils.convertBytes(size),
             extension: _.toLower(fs.extension(pathfile)),
             basename: fs.basename(pathfile),
             dirname: fs.dirname(pathfile),

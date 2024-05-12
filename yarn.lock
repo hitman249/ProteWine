@@ -2108,16 +2108,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^30.0.2":
-  version: 30.0.2
-  resolution: "electron@npm:30.0.2"
+"electron@npm:^30.0.3":
+  version: 30.0.3
+  resolution: "electron@npm:30.0.3"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/5fc8c002c821ce21949dcce2c021ac620be79e067a05b2fb577e0958458a7fdceb18ecce58f767c1ec0b5947293be0c638547264d60aa45292eeaf3dbde3b153
+  checksum: 10c0/8fc437e491fd7baa132fd4cbf74c0a6b2f0ff7db373f4e198764b2385266118051e1db6599377340c6a743422f63fc04f5d85c8289498f9fc770c9ea96421405
   languageName: node
   linkType: hard
 
@@ -4253,7 +4253,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^7.8.0"
     "@typescript-eslint/parser": "npm:^7.8.0"
     cookie: "npm:^0.6.0"
-    electron: "npm:^30.0.2"
+    electron: "npm:^30.0.3"
     electron-builder: "npm:24.13.3"
     eslint: "npm:^9.2.0"
     fetch-blob: "npm:^4.0.0"
