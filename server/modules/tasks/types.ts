@@ -9,4 +9,5 @@ export type BodyBus = {
   module: string,
   event: string,
   value: any,
+  date?: string,
 }

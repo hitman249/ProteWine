@@ -5,6 +5,7 @@ import type {App} from '../../app';
 import type Tasks from '../../modules/tasks';
 import {RoutesTaskEvent, RoutesTaskMethod} from '../routes';
 import type {BodyBus} from '../../modules/tasks/types';
+import Utils from '../../helpers/utils';
 
 export default class TasksRoutes extends AbstractModule {
   private readonly app: App;
@@ -65,6 +66,7 @@ export default class TasksRoutes extends AbstractModule {
     this.window.webContents.send(RoutesTaskEvent.RUN, {
       cmd,
       type: this.app.getTasks().getType(),
+      date: Utils.getFormattedDate(),
     });
   }
 
@@ -72,10 +74,12 @@ export default class TasksRoutes extends AbstractModule {
     this.window.webContents.send(RoutesTaskEvent.LOG, {
       line,
       type: this.app.getTasks().getType(),
+      date: Utils.getFormattedDate(),
     });
   }
 
   private onBus(event: RoutesTaskEvent.BUS, body: BodyBus): void {
+    body.date = Utils.getFormattedDate();
     this.window.webContents.send(RoutesTaskEvent.BUS, body);
   }
 
@@ -83,6 +87,7 @@ export default class TasksRoutes extends AbstractModule {
     this.window.webContents.send(RoutesTaskEvent.ERROR, {
       error,
       type: this.app.getTasks().getType(),
+      date: Utils.getFormattedDate(),
     });
   }
 
@@ -90,12 +95,14 @@ export default class TasksRoutes extends AbstractModule {
     this.window.webContents.send(RoutesTaskEvent.PROGRESS, {
       progress,
       type: this.app.getTasks().getType(),
+      date: Utils.getFormattedDate(),
     });
   }
 
   private onExit(): void {
     this.window.webContents.send(RoutesTaskEvent.EXIT, {
       type: this.app.getTasks().getType(),
+      date: Utils.getFormattedDate(),
     });
   }
 }

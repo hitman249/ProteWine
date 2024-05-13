@@ -290,4 +290,22 @@ export default class Utils {
 
     return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
   }
+
+  public static getFormattedDate(): string {
+    const date: Date = new Date();
+
+    const yyyy: number = date.getFullYear();
+    const mm: string = _.padStart((date.getMonth() + 1).toString(), 2, '0');
+    const dd: string = _.padStart(date.getDate().toString(), 2, '0');
+
+    const timePart: string = [
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+    ]
+      .map((n: number) => _.padStart(n.toString(), 2, '0'))
+      .join(':');
+
+    return `${dd}.${mm}.${yyyy} ${timePart}`;
+  }
 }
