@@ -11,6 +11,7 @@
   import {TaskType} from '../../../../server/modules/tasks/types';
   import {PopupNames} from '../../modules/popup';
   import Kernel from '../../modules/api/modules/kernel';
+  import Progress from '../Progress.svelte';
 
   let list: List;
   const data: FormData<MenuItem> = window.$app.getPopup().getData();
@@ -56,6 +57,7 @@
   function onRun(event: RoutesTaskEvent.RUN, data: {type: TaskType, cmd: string}): void {
     if (TaskType.KERNEL === data.type) {
       running = true;
+      pushLine('Kernel start.');
       pushLine(data.cmd);
     }
   }
@@ -68,6 +70,7 @@
 
   function onExit(event: RoutesTaskEvent.EXIT, data: {type: TaskType}): void {
     if (TaskType.KERNEL === data.type) {
+      pushLine('Kernel exit.');
       running = false;
       completed = true;
     }
@@ -118,15 +121,12 @@
 
 <div class="popup">
   <div class="header">
-    {#if completed}
-      Completed
-    {:else}
+    {#if !completed}
       Running
     {/if}
-
   </div>
   <div class="content">
-    <div class="center">
+    <div class="list">
       <List
         bind:this={list}
         {items}
@@ -140,14 +140,20 @@
         type={StickerType.LOG}
       />
     </div>
+
+    <div class="list-additional">
+      <div class="message">50%</div>
+      <Progress value={50} style="width: calc(100% - 500px); margin-top: 0px;"/>
+      <div class="message">Completed: 10Kb \ 1Gb</div>
+    </div>
   </div>
   <div class="footer">
-    {#if running}
-      <Loader style="margin-top: 10px;"/>
-    {/if}
-
     {#if completed}
       <div class="message">Press any key to exit.</div>
+    {/if}
+
+    {#if running}
+      <Loader style="margin-top: 10px;"/>
     {/if}
   </div>
 </div>
@@ -163,6 +169,18 @@
     top: 0;
     left: 0;
 
+    .message {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      font-weight: 100;
+      font-size: 16px;
+      text-align: center;
+      line-height: 18px;
+      margin-top: 12px;
+      margin-bottom: 14px;
+    }
+
     .header {
       display: flex;
       align-items: flex-end;
@@ -173,10 +191,10 @@
       left: 0;
       right: 0;
       margin: 0 auto;
-      border-bottom: rgb(255 255 255 / 80%) solid 1px;
       padding-bottom: 3px;
       font-weight: 100;
       font-size: 16px;
+      border-bottom: rgb(255 255 255 / 80%) solid 1px;
       filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
     }
 
@@ -189,25 +207,19 @@
       left: 0;
       right: 0;
       margin: 0 auto;
-      border-top: rgb(255 255 255 / 80%) solid 1px;
       justify-content: end;
+      border-top: rgb(255 255 255 / 80%) solid 1px;
+      filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
 
       .message {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
         position: absolute;
         margin: auto;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        padding-top: 3px;
-        font-weight: 100;
-        font-size: 16px;
-        filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
-        text-align: center;
+        height: 100%;
+        padding-top: 14px;
       }
     }
 
@@ -218,15 +230,57 @@
       flex: 1;
       justify-content: center;
 
-      .center {
+      .list {
         width: calc(100% - 100px);
-        height: 100%;
+        height: calc(100% - 150px);
         position: absolute;
         margin: auto;
         top: 0;
-        bottom: 0;
+        bottom: 100px;
         left: 0;
         right: 0;
+      }
+
+      .list-additional {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        //border-top: rgb(255 255 255 / 80%) solid 1px;
+        width: calc(100% - 100px);
+        height: 100px;
+        position: absolute;
+        margin: auto;
+        top: calc(100% - 125px);
+        left: 0;
+        right: 0;
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 212, 255, 30%) 50%, rgba(0, 0, 0, 0) 100%);
+
+        .message {
+          filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+        }
+
+        &:before {
+          position: absolute;
+          display: block;
+          content: '';
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+        }
+        &:after {
+          position: absolute;
+          display: block;
+          content: '';
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+          filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+        }
       }
     }
   }
