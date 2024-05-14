@@ -51,7 +51,7 @@ export default class Wine extends AbstractKernel {
       await this.fs.mkdir(prefix);
     }
 
-    return this.run('sc');
+    return this.run('sc', SessionType.RUN, {WINEDEBUG: 'fixme-all'});
   }
 
   public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {

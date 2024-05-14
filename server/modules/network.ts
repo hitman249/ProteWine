@@ -104,6 +104,7 @@ export default class Network extends AbstractModule {
           totalBytesFormatted: Utils.convertBytes(0),
           transferredBytesFormatted: Utils.convertBytes(0),
           path: url,
+          name: path.basename(url),
           itemsComplete: 1,
           itemsCount: 1,
         });
@@ -130,6 +131,7 @@ export default class Network extends AbstractModule {
                 totalBytesFormatted: Utils.convertBytes(contentLength),
                 transferredBytesFormatted: Utils.convertBytes(downloadedLength),
                 path: url,
+                name: path.basename(url),
                 itemsComplete: 1,
                 itemsCount: 1,
               });

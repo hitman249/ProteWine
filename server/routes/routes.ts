@@ -2,6 +2,7 @@ export enum RoutesKernel {
   VERSION = 'kernel:version',
   RUN = 'kernel:run',
   INSTALL = 'kernel:install',
+  CREATE_PREFIX = 'kernel:create-prefix',
   LAUNCHER = 'kernel:launcher',
 }
 
@@ -42,6 +43,7 @@ export default {
     RoutesKernel.RUN,
     RoutesKernel.LAUNCHER,
     RoutesKernel.INSTALL,
+    RoutesKernel.CREATE_PREFIX,
     RoutesKernel.VERSION,
     RoutesFileSystem.LS,
     RoutesFileSystem.STORAGES,

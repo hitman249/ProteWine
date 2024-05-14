@@ -9,14 +9,19 @@
   import FormData, {FileManagerMode, GameOperation} from '../../../models/form-data';
   import Loader from '../../Loader.svelte';
   import {PopupNames} from '../../../modules/popup';
+  import FileSystem from '../../../modules/api/modules/file-system';
+  import type Iso from '../../../modules/api/modules/iso';
+
+  const fsApi: FileSystem = window.$app.getApi().getFileSystem();
 
   let list: List;
   let data: File[] = undefined;
   let currentPath: string = '';
   let pathIndices: {[path: string]: number} = {};
 
-  const popupData: FormData<MenuItem> = window.$app.getPopup().getData();
-  const mode: FileManagerMode = popupData.getFileManagerMode();
+  const formData: FormData<MenuItem> = window.$app.getPopup().getData();
+  const mode: FileManagerMode = formData.getFileManagerMode();
+  const root: string = formData.getFileManagerRootPath();
 
   const value: Value = new Value({
     value: 'select',
@@ -57,13 +62,13 @@
           const select: ValueType = selectList.getItem();
 
           if ('execute' === select.value) {
-            popupData.setExtension(item.getExtension());
-            popupData.setPath(item.getPath());
-            window.$app.getPopup().open(PopupNames.EXECUTING, popupData);
+            formData.setExtension(item.getExtension());
+            formData.setPath(item.getPath());
+            window.$app.getPopup().open(PopupNames.EXECUTING, formData);
           } else if ('mount' === select.value) {
-            popupData.setFileManagerImage(true);
-            popupData.setPath(item.getPath());
-
+            formData.setFileManagerImage(true);
+            formData.setPath(item.getPath());
+            window.$app.getPopup().open(PopupNames.EXECUTING, formData);
           }
         }
 
@@ -73,7 +78,7 @@
       if (item && item.isDirectory()) {
         loading = true;
 
-        window.$app.getApi().getFileSystem().ls(item.path).then((files: File[]) => {
+        fsApi.ls(item.path).then((files: File[]) => {
           currentPath = item.path;
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {
@@ -103,14 +108,16 @@
         return;
       }
 
-      const operation: GameOperation = popupData.getOperation();
+      const operation: GameOperation = formData.getOperation();
 
       if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_IMAGE === operation)) {
         return keyboardWatch(event, KeyboardKey.ENTER);
       } else {
         selectListItems = value.getList().filter((value: ValueType) => {
           if ('execute' === value.value) {
-            return item.isExecutable() && popupData.isFileManagerExecutable();
+            return item.isExecutable() && formData.isFileManagerExecutable();
+          } else if ('mount' === value.value) {
+            return item.isDiskImage();
           }
 
           return false;
@@ -125,9 +132,15 @@
         return;
       }
 
+      let minLength: number = 0;
+
+      if (root) {
+        minLength = root.split('/').length - 1;
+      }
+
       const path: string[] = currentPath.split('/').slice(0, -1);
 
-      if (path.length === 0) {
+      if (path.length === minLength) {
         window.$app.getPopup().back();
         return;
       }
@@ -135,7 +148,7 @@
       currentPath = path.join('/');
       loading = true;
 
-      (currentPath ? window.$app.getApi().getFileSystem().ls(currentPath) : window.$app.getApi().getFileSystem().getStorages())
+      (currentPath ? fsApi.ls(currentPath) : fsApi.getStorages())
         .then((files: File[]) => {
           data = files.filter((file: File) => {
             if (FileManagerMode.EXECUTABLE === mode) {
@@ -162,14 +175,20 @@
 
   onMount(() => {
     bindEvents();
-    window.$app.getApi().getFileSystem().getStorages().then((files: File[]) => {
+
+    (root ? fsApi.ls(root) : fsApi.getStorages()).then((files: File[]) => {
       data = files;
       loading = false;
     });
   });
 
-  onDestroy(() => {
+  onDestroy(async () => {
     unbindEvents();
+
+    if (formData.isFileManagerImage()) {
+      const iso: Iso = window.$app.getApi().getIso();
+      await iso.unmount();
+    }
   });
 </script>
 

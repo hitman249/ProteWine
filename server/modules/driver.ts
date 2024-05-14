@@ -16,6 +16,7 @@ export default class Driver extends AbstractModule {
   private declare intel: GPU | false;
   private declare name: string;
   private declare opengl: string;
+  private declare vulkan: string;
 
   private readonly command: Command;
   private readonly system: System;
@@ -36,6 +37,7 @@ export default class Driver extends AbstractModule {
         'intel',
         'name',
         'opengl',
+        'vulkan',
       );
   }
 
@@ -192,39 +194,18 @@ export default class Driver extends AbstractModule {
     let driver: GPU | false = await this.getNvidia();
 
     if (driver) {
-      if ('nvidia' === driver.driver && version_compare(driver.version, '415.22', '<')) {
-        driver.info = 'Please install NVIDIA driver 415.22 or newer.';
-      }
-
       return driver;
     }
 
     driver = await this.getAmd();
 
     if (driver) {
-      if ('amdgpu-pro' === driver.driver && version_compare(driver.version, '18.50', '<')) {
-        driver.info = 'Please install AMDGPU PRO 18.50 or newer.';
-      }
-      if ('amdgpu' === driver.driver && version_compare(driver.mesa, '18.3', '<')) {
-        driver.info = 'Please install RADV Mesa 18.3 or newer.';
-      }
-
       return driver;
     }
 
     driver = await this.getIntel();
 
-    if (driver) {
-      if ('intel' === driver.driver && version_compare(driver.mesa, '18.3', '<')) {
-        driver.info = 'Please install Mesa 18.3 or newer.';
-      }
-    }
-
     return driver;
-  }
-
-  public async isGalliumNineSupport(): Promise<boolean> {
-    return Boolean((await this.getAmd()) || (await this.getIntel()));
   }
 
   public async getName(): Promise<string> {
@@ -271,13 +252,20 @@ export default class Driver extends AbstractModule {
     return this.opengl;
   }
 
-  public async isDefaultACO(): Promise<boolean> {
-    const version: string = await this.system.getMesaVersion();
-
-    if (!version) {
-      return true;
+  public async getVulkanVersion(): Promise<string> {
+    if (undefined !== this.vulkan) {
+      return this.vulkan;
     }
 
-    return version_compare(version, '20.2', '>');
+    let version: string = await this.command.exec("(ldconfig -v | grep libvulkan | grep -s -Po '\\.so\\.\\K([0-9]+\\.)*[0-9]+' | sed '/^1./!d' ) 2>/dev/null | sed '$ d'");
+
+    if (!version) {
+      this.vulkan = '';
+      return this.vulkan;
+    }
+
+    this.vulkan = version;
+
+    return this.vulkan;
   }
 }

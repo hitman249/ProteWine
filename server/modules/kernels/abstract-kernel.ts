@@ -7,6 +7,7 @@ import type WatchProcess from '../../helpers/watch-process';
 import EventListener from '../../helpers/event-listener';
 import Container from '../container';
 import Memory from '../../helpers/memory';
+import Utils from '../../helpers/utils';
 
 export enum KernelEvent {
   LOG = 'log',
@@ -18,6 +19,7 @@ export enum KernelEvent {
 export enum KernelOperation {
   RUN = 'run',
   INSTALL = 'install',
+  CREATE_PREFIX = 'create-prefix',
   REGISTER = 'regedit',
   LIBRARY = 'regsvr32',
 }
@@ -35,12 +37,16 @@ export enum SessionType {
 
 export type PathsType = {
   dosDevices: string,
+  driveC: string,
   system32: string,
   system64: string,
   logs: string,
   dxvk: string,
-  info: string,
+  metadata: string,
   cache: string,
+  iso: string,
+  install: string,
+  games: string,
 }
 
 export default abstract class AbstractKernel extends EventListener {
@@ -60,12 +66,16 @@ export default abstract class AbstractKernel extends EventListener {
 
   protected paths: PathsType = {
     dosDevices: '/dosdevices',
+    driveC: '/drive_c',
     system64: '/drive_c/windows/system32',
     system32: '/drive_c/windows/syswow64',
     logs: '/drive_c/logs',
     dxvk: '/drive_c/dxvk.conf',
-    info: '/drive_c/info',
+    metadata: '/drive_c/metadata',
     cache: '/drive_c/cache',
+    iso: '/drive_c/cache/iso',
+    install: '/drive_c/cache/install',
+    games: '/drive_c/Games',
   };
 
   constructor(path: string, system: System) {
@@ -149,6 +159,14 @@ export default abstract class AbstractKernel extends EventListener {
     return `${await this.getPrefixDir()}${this.paths.dosDevices}`;
   }
 
+  public async getDriveCDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.driveC}`;
+  }
+
+  public async getGamesDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.games}`;
+  }
+
   public async getSystem32Dir(): Promise<string> {
     return `${await this.getPrefixDir()}${this.paths.system32}`;
   }
@@ -161,8 +179,16 @@ export default abstract class AbstractKernel extends EventListener {
     return `${await this.getPrefixDir()}${this.paths.cache}`;
   }
 
-  public async getInfoDir(): Promise<string> {
-    return `${await this.getPrefixDir()}${this.paths.info}`;
+  public async getIsoDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.iso}`;
+  }
+
+  public async getInstallDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.install}`;
+  }
+
+  public async getMetadataDir(): Promise<string> {
+    return `${await this.getPrefixDir()}${this.paths.metadata}`;
   }
 
   public async getLogsDir(): Promise<string> {
@@ -171,5 +197,23 @@ export default abstract class AbstractKernel extends EventListener {
 
   public async getDxvkFile(): Promise<string> {
     return `${await this.getPrefixDir()}${this.paths.dxvk}`;
+  }
+
+  public async setMetadata(field: string, value: string | boolean | number): Promise<void> {
+    const path: string = await this.getMetadataDir();
+
+    if (!await this.fs.exists(path)) {
+      await this.fs.mkdir(path);
+    }
+
+    await this.fs.filePutContents(`${path}/${field}`, Utils.jsonEncode(value));
+  }
+
+  public async getMetadata(field: string): Promise<string | boolean | number | undefined> {
+    const path: string = `${await this.getMetadataDir()}/${field}`;
+
+    if (await this.fs.exists(path)) {
+      return Utils.jsonDecode(await this.fs.fileGetContents(path));
+    }
   }
 }

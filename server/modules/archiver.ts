@@ -18,6 +18,7 @@ export type Progress = {
   totalBytesFormatted: string,
   transferredBytesFormatted: string,
   path?: string,
+  name?: string,
   itemsCount?: number,
   itemsComplete?: number,
   event?: 'copy' | 'extract' | 'packing' | 'download',
@@ -128,6 +129,7 @@ export default class Archiver extends EventListener {
         itemsCount: progress.itemsCount,
         itemsComplete: progress.itemsComplete,
         path: progress.path,
+        name: this.fs.basename(progress.path),
         event: 'copy',
       } as Progress);
     });
@@ -165,6 +167,7 @@ export default class Archiver extends EventListener {
           itemsCount: 1,
           itemsComplete: 1,
           path: this.src,
+          name: this.fs.basename(this.src),
           event: 'extract',
         } as Progress);
       });
@@ -239,6 +242,7 @@ export default class Archiver extends EventListener {
         itemsCount: 1,
         itemsComplete: 1,
         path: this.src,
+        name: this.fs.basename(this.src),
         event: 'packing',
       } as Progress);
     });

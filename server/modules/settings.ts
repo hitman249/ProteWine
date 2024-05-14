@@ -1,5 +1,6 @@
-import {AbstractModule} from './abstract-module';
+import _ from 'lodash';
 import Utils from '../helpers/utils';
+import {AbstractModule} from './abstract-module';
 import type AppFolders from './app-folders';
 import type Command from './command';
 import type FileSystem from './file-system';
@@ -15,16 +16,14 @@ export default class Settings extends AbstractModule {
   private readonly command: Command;
   private readonly fs: FileSystem;
   private readonly system: System;
-  private readonly kernels: Kernels;
 
-  constructor(appFolders: AppFolders, command: Command, fs: FileSystem, system: System, kernels: Kernels) {
+  constructor(appFolders: AppFolders, command: Command, fs: FileSystem, system: System) {
     super();
 
     this.appFolders = appFolders;
     this.command = command;
     this.fs = fs;
     this.system = system;
-    this.kernels = kernels;
   }
 
   public async init(): Promise<any> {
@@ -61,8 +60,12 @@ export default class Settings extends AbstractModule {
     return (await this.appFolders.getRootDir()) + this.path;
   }
 
-  public getKernel(): Kernel {
-    return this.kernels.getKernel();
+  public getWindowsVersion(): string {
+    return _.get(this.config, 'windowsVersion');
+  }
+
+  public isPulse(): boolean {
+    return _.get(this.config, 'fixes.pulse', false);
   }
 
   public getDefaultConfig(): {} {
@@ -85,9 +88,10 @@ export default class Settings extends AbstractModule {
         mangohud: false,
       },
       fixes: {
+        pulse: true,
         focus: false,          // Fix focus
         noCrashDialog: false,  // No crash dialog
-        wineMenuBuilder: false,
+        wineMenuBuilder: true,
       },
     };
   }

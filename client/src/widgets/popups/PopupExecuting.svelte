@@ -1,5 +1,6 @@
 <script lang="ts">
   import {onDestroy, onMount, tick} from 'svelte';
+  import _ from 'lodash';
   import {StickerType} from '../stickers';
   import List from '../../components/list/List.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
@@ -8,15 +9,32 @@
   import Loader from '../Loader.svelte';
   import Tasks from '../../modules/api/modules/tasks';
   import {RoutesTaskEvent} from '../../../../server/routes/routes';
-  import {TaskType} from '../../../../server/modules/tasks/types';
+  import {type BodyBus, TaskType} from '../../../../server/modules/tasks/types';
   import {PopupNames} from '../../modules/popup';
   import Kernel from '../../modules/api/modules/kernel';
   import Progress from '../Progress.svelte';
+  import type {Progress as ProgressType} from '../../../../server/modules/archiver';
+  import type Iso from '../../modules/api/modules/iso';
+  import type {IsoData} from '../../../../server/routes/modules/iso';
 
   let list: List;
-  const data: FormData<MenuItem> = window.$app.getPopup().getData();
+  const formData: FormData<MenuItem> = window.$app.getPopup().getData();
   let running: boolean = false;
   let completed: boolean = false;
+  let progress: boolean = false;
+  let progressData: ProgressType = {
+    success: true,
+    progress: 0,
+    totalBytes: 0,
+    transferredBytes: 0,
+    totalBytesFormatted: '0',
+    transferredBytesFormatted: '0',
+    path: '',
+    name: '',
+    itemsCount: 0,
+    itemsComplete: 0,
+    event: 'download',
+  };
 
   let items: string[] = [];
 
@@ -36,7 +54,7 @@
       }
 
       if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key || KeyboardKey.LEFT === key) {
-        window.$app.getPopup().open(PopupNames.GAME_OPERATION, data).clearHistory();
+        window.$app.getPopup().open(PopupNames.GAME_OPERATION, formData).clearHistory();
         return;
       }
     }
@@ -55,6 +73,10 @@
   }
 
   function onRun(event: RoutesTaskEvent.RUN, data: {type: TaskType, cmd: string}): void {
+    if (progress) {
+      progress = false;
+    }
+
     if (TaskType.KERNEL === data.type) {
       running = true;
       pushLine('Kernel start.');
@@ -63,16 +85,46 @@
   }
 
   function onLog(event: RoutesTaskEvent.LOG, data: {type: TaskType, line: string}): void {
+    if (progress) {
+      progress = false;
+    }
+
     if (TaskType.KERNEL === data.type) {
       pushLine(data.line);
     }
   }
 
+  function onBus(event: RoutesTaskEvent.BUS, body: BodyBus): void {
+    if (progress) {
+      progress = false;
+    }
+
+    if ('iso' === body.module) {
+      const value: IsoData = body.value;
+      pushLine(`${body.module}.${body.event}: ${value.basename} (${value.src} -> ${value.dest})`);
+    }
+  }
+
+  function onProgress(event: RoutesTaskEvent.PROGRESS, data: {type: TaskType, progress: ProgressType}): void {
+    progressData = data.progress;
+
+    if (!progress) {
+      progress = true;
+    }
+  }
+
   function onExit(event: RoutesTaskEvent.EXIT, data: {type: TaskType}): void {
+    if (progress) {
+      progress = false;
+    }
+
     if (TaskType.KERNEL === data.type) {
       pushLine('Kernel exit.');
-      running = false;
-      completed = true;
+
+      if (GameOperation.INSTALL_IMAGE !== formData.getOperation()) {
+        running = false;
+        completed = true;
+      }
     }
   }
 
@@ -82,6 +134,8 @@
 
     tasks.on(RoutesTaskEvent.RUN, onRun);
     tasks.on(RoutesTaskEvent.LOG, onLog);
+    tasks.on(RoutesTaskEvent.BUS, onBus);
+    tasks.on(RoutesTaskEvent.PROGRESS, onProgress);
     tasks.on(RoutesTaskEvent.EXIT, onExit);
   }
 
@@ -92,15 +146,25 @@
 
     tasks.off(RoutesTaskEvent.RUN, onRun);
     tasks.off(RoutesTaskEvent.LOG, onLog);
+    tasks.off(RoutesTaskEvent.BUS, onBus);
+    tasks.off(RoutesTaskEvent.PROGRESS, onProgress);
     tasks.off(RoutesTaskEvent.EXIT, onExit);
   }
 
   onMount(async () => {
     bindEvents();
 
-    if (GameOperation.INSTALL_FILE === data.getOperation() && FileManagerMode.EXECUTABLE === data.getFileManagerMode()) {
+    if (GameOperation.INSTALL_FILE === formData.getOperation()) {
       const kernel: Kernel = window.$app.getApi().getKernel();
-      await kernel.install(`${await kernel.getLauncherByFileType(data.getExtension())} "${data.getPath()}"`);
+      await kernel.install(`${await kernel.getLauncherByFileType(formData.getExtension())} "${formData.getPath()}"`);
+    } else if (GameOperation.INSTALL_IMAGE === formData.getOperation()) {
+      const iso: Iso = window.$app.getApi().getIso();
+      const mountedPath: string = await iso.mount(formData.getPath());
+      formData.setFileManagerRootPath(mountedPath);
+      formData.setOperation(GameOperation.INSTALL_FILE);
+      formData.setFileManagerImage(true);
+
+      window.$app.getPopup().open(PopupNames.FILE_MANAGER, formData);
     }
   });
 
@@ -108,12 +172,15 @@
     unbindEvents();
 
     if (running) {
-      if (GameOperation.INSTALL_FILE === data.getOperation()) {
+      if (GameOperation.INSTALL_FILE === formData.getOperation()) {
         const tasks: Tasks = window.$app.getApi().getTasks();
 
         if (!(await tasks.isFinish()) && TaskType.KERNEL === (await tasks.getType())) {
           await tasks.kill();
         }
+      } else if (GameOperation.INSTALL_IMAGE === formData.getOperation()) {
+        // const iso: Iso = window.$app.getApi().getIso();
+        // await iso.unmount();
       }
     }
   });
@@ -126,7 +193,7 @@
     {/if}
   </div>
   <div class="content">
-    <div class="list">
+    <div class="list" class:with-progress={progress}>
       <List
         bind:this={list}
         {items}
@@ -141,10 +208,17 @@
       />
     </div>
 
-    <div class="list-additional">
-      <div class="message">50%</div>
-      <Progress value={50} style="width: calc(100% - 500px); margin-top: 0px;"/>
-      <div class="message">Completed: 10Kb \ 1Gb</div>
+    <div class="list-additional" class:with-progress={progress}>
+      <div class="message">{progressData.progress}%</div>
+      <Progress value={progressData.progress} style="width: calc(100% - 500px); margin-top: 0px;"/>
+      <div class="message">
+        {#if progressData.name}
+          {_.capitalize(progressData.event)}: {progressData.name}
+        {/if}
+
+        Completed: {progressData.transferredBytesFormatted} \ {progressData.totalBytesFormatted}
+        Files: {progressData.itemsComplete} \ {progressData.itemsCount}
+      </div>
     </div>
   </div>
   <div class="footer">
@@ -232,13 +306,18 @@
 
       .list {
         width: calc(100% - 100px);
-        height: calc(100% - 150px);
+        height: 100%;
         position: absolute;
         margin: auto;
         top: 0;
-        bottom: 100px;
+        bottom: 0;
         left: 0;
         right: 0;
+
+        &.with-progress {
+          height: calc(100% - 125px);
+          bottom: 125px;
+        }
       }
 
       .list-additional {
@@ -255,6 +334,12 @@
         left: 0;
         right: 0;
         background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 212, 255, 30%) 50%, rgba(0, 0, 0, 0) 100%);
+        opacity: 0;
+        transition: opacity 0.2s;
+
+        &.with-progress {
+          opacity: 1;
+        }
 
         .message {
           filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);

@@ -59,6 +59,7 @@ export default class CopyFile extends EventListener {
         totalBytesFormatted: Utils.convertBytes(0),
         transferredBytesFormatted: Utils.convertBytes(0),
         path: this.src,
+        name: this.fs.basename(this.src),
         itemsCount: 1,
         itemsComplete: 1,
       } as Progress);
@@ -78,6 +79,7 @@ export default class CopyFile extends EventListener {
           totalBytesFormatted: Utils.convertBytes(filesize),
           transferredBytesFormatted: Utils.convertBytes(filesize),
           path: this.src,
+          name: this.fs.basename(this.src),
           itemsCount: 1,
           itemsComplete: 1,
         } as Progress);
@@ -100,6 +102,7 @@ export default class CopyFile extends EventListener {
           totalBytesFormatted: Utils.convertBytes(filesize),
           transferredBytesFormatted: Utils.convertBytes(bytesCopied),
           path: this.src,
+          name: this.fs.basename(this.src),
           itemsCount: 1,
           itemsComplete: 1,
         } as Progress);

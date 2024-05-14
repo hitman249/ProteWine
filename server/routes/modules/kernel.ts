@@ -22,6 +22,7 @@ export default class KernelRoutes extends AbstractModule {
     this.bindLauncher();
     this.bindRun();
     this.bindInstall();
+    this.bindCreatePrefix();
   }
 
   private bindVersion(): void {
@@ -47,6 +48,16 @@ export default class KernelRoutes extends AbstractModule {
       async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
         this.app.getTasks()
           .kernel(cmd, KernelOperation.INSTALL)
+          .then(() => undefined),
+    );
+  }
+
+  private bindCreatePrefix(): void {
+    this.ipc.handle(
+      RoutesKernel.CREATE_PREFIX,
+      async (event: IpcMainInvokeEvent): Promise<any> =>
+        this.app.getTasks()
+          .kernel('', KernelOperation.CREATE_PREFIX)
           .then(() => undefined),
     );
   }

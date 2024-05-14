@@ -72,6 +72,8 @@ export default class IsoRoutes extends AbstractModule {
         this.iso = await this.app.createIso(path);
         this.bindEvents();
         await this.iso.mount();
+
+        return this.iso.getFolder();
       },
     );
   }
