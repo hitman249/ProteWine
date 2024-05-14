@@ -15,6 +15,7 @@ import LinkInfo from './modules/link-info';
 import Tasks from './modules/tasks';
 import Games from './modules/games';
 import Iso from './modules/iso';
+import Prefix from './modules/prefix';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -33,6 +34,7 @@ export class App {
   private readonly LINK_INFO: LinkInfo;
   private readonly TASKS: Tasks;
   private readonly GAMES: Games;
+  private readonly PREFIX: Prefix;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -52,6 +54,7 @@ export class App {
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM);
     this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM);
     this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS);
+    this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
 
     this.initOrder = [
       this.COMMAND,
@@ -68,6 +71,7 @@ export class App {
       this.LINK_INFO,
       this.TASKS,
       this.GAMES,
+      this.PREFIX,
     ];
   }
 
@@ -148,6 +152,10 @@ export class App {
 
   public getGames(): Games {
     return this.GAMES;
+  }
+
+  public getPrefix(): Prefix {
+    return this.PREFIX;
   }
 
   public getMountWine(): Mount {

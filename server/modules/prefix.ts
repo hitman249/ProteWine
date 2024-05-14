@@ -91,6 +91,15 @@ export default class Prefix extends AbstractModule {
     await this.updateSound();
   }
 
+  public async isExist(): Promise<boolean> {
+    return await this.fs.exists(await this.appFolders.getPrefixDir());
+  }
+
+  public async refresh(): Promise<void> {
+    await this.deletePrefix();
+    await this.create();
+  }
+
   private async createPrefix(): Promise<WatchProcess> {
     return this.tasks.kernel('', KernelOperation.CREATE_PREFIX);
   }
@@ -137,7 +146,7 @@ export default class Prefix extends AbstractModule {
 
       const path: string = `${(await kernel.getDriveCDir())}/sound.reg`;
 
-      if (pulse) {
+      if (newPulse) {
         regs.push('"Audio"="pulse"\n');
       } else {
         regs.push('"Audio"="alsa"\n');

@@ -23,6 +23,12 @@ export enum RoutesIso {
   UNMOUNT = 'iso:unmount',
 }
 
+export enum RoutesPrefix {
+  EXIST = 'prefix:exist',
+  CREATE = 'prefix:create',
+  REFRESH = 'prefix:refresh',
+}
+
 export enum RoutesTaskEvent {
   RUN = 'task:run',
   LOG = 'task:log',
@@ -53,6 +59,9 @@ export default {
     RoutesTaskMethod.FINISH,
     RoutesIso.MOUNT,
     RoutesIso.UNMOUNT,
+    RoutesPrefix.EXIST,
+    RoutesPrefix.CREATE,
+    RoutesPrefix.REFRESH,
   ] as string[],
   send: [] as string[],
   receive: [

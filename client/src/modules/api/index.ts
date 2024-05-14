@@ -4,6 +4,7 @@ import Kernel from './modules/kernel';
 import Tasks from './modules/tasks';
 import Games from './modules/games';
 import Iso from './modules/iso';
+import Prefix from './modules/prefix';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -11,6 +12,7 @@ export default class Api extends AbstractModule {
   private readonly TASKS: Tasks = new Tasks();
   private readonly GAMES: Games = new Games();
   private readonly ISO: Iso = new Iso();
+  private readonly PREFIX: Prefix = new Prefix();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
@@ -18,6 +20,7 @@ export default class Api extends AbstractModule {
     this.TASKS,
     this.GAMES,
     this.ISO,
+    this.PREFIX,
   ];
 
   public async init(): Promise<any> {
@@ -44,6 +47,10 @@ export default class Api extends AbstractModule {
 
   public getIso(): Iso {
     return this.ISO;
+  }
+
+  public getPrefix(): Prefix {
+    return this.PREFIX;
   }
 }
 
