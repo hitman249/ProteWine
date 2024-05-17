@@ -72,7 +72,7 @@ export default class CopyFile extends EventListener {
     return new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) => {
       if (filesize <= this.hw.highWaterMark) {
         this.fireEvent(CopyFileEvent.PROGRESS, {
-          success: true,
+          success: false,
           progress: 100,
           totalBytes: filesize,
           transferredBytes: filesize,
@@ -82,6 +82,7 @@ export default class CopyFile extends EventListener {
           name: this.fs.basename(this.src),
           itemsCount: 1,
           itemsComplete: 1,
+          event: 'copy',
         } as Progress);
       }
 
@@ -89,13 +90,19 @@ export default class CopyFile extends EventListener {
 
       const readStream: ReadStream = fs.createReadStream(this.src, this.hw);
 
-      readStream.on('end', () => resolve());
-      readStream.on('error', (err: NodeJS.ErrnoException) => reject(err));
+      readStream.on('end', () => {
+        this.fireEvent(CopyFileEvent.PROGRESS, Utils.getFullProgress('copy'));
+        resolve();
+      });
+      readStream.on('error', (err: NodeJS.ErrnoException) => {
+        this.fireEvent(CopyFileEvent.PROGRESS, Utils.getFullProgress('copy'));
+        reject(err);
+      });
       readStream.on('data', (chunk: Buffer): void => {
         bytesCopied += chunk.length;
 
         this.fireEvent(CopyFileEvent.PROGRESS, {
-          success: true,
+          success: false,
           progress: ((bytesCopied / filesize) * 100),
           totalBytes: filesize,
           transferredBytes: bytesCopied,
@@ -105,6 +112,7 @@ export default class CopyFile extends EventListener {
           name: this.fs.basename(this.src),
           itemsCount: 1,
           itemsComplete: 1,
+          event: 'copy',
         } as Progress);
       });
 

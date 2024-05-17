@@ -7,6 +7,7 @@
   import PopupSelectOperation from './widgets/popups/wizards/PopupSelectOperation.svelte';
   import PopupFileManager from './widgets/popups/wizards/PopupFileManager.svelte';
   import PopupExecuting from './widgets/popups/PopupExecuting.svelte';
+  import FormData, {GameOperation} from './models/form-data';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -29,6 +30,14 @@
     menu?.bindEvents();
     showPopup = false;
     showMenu = true;
+  });
+
+  window.$app.getApi().getPrefix().isProcessed().then((processed: boolean) => {
+    if (processed) {
+      const data: FormData<void> = new FormData();
+      data.setOperation(GameOperation.PREFIX);
+      popup.open(PopupNames.EXECUTING, data)
+    }
   });
 </script>
 

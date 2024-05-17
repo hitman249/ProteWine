@@ -82,7 +82,7 @@ export default class CopyDir extends EventListener {
       itemsComplete++;
 
       this.fireEvent(CopyDirEvent.PROGRESS, {
-        success: true,
+        success: false,
         progress: 100,
         path: source.src,
         name: this.fs.basename(source.src),
@@ -92,6 +92,7 @@ export default class CopyDir extends EventListener {
         transferredBytes: 0,
         totalBytesFormatted: Utils.convertBytes(this.size),
         transferredBytesFormatted: Utils.convertBytes(0),
+        event: 'copy',
       } as Progress);
     }
 
@@ -103,7 +104,7 @@ export default class CopyDir extends EventListener {
       await file.copy({overwrite});
 
       this.fireEvent(CopyDirEvent.PROGRESS, {
-        success: true,
+        success: false,
         progress: 100,
         path: source.src,
         name: this.fs.basename(source.src),
@@ -111,6 +112,7 @@ export default class CopyDir extends EventListener {
         itemsComplete,
         totalBytes: this.size,
         transferredBytes: 0,
+        event: 'copy',
       } as Progress);
     }
 
@@ -124,7 +126,7 @@ export default class CopyDir extends EventListener {
         const transferredBytes: number = bytesCopied + progress.transferredBytes;
 
         this.fireEvent(CopyDirEvent.PROGRESS, {
-          success: true,
+          success: false,
           progress: ((transferredBytes / this.size) * 100),
           path: source.src,
           name: this.fs.basename(source.src),
@@ -134,6 +136,7 @@ export default class CopyDir extends EventListener {
           transferredBytes: transferredBytes,
           totalBytesFormatted: Utils.convertBytes(this.size),
           transferredBytesFormatted: Utils.convertBytes(transferredBytes),
+          event: 'copy',
         } as Progress);
       });
 
@@ -141,6 +144,8 @@ export default class CopyDir extends EventListener {
 
       bytesCopied = bytesCopied + await file.getSize();
     }
+
+    this.fireEvent(CopyDirEvent.PROGRESS, Utils.getFullProgress('copy'));
   }
 
   private prepareSrc(src: string): Source {

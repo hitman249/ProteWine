@@ -10,6 +10,7 @@ import type Kernels from './kernels';
 import type {Kernel} from './kernels';
 import type System from './system';
 import type WatchProcess from '../helpers/watch-process';
+import type {Progress} from './archiver';
 
 export default class Prefix extends AbstractModule {
   private readonly command: Command;
@@ -19,6 +20,11 @@ export default class Prefix extends AbstractModule {
   private readonly tasks: Tasks;
   private readonly settings: Settings;
   private readonly system: System;
+
+  private processed: boolean = false;
+  private itemsComplete: number = 0;
+  private itemsCount: number = 6;
+  private lastProgress: Progress;
 
   constructor(appFolders: AppFolders, command: Command, fs: FileSystem, kernels: Kernels, tasks: Tasks, settings: Settings, system: System) {
     super();
@@ -36,13 +42,56 @@ export default class Prefix extends AbstractModule {
 
   }
 
+  public setProcessed(value: boolean): void {
+    this.processed = value;
+  }
+
+  private sendProgress(name: string, progress: number, success: boolean = false): void {
+    this.lastProgress = {
+      success,
+      progress,
+      totalBytes: 0,
+      transferredBytes: 0,
+      totalBytesFormatted: '',
+      transferredBytesFormatted: '',
+      itemsComplete: ++this.itemsComplete,
+      itemsCount: this.itemsCount,
+      path: '',
+      name,
+      event: 'prefix',
+    } as Progress;
+
+    this.sendLastProgress();
+  }
+
+  public sendLastProgress(): void {
+    if (this.lastProgress) {
+      this.tasks.sendProgress(this.lastProgress);
+    }
+  }
+
   public async create(): Promise<void> {
+    this.processed = true;
+    this.itemsComplete = 0;
+    this.lastProgress = undefined;
+
+    this.tasks.sendBus({
+      event: 'creating',
+      module: 'prefix',
+      value: undefined,
+    });
+
+    this.sendProgress('Creating prefix', 10);
     await this.createPrefix();
 
+
+    this.sendProgress('Creating metadata', 30);
     const kernel: Kernel = this.kernels.getKernel();
-    await kernel.setMetadata('version', await kernel.version());
+    await kernel.setMetadata('kernel', await kernel.version());
     await kernel.setMetadata('arch', 'win64');
 
+
+    this.sendProgress('Sandbox configuration', 40);
 
     /**
      * Sandbox disable
@@ -74,10 +123,16 @@ export default class Prefix extends AbstractModule {
       'reg delete "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\Namespace\\{9D20AAE8-0625-44B0-9CA7-71889C2254D9}" /va /f',
     );
 
+
+    this.sendProgress('Folders configuration', 60);
+
     /**
      * Create folders symlink
      */
     await this.updateFolders();
+
+
+    this.sendProgress('Windows Version configuration', 70);
 
     /**
      * Set Windows Version
@@ -85,14 +140,30 @@ export default class Prefix extends AbstractModule {
     await this.updateWindowsVersion();
 
 
+    this.sendProgress('Sound configuration', 80);
+
     /**
      * Set Pulse or Alsa
      */
     await this.updateSound();
+
+    this.processed = false;
+
+    this.sendProgress('', 100, true);
+
+    this.tasks.sendBus({
+      event: 'created',
+      module: 'prefix',
+      value: undefined,
+    });
   }
 
   public async isExist(): Promise<boolean> {
     return await this.fs.exists(await this.appFolders.getPrefixDir());
+  }
+
+  public isProcessed(): boolean {
+    return this.processed;
   }
 
   public async refresh(): Promise<void> {
@@ -101,7 +172,10 @@ export default class Prefix extends AbstractModule {
   }
 
   private async createPrefix(): Promise<WatchProcess> {
-    return this.tasks.kernel('', KernelOperation.CREATE_PREFIX);
+    const process: WatchProcess = await this.tasks.kernel('', KernelOperation.CREATE_PREFIX);
+    await process.wait();
+
+    return process;
   }
 
   private async deletePrefix(): Promise<void> {
@@ -135,7 +209,7 @@ export default class Prefix extends AbstractModule {
   private async updateSound(): Promise<void> {
     const kernel: Kernel = this.kernels.getKernel();
 
-    const pulse: boolean = Boolean(await kernel.getMetadata('sound'));
+    const pulse: boolean | undefined = await kernel.getMetadata('sound') as boolean | undefined;
     const newPulse: boolean = this.settings.isPulse() && await this.system.isPulse();
 
     if (pulse !== newPulse) {
@@ -169,7 +243,7 @@ export default class Prefix extends AbstractModule {
         'Windows Registry Editor Version 5.00\n',
       ];
 
-      let path: string = `${await kernel.getDriveCDir()}/updateWindowsVersion.reg`;
+      let path: string = `${await kernel.getDriveCDir()}/windowsVersion.reg`;
       let append: {[key: string]: {[key: string]: string}} = {};
 
       switch (newWindowsVersion) {

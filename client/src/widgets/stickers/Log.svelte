@@ -1,3 +1,6 @@
+<script context="module" lang="ts">
+  const SKIP: string[] = [':err:wineboot:', ':err:ntoskrnl:', ':err:ole:'];
+</script>
 <script lang="ts">
   import type {ValueType} from '../../modules/value';
 
@@ -18,12 +21,24 @@
     textShadow: '',
   };
 
+  function subExist(str: string | string[]): boolean {
+    str = Array.isArray(str) ? str : [str];
+
+    for (const item of str) {
+      if (-1 !== item.indexOf(':err:')) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   function getColor(item: string): ColorType {
     if (!item) {
       return defaultColor;
     }
 
-    if (-1 !== item.indexOf(':err:')) {
+    if (-1 !== item.indexOf(':err:') && !subExist(SKIP)) {
       return {
         // color: 'rgb(255,241,0)',
         color: 'rgb(247,255,0)',

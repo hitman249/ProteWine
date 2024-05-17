@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import iconv from 'iconv-lite';
 import type {ReadStream} from 'fs';
+import type {Progress} from '../modules/archiver';
 
 type CounterType = {count: number, codepage: string, str: string};
 
@@ -307,5 +308,21 @@ export default class Utils {
       .join(':');
 
     return `${dd}.${mm}.${yyyy} ${timePart}`;
+  }
+
+  public static getFullProgress(event: Progress['event']): Progress {
+    return {
+      success: true,
+      progress: 100,
+      totalBytes: 0,
+      transferredBytes: 0,
+      totalBytesFormatted: '',
+      transferredBytesFormatted: '',
+      itemsCount: 0,
+      itemsComplete: 0,
+      path: '',
+      name: '',
+      event,
+    } as Progress;
   }
 }

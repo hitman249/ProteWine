@@ -16,4 +16,12 @@ export default class Prefix extends AbstractModule {
   public async isExist(): Promise<boolean> {
     return (await window.electronAPI.invoke(RoutesPrefix.EXIST));
   }
+
+  public async isProcessed(): Promise<boolean> {
+    return (await window.electronAPI.invoke(RoutesPrefix.PROCESSED));
+  }
+
+  public async sendLastProgress(): Promise<void> {
+    return (await window.electronAPI.invoke(RoutesPrefix.PROGRESS));
+  }
 }

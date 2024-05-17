@@ -97,7 +97,7 @@ export default class Network extends AbstractModule {
         let downloadedLength: number = 0;
 
         progress({
-          success: contentLength > 0,
+          success: false,
           progress: 0,
           totalBytes: contentLength,
           transferredBytes: downloadedLength,
@@ -107,6 +107,7 @@ export default class Network extends AbstractModule {
           name: path.basename(url),
           itemsComplete: 1,
           itemsCount: 1,
+          event: 'download',
         });
 
         return new Promise((resolve: () => void, reject: () => void) => {
@@ -116,8 +117,14 @@ export default class Network extends AbstractModule {
           fileStream.on('error', reject);
 
           response.body.pipe(fileStream);
-          response.body.on('end', resolve);
-          response.body.on('error', reject);
+          response.body.on('end', () => {
+            progress(Utils.getFullProgress('download'));
+            resolve();
+          });
+          response.body.on('error', () => {
+            progress(Utils.getFullProgress('download'));
+            reject();
+          });
 
           if (contentLength > 0) {
             response.body.on('data', (chunk: Buffer) => {
@@ -134,6 +141,7 @@ export default class Network extends AbstractModule {
                 name: path.basename(url),
                 itemsComplete: 1,
                 itemsCount: 1,
+                event: 'download',
               });
             });
           }

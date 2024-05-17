@@ -18,14 +18,30 @@ export default class PrefixRoutes extends AbstractModule {
 
   public async init(): Promise<any> {
     this.bindExist();
+    this.bindProcessed();
     this.bindCreate();
     this.bindRefresh();
+    this.bindProgress();
   }
 
   private bindExist(): void {
     this.ipc.handle(
       RoutesPrefix.EXIST,
       async (): Promise<boolean> => this.app.getPrefix().isExist(),
+    );
+  }
+
+  private bindProcessed(): void {
+    this.ipc.handle(
+      RoutesPrefix.PROCESSED,
+      async (): Promise<boolean> => this.app.getPrefix().isProcessed(),
+    );
+  }
+
+  private bindProgress(): void {
+    this.ipc.handle(
+      RoutesPrefix.PROGRESS,
+      async (): Promise<void> => this.app.getPrefix().sendLastProgress(),
     );
   }
 

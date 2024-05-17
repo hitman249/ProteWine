@@ -21,7 +21,7 @@ export type Progress = {
   name?: string,
   itemsCount?: number,
   itemsComplete?: number,
-  event?: 'copy' | 'extract' | 'packing' | 'download',
+  event?: 'copy' | 'extract' | 'packing' | 'download' | 'prefix',
 };
 
 const ARCHIVES: string[] = [
@@ -120,7 +120,7 @@ export default class Archiver extends EventListener {
 
     await this.fs.mv(this.src, mvFile, {overwrite: true}, (progress: Progress) => {
       this.fireEvent(ArchiverEvent.PROGRESS, {
-        success: true,
+        success: false,
         progress: progress.progress,
         totalBytes: progress.totalBytes,
         transferredBytes: progress.transferredBytes,
@@ -133,6 +133,8 @@ export default class Archiver extends EventListener {
         event: 'copy',
       } as Progress);
     });
+
+    this.fireEvent(ArchiverEvent.PROGRESS, Utils.getFullProgress('copy'));
 
     if (!await this.fs.exists(mvFile)) {
       throw new Error(`Error found file: ${mvFile}`);
@@ -158,7 +160,7 @@ export default class Archiver extends EventListener {
         const transferredBytes: number = size / 100 * Utils.toInt(percent);
 
         this.fireEvent(ArchiverEvent.PROGRESS, {
-          success: true,
+          success: false,
           progress: Utils.toInt(percent),
           totalBytes: size,
           transferredBytes,
@@ -173,7 +175,10 @@ export default class Archiver extends EventListener {
       });
     }
 
-    this.process.wait().then(() => this.fs.rm(mvFile));
+    this.process.wait().then(() => {
+      this.fireEvent(ArchiverEvent.PROGRESS, Utils.getFullProgress('extract'));
+      this.fs.rm(mvFile);
+    });
 
     return this;
   }
@@ -233,7 +238,7 @@ export default class Archiver extends EventListener {
       prevPercent = percent;
 
       this.fireEvent(ArchiverEvent.PROGRESS, {
-        success: true,
+        success: false,
         progress: Utils.toInt(percent),
         totalBytes: 0,
         transferredBytes: 0,
@@ -246,6 +251,8 @@ export default class Archiver extends EventListener {
         event: 'packing',
       } as Progress);
     });
+
+    this.process.wait().then(() => this.fireEvent(ArchiverEvent.PROGRESS, Utils.getFullProgress('packing')));
 
     return this;
   }

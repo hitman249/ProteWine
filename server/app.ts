@@ -89,6 +89,11 @@ export class App {
     await this.APP_FOLDERS.create();
     await this.MOUNT_WINE.mount();
     await this.MOUNT_DATA.mount();
+
+    if (!await this.PREFIX.isExist()) {
+      this.PREFIX.setProcessed(true);
+      this.PREFIX.create().then(() => undefined);
+    }
   }
 
   public async createIso(path: string): Promise<Iso> {

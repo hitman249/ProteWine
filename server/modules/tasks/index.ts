@@ -78,6 +78,10 @@ export default class Tasks extends AbstractModule {
     this.fireEvent(RoutesTaskEvent.BUS, body);
   }
 
+  public sendProgress(progress: Progress): void {
+    this.fireEvent(RoutesTaskEvent.PROGRESS, progress);
+  }
+
   private onRun(event: RoutesTaskEvent.RUN, cmd: string): void {
     this.fireEvent(RoutesTaskEvent.RUN, cmd);
   }

@@ -6,6 +6,7 @@ export enum GameOperation {
   SYMLINK_GAME = 'symlink-game',
   IMPORT_LINK = 'import-link',
   WINETRICKS = 'winetricks',
+  PREFIX = 'prefix',
 }
 
 export enum FileManagerMode {
@@ -24,7 +25,7 @@ export default class FormData<T> {
   public fileManagerImage: boolean = false;
   public extension: string;
 
-  constructor(data: T) {
+  constructor(data?: T) {
     this.data = data;
   }
 

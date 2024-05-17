@@ -27,6 +27,8 @@ export enum RoutesPrefix {
   EXIST = 'prefix:exist',
   CREATE = 'prefix:create',
   REFRESH = 'prefix:refresh',
+  PROCESSED = 'prefix:processed',
+  PROGRESS = 'prefix:progress',
 }
 
 export enum RoutesTaskEvent {
@@ -62,6 +64,8 @@ export default {
     RoutesPrefix.EXIST,
     RoutesPrefix.CREATE,
     RoutesPrefix.REFRESH,
+    RoutesPrefix.PROCESSED,
+    RoutesPrefix.PROGRESS,
   ] as string[],
   send: [] as string[],
   receive: [

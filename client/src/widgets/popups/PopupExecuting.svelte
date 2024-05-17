@@ -4,7 +4,7 @@
   import {StickerType} from '../stickers';
   import List from '../../components/list/List.svelte';
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
-  import FormData, {FileManagerMode, GameOperation} from '../../models/form-data';
+  import FormData, {GameOperation} from '../../models/form-data';
   import type {MenuItem} from '../../modules/menu';
   import Loader from '../Loader.svelte';
   import Tasks from '../../modules/api/modules/tasks';
@@ -18,7 +18,8 @@
   import type {IsoData} from '../../../../server/routes/modules/iso';
 
   let list: List;
-  const formData: FormData<MenuItem> = window.$app.getPopup().getData();
+  const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
+  const blockExit: boolean = GameOperation.PREFIX === formData.getOperation();
   let running: boolean = false;
   let completed: boolean = false;
   let progress: boolean = false;
@@ -47,7 +48,7 @@
       list?.keyUp();
     }
 
-    if (running || completed) {
+    if ((running || completed) && !blockExit) {
       if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
         unbindEvents();
         window.$app.getPopup().back();
@@ -73,10 +74,6 @@
   }
 
   function onRun(event: RoutesTaskEvent.RUN, data: {type: TaskType, cmd: string}): void {
-    if (progress) {
-      progress = false;
-    }
-
     if (TaskType.KERNEL === data.type) {
       running = true;
       pushLine('Kernel start.');
@@ -85,43 +82,46 @@
   }
 
   function onLog(event: RoutesTaskEvent.LOG, data: {type: TaskType, line: string}): void {
-    if (progress) {
-      progress = false;
-    }
-
     if (TaskType.KERNEL === data.type) {
       pushLine(data.line);
     }
   }
 
   function onBus(event: RoutesTaskEvent.BUS, body: BodyBus): void {
-    if (progress) {
-      progress = false;
-    }
-
     if ('iso' === body.module) {
       const value: IsoData = body.value;
       pushLine(`${body.module}.${body.event}: ${value.basename} (${value.src} -> ${value.dest})`);
     }
+
+    if ('prefix' === body.module && 'created' === body.event) {
+      if (GameOperation.PREFIX === formData.getOperation()) {
+        window.$app.getPopup().clearHistory().back();
+      }
+    }
   }
 
   function onProgress(event: RoutesTaskEvent.PROGRESS, data: {type: TaskType, progress: ProgressType}): void {
-    progressData = data.progress;
+    if (Boolean(data.progress.success)) {
+      if (progress) {
+        progress = false;
+      }
+    } else {
+      progressData = data.progress;
 
-    if (!progress) {
-      progress = true;
+      if (!progress) {
+        progress = true;
+      }
     }
   }
 
   function onExit(event: RoutesTaskEvent.EXIT, data: {type: TaskType}): void {
-    if (progress) {
-      progress = false;
-    }
-
     if (TaskType.KERNEL === data.type) {
       pushLine('Kernel exit.');
 
-      if (GameOperation.INSTALL_IMAGE !== formData.getOperation()) {
+      if (
+        GameOperation.INSTALL_IMAGE !== formData.getOperation()
+        && GameOperation.PREFIX !== formData.getOperation()
+      ) {
         running = false;
         completed = true;
       }
@@ -165,6 +165,8 @@
       formData.setFileManagerImage(true);
 
       window.$app.getPopup().open(PopupNames.FILE_MANAGER, formData);
+    } else if (GameOperation.PREFIX === formData.getOperation()) {
+      await window.$app.getApi().getPrefix().sendLastProgress();
     }
   });
 
@@ -178,9 +180,8 @@
         if (!(await tasks.isFinish()) && TaskType.KERNEL === (await tasks.getType())) {
           await tasks.kill();
         }
-      } else if (GameOperation.INSTALL_IMAGE === formData.getOperation()) {
-        // const iso: Iso = window.$app.getApi().getIso();
-        // await iso.unmount();
+      } else if (GameOperation.PREFIX === formData.getOperation()) {
+        window.$app.getPopup().clearHistory().back();
       }
     }
   });
@@ -189,7 +190,11 @@
 <div class="popup">
   <div class="header">
     {#if !completed}
-      Running
+      {#if GameOperation.PREFIX === formData.getOperation()}
+        Prefix initialization
+      {:else}
+        Running
+      {/if}
     {/if}
   </div>
   <div class="content">
@@ -213,11 +218,25 @@
       <Progress value={progressData.progress} style="width: calc(100% - 500px); margin-top: 0px;"/>
       <div class="message">
         {#if progressData.name}
-          {_.capitalize(progressData.event)}: {progressData.name}
+          {#if GameOperation.PREFIX !== formData.getOperation()}
+            {_.capitalize(progressData.event)}:
+          {/if}
+          {progressData.name}.
         {/if}
 
-        Completed: {progressData.transferredBytesFormatted} \ {progressData.totalBytesFormatted}
-        Files: {progressData.itemsComplete} \ {progressData.itemsCount}
+        {#if progressData.totalBytesFormatted}
+          Completed: {progressData.transferredBytesFormatted} \ {progressData.totalBytesFormatted}.
+        {/if}
+
+        {#if progressData.itemsCount}
+          {#if GameOperation.PREFIX === formData.getOperation()}
+            Step:
+          {:else}
+            Files:
+          {/if}
+
+          [{progressData.itemsComplete}/{progressData.itemsCount}]
+        {/if}
       </div>
     </div>
   </div>
