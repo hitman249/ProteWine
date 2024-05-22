@@ -126,6 +126,18 @@ export default class Value {
         value: 'execute',
         title: 'Execute',
       },
+      {
+        value: 'move',
+        title: 'Move',
+      },
+      {
+        value: 'copy',
+        title: 'Copy',
+      },
+      {
+        value: 'symlink',
+        title: 'Create symlink',
+      },
     ],
   };
 

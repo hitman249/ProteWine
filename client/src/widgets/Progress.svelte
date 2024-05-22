@@ -6,7 +6,7 @@
 
 <div class="progress" {style}>
   <div
-    style={infinite ? '' : `width: ${value}%`}
+    style={infinite ? '' : `width: ${value.toFixed(2)}%`}
     class="value {infinite ? 'animate' : ''}"
   />
 </div>

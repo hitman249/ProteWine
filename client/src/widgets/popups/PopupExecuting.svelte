@@ -1,3 +1,10 @@
+<script lang="ts" context="module">
+  const COPY_FILES: string[] = [
+    GameOperation.COPY_GAME,
+    GameOperation.MOVE_GAME,
+    GameOperation.SYMLINK_GAME,
+  ];
+</script>
 <script lang="ts">
   import {onDestroy, onMount, tick} from 'svelte';
   import _ from 'lodash';
@@ -16,6 +23,8 @@
   import type {Progress as ProgressType} from '../../../../server/modules/archiver';
   import type Iso from '../../modules/api/modules/iso';
   import type {IsoData} from '../../../../server/routes/modules/iso';
+  import type AppFolders from '../../modules/api/modules/app-folders';
+  import type FileSystem from '../../modules/api/modules/file-system';
 
   let list: List;
   const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
@@ -79,10 +88,16 @@
       pushLine('Kernel start.');
       pushLine(data.cmd);
     }
+
+    if (TaskType.FILE_SYSTEM === data.type) {
+      running = true;
+      pushLine('Start.');
+      pushLine(data.cmd);
+    }
   }
 
   function onLog(event: RoutesTaskEvent.LOG, data: {type: TaskType, line: string}): void {
-    if (TaskType.KERNEL === data.type) {
+    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type) {
       pushLine(data.line);
     }
   }
@@ -126,6 +141,13 @@
         completed = true;
       }
     }
+
+    if (TaskType.FILE_SYSTEM === data.type) {
+      pushLine('Complete.');
+
+      running = false;
+      completed = true;
+    }
   }
 
   export function bindEvents(): void {
@@ -155,9 +177,20 @@
     bindEvents();
 
     if (GameOperation.INSTALL_FILE === formData.getOperation()) {
+      /**
+       * Install file
+       */
+
       const kernel: Kernel = window.$app.getApi().getKernel();
-      await kernel.install(`${await kernel.getLauncherByFileType(formData.getExtension())} "${formData.getPath()}"`);
+      await kernel.install(
+        `${await kernel.getLauncherByFileType(formData.getExtension())} "${formData.getPath()}"`
+      );
+
     } else if (GameOperation.INSTALL_IMAGE === formData.getOperation()) {
+      /**
+       * Mount image
+       */
+
       const iso: Iso = window.$app.getApi().getIso();
       const mountedPath: string = await iso.mount(formData.getPath());
       formData.setFileManagerRootPath(mountedPath);
@@ -165,8 +198,43 @@
       formData.setFileManagerImage(true);
 
       window.$app.getPopup().open(PopupNames.FILE_MANAGER, formData);
+
     } else if (GameOperation.PREFIX === formData.getOperation()) {
+      /**
+       * Creating prefix
+       */
+
       await window.$app.getApi().getPrefix().sendLastProgress();
+
+    } else if (GameOperation.COPY_GAME === formData.getOperation()) {
+      /**
+       * Copy game folder
+       */
+
+      const fs: FileSystem = window.$app.getApi().getFileSystem();
+      const appFolders: AppFolders = window.$app.getApi().getAppFolders();
+
+      await fs.cp(
+        formData.getPath(),
+        `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
+      );
+    } else if (GameOperation.MOVE_GAME === formData.getOperation()) {
+      /**
+       * Move game folder
+       */
+
+      const fs: FileSystem = window.$app.getApi().getFileSystem();
+      const appFolders: AppFolders = window.$app.getApi().getAppFolders();
+
+      await fs.mv(
+        formData.getPath(),
+        `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
+      );
+    } else if (GameOperation.SYMLINK_GAME === formData.getOperation()) {
+      /**
+       * Create symlink
+       */
+
     }
   });
 
@@ -184,6 +252,11 @@
         window.$app.getPopup().clearHistory().back();
       }
     }
+
+    if (formData.isFileManagerImage() && !formData.isFileManagerMountImage()) {
+      const iso: Iso = window.$app.getApi().getIso();
+      await iso.unmount();
+    }
   });
 </script>
 
@@ -192,6 +265,12 @@
     {#if !completed}
       {#if GameOperation.PREFIX === formData.getOperation()}
         Prefix initialization
+      {:else if GameOperation.COPY_GAME === formData.getOperation()}
+        Copying the game folder
+      {:else if GameOperation.MOVE_GAME === formData.getOperation()}
+        Moving the game folder
+      {:else if GameOperation.SYMLINK_GAME === formData.getOperation()}
+        Creating a link to the game folder
       {:else}
         Running
       {/if}
@@ -214,10 +293,10 @@
     </div>
 
     <div class="list-additional" class:with-progress={progress}>
-      <div class="message">{progressData.progress}%</div>
+      <div class="message">{progressData.progress.toFixed(2)}%</div>
       <Progress value={progressData.progress} style="width: calc(100% - 500px); margin-top: 0px;"/>
       <div class="message">
-        {#if progressData.name}
+        {#if progressData.name && -1 === COPY_FILES.indexOf(formData.getOperation())}
           {#if GameOperation.PREFIX !== formData.getOperation()}
             {_.capitalize(progressData.event)}:
           {/if}

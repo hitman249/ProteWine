@@ -11,13 +11,14 @@ import WatchProcessTask from './watch-process-task';
 import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType, BodyBus} from './types';
 import CallbackTask from './callback-task';
+import FileSystemTask from './fs-task';
 
 export default class Tasks extends AbstractModule {
   private readonly command: Command;
   private readonly kernels: Kernels;
   private readonly fs: FileSystem;
 
-  private current: KernelTask | ArchiverTask | WatchProcessTask | CallbackTask;
+  private current: KernelTask | ArchiverTask | WatchProcessTask | CallbackTask | FileSystemTask;
 
   constructor(command: Command, kernels: Kernels, fs: FileSystem) {
     super();
@@ -165,5 +166,21 @@ export default class Tasks extends AbstractModule {
     this.after();
 
     return this.current.run(callback);
+  }
+
+  public async cp(src: string, dest: string): Promise<void> {
+    this.before();
+    this.current = new FileSystemTask(this.command, this.kernels, this.fs);
+    this.after();
+
+    return this.current.cp(src, dest);
+  }
+
+  public async mv(src: string, dest: string): Promise<void> {
+    this.before();
+    this.current = new FileSystemTask(this.command, this.kernels, this.fs);
+    this.after();
+
+    return this.current.mv(src, dest);
   }
 }

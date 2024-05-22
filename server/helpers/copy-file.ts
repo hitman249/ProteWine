@@ -28,15 +28,15 @@ export default class CopyFile extends EventListener {
     await this.overwrite(overwrite);
     await this.getSize();
 
-    return new Promise((resolve: () => void, reject: (err?: NodeJS.ErrnoException) => void) => {
+    return new Promise((resolve: () => void, reject: (err?: string) => void) => {
       fs.rename(this.src, this.dest, (err: NodeJS.ErrnoException) => {
         if (err) {
           if ('EXDEV' === String(err.code).toUpperCase()) {
             return this.copy({overwrite})
               .then(() => this.fs.rm(this.src))
-              .then(() => resolve(), () => reject({path: this.src, code: 'REMOVE'} as NodeJS.ErrnoException));
+              .then(() => resolve(), () => reject(`Error move "${this.src}"`));
           } else {
-            return reject(err);
+            return reject(err.message);
           }
         }
 
@@ -69,7 +69,7 @@ export default class CopyFile extends EventListener {
 
     const filesize: number = await this.getSize();
 
-    return new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) => {
+    return new Promise((resolve: () => void, reject: (err: string) => void) => {
       if (filesize <= this.hw.highWaterMark) {
         this.fireEvent(CopyFileEvent.PROGRESS, {
           success: false,
@@ -96,7 +96,7 @@ export default class CopyFile extends EventListener {
       });
       readStream.on('error', (err: NodeJS.ErrnoException) => {
         this.fireEvent(CopyFileEvent.PROGRESS, Utils.getFullProgress('copy'));
-        reject(err);
+        reject(err.message);
       });
       readStream.on('data', (chunk: Buffer): void => {
         bytesCopied += chunk.length;
@@ -131,15 +131,15 @@ export default class CopyFile extends EventListener {
   }
 
   private async copySymlink(): Promise<void> {
-    return new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) => {
+    return new Promise((resolve: () => void, reject: (err: string) => void) => {
       fs.readlink(this.src, (err: NodeJS.ErrnoException, linkPath: string) => {
         if (err) {
-          return reject(err);
+          return reject(err.message);
         }
 
         fs.symlink(linkPath, this.dest, (err: NodeJS.ErrnoException) => {
           if (err) {
-            return reject(err);
+            return reject(err.message);
           }
 
           return resolve();
@@ -153,10 +153,10 @@ export default class CopyFile extends EventListener {
       return this.size;
     }
 
-    return new Promise((resolve: (value: number) => void, reject: (err: NodeJS.ErrnoException) => void) => {
+    return new Promise((resolve: (value: number) => void, reject: (err: string) => void) => {
       fs.lstat(this.src, (err: NodeJS.ErrnoException, stat: Stats): void => {
         if (err) {
-          return reject(err);
+          return reject(err.message);
         }
 
         this.size = stat.size;

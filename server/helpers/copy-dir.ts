@@ -53,15 +53,15 @@ export default class CopyDir extends EventListener {
       }
     }
 
-    return new Promise((resolve: () => void, reject: (err?: NodeJS.ErrnoException) => void) => {
+    return new Promise((resolve: () => void, reject: (err?: string) => void) => {
       fs.rename(this.src, this.dest, (err: NodeJS.ErrnoException) => {
         if (err) {
           if ('EXDEV' === String(err.code).toUpperCase()) {
             return this.copy({overwrite})
               .then(() => this.fs.rm(this.src))
-              .then(() => resolve(), () => reject({path: this.src, code: 'REMOVE'} as NodeJS.ErrnoException));
+              .then(() => resolve(), () => reject(`Error move "${this.src}"`));
           } else {
-            return reject(err);
+            return reject(err.message);
           }
         }
 

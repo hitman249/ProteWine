@@ -73,7 +73,7 @@ export default class IsoRoutes extends AbstractModule {
         this.bindEvents();
         await this.iso.mount();
 
-        return this.iso.getFolder();
+        return this.iso.getFolderInPrefix();
       },
     );
   }

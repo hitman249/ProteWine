@@ -23,6 +23,7 @@ export default class FormData<T> {
   public fileManagerRootPath: string;
   public fileManagerExecutable: boolean = false;
   public fileManagerImage: boolean = false;
+  public fileManagerMountImage: boolean = false;
   public extension: string;
 
   constructor(data?: T) {
@@ -99,5 +100,14 @@ export default class FormData<T> {
 
   public isFileManagerImage(): boolean {
     return this.fileManagerImage;
+  }
+
+  public setFileManagerMountImage(value: boolean): this {
+    this.fileManagerMountImage = Boolean(value);
+    return this;
+  }
+
+  public isFileManagerMountImage(): boolean {
+    return this.fileManagerMountImage;
   }
 }

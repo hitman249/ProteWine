@@ -58,18 +58,33 @@
       const item: File = list?.getItem();
 
       if (isSelectList) {
-        if (item && !item.isDirectory()) {
+        if (item) {
           const select: ValueType = selectList.getItem();
 
-          if ('execute' === select.value) {
-            formData.setExtension(item.getExtension());
-            formData.setPath(item.getPath());
-            window.$app.getPopup().open(PopupNames.EXECUTING, formData);
-          } else if ('mount' === select.value) {
-            formData.setFileManagerImage(true);
-            formData.setPath(item.getPath());
-            window.$app.getPopup().open(PopupNames.EXECUTING, formData);
+          switch (select.value) {
+            case 'execute':
+              formData.setFileManagerMountImage(false);
+              formData.setExtension(item.getExtension());
+              formData.setPath(item.getPath());
+
+              break;
+            case 'mount':
+              formData.setFileManagerMountImage(true);
+              formData.setFileManagerImage(true);
+              formData.setPath(item.getPath());
+
+              break;
+            case 'copy':
+            case 'move':
+            case 'symlink':
+              formData.setFileManagerMountImage(false);
+              formData.setFileManagerImage(false);
+              formData.setPath(item.getPath());
+
+              break;
           }
+
+          window.$app.getPopup().open(PopupNames.EXECUTING, formData);
         }
 
         return;
@@ -114,10 +129,17 @@
         return keyboardWatch(event, KeyboardKey.ENTER);
       } else {
         selectListItems = value.getList().filter((value: ValueType) => {
-          if ('execute' === value.value) {
-            return item.isExecutable() && formData.isFileManagerExecutable();
-          } else if ('mount' === value.value) {
-            return item.isDiskImage();
+          switch (value.value) {
+            case 'execute':
+              return item.isExecutable() && formData.isFileManagerExecutable();
+            case 'mount':
+              return item.isDiskImage();
+            case 'copy':
+              return formData.getOperation() === GameOperation.COPY_GAME;
+            case 'move':
+              return formData.getOperation() === GameOperation.MOVE_GAME;
+            case 'symlink':
+              return formData.getOperation() === GameOperation.SYMLINK_GAME;
           }
 
           return false;
@@ -185,7 +207,7 @@
   onDestroy(async () => {
     unbindEvents();
 
-    if (formData.isFileManagerImage()) {
+    if (formData.isFileManagerImage() && !window.$app.getPopup().isOpen(PopupNames.EXECUTING)) {
       const iso: Iso = window.$app.getApi().getIso();
       await iso.unmount();
     }

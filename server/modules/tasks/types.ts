@@ -3,6 +3,7 @@ export enum TaskType {
   KERNEL = 'kernel',
   WATCH_PROCESS = 'watch-process',
   CALLBACK = 'callback',
+  FILE_SYSTEM = 'fs',
 }
 
 export type BodyBus = {

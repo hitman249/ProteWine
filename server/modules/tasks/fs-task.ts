@@ -1,0 +1,76 @@
+import AbstractTask from './abstract-task';
+import type WatchProcess from '../../helpers/watch-process';
+import type Command from '../command';
+import type Kernels from '../kernels';
+import type FileSystem from '../file-system';
+import type {Progress} from '../archiver';
+import {RoutesTaskEvent} from '../../routes/routes';
+import {TaskType} from './types';
+
+export default class FileSystemTask extends AbstractTask {
+  protected type: TaskType = TaskType.FILE_SYSTEM;
+  private finish: boolean = false;
+
+  constructor(command: Command, kernels: Kernels, fs: FileSystem) {
+    super(command, kernels, fs);
+  }
+
+  private async handler(src: string, dest: string, op: 'cp' | 'mv'): Promise<void> {
+    const operation: any = op === 'cp' ? this.fs.cp.bind(this.fs) : this.fs.mv.bind(this.fs);
+    const title: string = op === 'cp' ? 'Copy' : 'Move';
+
+    if (this.task) {
+      if (!this.task.isFinish()) {
+        this.task.kill();
+      }
+    }
+
+    this.finish = false;
+
+    let resolve: (text: string) => void;
+
+    const promise: Promise<void> = new Promise((success: () => void) => (resolve = success));
+
+    this.task = {
+      resolve,
+      isFinish: (): boolean => this.finish,
+      wait: (): Promise<void> => promise,
+      kill: (): void => undefined,
+    } as unknown as WatchProcess;
+
+    this.fireEvent(RoutesTaskEvent.RUN, `${title} "${src}" to "${dest}".`);
+
+    let lastSrc: string;
+
+    operation(src, dest, undefined, (progress: Progress) => {
+      if (lastSrc !== progress.path) {
+        lastSrc = progress.path;
+
+        if (lastSrc) {
+          this.fireEvent(RoutesTaskEvent.LOG, `${title} "${lastSrc}".`);
+        }
+      }
+
+      this.fireEvent(RoutesTaskEvent.PROGRESS, progress);
+    })
+      .then(
+        () => {
+          this.finish = true;
+          this.fireEvent(RoutesTaskEvent.EXIT);
+        },
+        (err: string) => {
+          this.finish = true;
+          this.fireEvent(RoutesTaskEvent.ERROR, err);
+          this.fireEvent(RoutesTaskEvent.EXIT);
+        },
+      );
+  }
+
+  public async cp(src: string, dest: string): Promise<void> {
+    return this.handler(src, dest, 'cp');
+  }
+
+  public async mv(src: string, dest: string): Promise<void> {
+    return this.handler(src, dest, 'mv');
+  }
+}

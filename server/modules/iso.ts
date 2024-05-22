@@ -216,6 +216,10 @@ export default class Iso extends AbstractModule {
     return this.folder;
   }
 
+  public async getFolderInPrefix(): Promise<string> {
+    return (await this.kernels.getKernel().getCacheDir()) + '/iso';
+  }
+
   public getFolderMounted(): string {
     return this.folderMounted;
   }

@@ -22,6 +22,10 @@ export default class FileSystemRoutes extends AbstractModule {
   public async init(): Promise<any> {
     this.bindLs();
     this.bindStorages();
+    this.bindCopy();
+    this.bindMove();
+    this.bindBasename();
+    this.bindDirname();
   }
 
   private bindLs(): void {
@@ -109,6 +113,34 @@ export default class FileSystemRoutes extends AbstractModule {
           dirname: fs.dirname(path),
         }));
       },
+    );
+  }
+
+  private bindCopy(): void {
+    this.ipc.handle(
+      RoutesFileSystem.COPY,
+      async (event: IpcMainInvokeEvent, src: string, dest: string): Promise<any> => this.app.getTasks().cp(src, dest),
+    );
+  }
+
+  private bindMove(): void {
+    this.ipc.handle(
+      RoutesFileSystem.MOVE,
+      async (event: IpcMainInvokeEvent, src: string, dest: string): Promise<any> => this.app.getTasks().mv(src, dest),
+    );
+  }
+
+  private bindBasename(): void {
+    this.ipc.handle(
+      RoutesFileSystem.BASENAME,
+      async (event: IpcMainInvokeEvent, path: string): Promise<any> => this.app.getFileSystem().basename(path),
+    );
+  }
+
+  private bindDirname(): void {
+    this.ipc.handle(
+      RoutesFileSystem.DIRNAME,
+      async (event: IpcMainInvokeEvent, path: string): Promise<any> => this.app.getFileSystem().dirname(path),
     );
   }
 }

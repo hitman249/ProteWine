@@ -107,7 +107,7 @@ export default class Prefix extends AbstractModule {
     for await (const device of await this.fs.glob(`${await kernel.getDosDevicesDir()}/*`)) {
       const name: string = this.fs.basename(device);
 
-      if ('c:' !== name) {
+      if ('c:' !== name && 'z:' !== name) {
         await this.fs.rm(device);
       }
     }

@@ -1,3 +1,5 @@
+import AppFoldersRoutes from './modules/app-folders';
+
 export enum RoutesKernel {
   VERSION = 'kernel:version',
   RUN = 'kernel:run',
@@ -9,6 +11,10 @@ export enum RoutesKernel {
 export enum RoutesFileSystem {
   LS = 'fs:ls',
   STORAGES = 'fs:storages',
+  COPY = 'fs:copy',
+  MOVE = 'fs:move',
+  BASENAME = 'fs:basename',
+  DIRNAME = 'fs:dirname',
 }
 
 export enum RoutesGames {
@@ -21,6 +27,10 @@ export enum RoutesGames {
 export enum RoutesIso {
   MOUNT = 'iso:mount',
   UNMOUNT = 'iso:unmount',
+}
+
+export enum RoutesAppFolders {
+  GAMES = 'app-folders:games',
 }
 
 export enum RoutesPrefix {
@@ -55,6 +65,10 @@ export default {
     RoutesKernel.VERSION,
     RoutesFileSystem.LS,
     RoutesFileSystem.STORAGES,
+    RoutesFileSystem.COPY,
+    RoutesFileSystem.MOVE,
+    RoutesFileSystem.BASENAME,
+    RoutesFileSystem.DIRNAME,
     RoutesGames.LIST,
     RoutesTaskMethod.KILL,
     RoutesTaskMethod.TYPE,
@@ -66,6 +80,7 @@ export default {
     RoutesPrefix.REFRESH,
     RoutesPrefix.PROCESSED,
     RoutesPrefix.PROGRESS,
+    RoutesAppFolders.GAMES,
   ] as string[],
   send: [] as string[],
   receive: [
