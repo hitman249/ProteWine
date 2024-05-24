@@ -302,7 +302,7 @@
     </div>
 
     <div class="list-additional" class:with-progress={progress}>
-      <div class="message">{progressData.progress.toFixed(2)}%</div>
+      <div class="message">{Math.trunc(progressData.progress)}%</div>
       <Progress value={progressData.progress} style="width: calc(100% - 500px); margin-top: 0px;"/>
       <div class="message">
         {#if progressData.name && -1 === COPY_FILES.indexOf(formData.getOperation())}

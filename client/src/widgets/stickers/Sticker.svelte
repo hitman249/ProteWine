@@ -201,6 +201,7 @@
   />
 {:else if isLink(type)}
   <Link
+    {active}
     {dummy}
     {itemClass}
     {item}

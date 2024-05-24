@@ -11,7 +11,6 @@
   export let item: LinkInfoData = undefined;
 
   $: path = (item?.path).split('/drive_c/')?.[1]?.split('/')?.join('\\');
-
   $: descriptionExist = true;
 </script>
 
