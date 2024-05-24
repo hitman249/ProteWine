@@ -51,7 +51,7 @@ export class App {
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
     this.KERNELS = new Kernels(this.SYSTEM);
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM);
-    this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM);
+    this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS);
     this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM);
     this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS);
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);

@@ -3,7 +3,6 @@ import type {App} from '../../app';
 import {AbstractModule} from '../../modules/abstract-module';
 import {RoutesGames} from '../routes';
 
-
 export default class GamesRoutes extends AbstractModule {
   private readonly app: App;
   private readonly ipc: IpcMain;
@@ -18,12 +17,20 @@ export default class GamesRoutes extends AbstractModule {
 
   public async init(): Promise<any> {
     this.bindList();
+    this.bindFindLinks();
   }
 
   private bindList(): void {
     this.ipc.handle(
       RoutesGames.LIST,
       async (): Promise<any> => this.app.getGames().getList(),
+    );
+  }
+
+  private bindFindLinks(): void {
+    this.ipc.handle(
+      RoutesGames.FIND_LINKS,
+      async (): Promise<any> => this.app.getLinkInfo().findLinks(),
     );
   }
 }

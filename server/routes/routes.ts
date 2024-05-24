@@ -13,12 +13,14 @@ export enum RoutesFileSystem {
   STORAGES = 'fs:storages',
   COPY = 'fs:copy',
   MOVE = 'fs:move',
+  SYMLINK = 'fs:symlink',
   BASENAME = 'fs:basename',
   DIRNAME = 'fs:dirname',
 }
 
 export enum RoutesGames {
   LIST = 'games:list',
+  FIND_LINKS = 'games:find-links',
   CREATE = 'games:create',
   REMOVE = 'games:remove',
   SAVE = 'games:save',
@@ -67,9 +69,11 @@ export default {
     RoutesFileSystem.STORAGES,
     RoutesFileSystem.COPY,
     RoutesFileSystem.MOVE,
+    RoutesFileSystem.SYMLINK,
     RoutesFileSystem.BASENAME,
     RoutesFileSystem.DIRNAME,
     RoutesGames.LIST,
+    RoutesGames.FIND_LINKS,
     RoutesTaskMethod.KILL,
     RoutesTaskMethod.TYPE,
     RoutesTaskMethod.FINISH,

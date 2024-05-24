@@ -53,9 +53,16 @@
 
     if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key) {
       unbindEvents();
-      data.setOperation(list?.getItem()?.value);
-      data.setFileManagerExecutable(true);
-      window.$app.getPopup().open(PopupNames.FILE_MANAGER, data);
+      const operation: GameOperation = list?.getItem()?.value;
+
+      data.setOperation(operation);
+
+      if (GameOperation.IMPORT_LINK === operation) {
+        window.$app.getPopup().open(PopupNames.FIND_LINKS, data);
+      } else {
+        data.setFileManagerExecutable(true);
+        window.$app.getPopup().open(PopupNames.FILE_MANAGER, data);
+      }
 
       return;
     }

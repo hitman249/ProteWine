@@ -88,6 +88,14 @@
 
     return StickerType.LOG === type;
   }
+
+  function isLink(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.LINK === type;
+  }
 </script>
 <script lang="ts">
   import type {MenuItem} from '../../modules/menu';
@@ -99,6 +107,7 @@
   import File from './File.svelte';
   import Operation from './Operation.svelte';
   import Log from './Log.svelte';
+  import Link from './Link.svelte';
 
   export let active: boolean;
   export let dummy: boolean;
@@ -184,6 +193,14 @@
   />
 {:else if isLog(type)}
   <Log
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+  />
+{:else if isLink(type)}
+  <Link
     {dummy}
     {itemClass}
     {item}

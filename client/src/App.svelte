@@ -8,6 +8,7 @@
   import PopupFileManager from './widgets/popups/wizards/PopupFileManager.svelte';
   import PopupExecuting from './widgets/popups/PopupExecuting.svelte';
   import FormData, {GameOperation} from './models/form-data';
+  import PopupFindLinks from './widgets/popups/wizards/PopupFindLinks.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -59,6 +60,8 @@
       <PopupFileManager bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.EXECUTING}
       <PopupExecuting bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.FIND_LINKS}
+      <PopupFindLinks bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

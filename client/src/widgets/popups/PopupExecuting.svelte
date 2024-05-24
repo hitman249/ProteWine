@@ -28,7 +28,7 @@
 
   let list: List;
   const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
-  const blockExit: boolean = GameOperation.PREFIX === formData.getOperation();
+  let blockExit: boolean = GameOperation.PREFIX === formData.getOperation();
   let running: boolean = false;
   let completed: boolean = false;
   let progress: boolean = false;
@@ -91,6 +91,7 @@
 
     if (TaskType.FILE_SYSTEM === data.type) {
       running = true;
+      blockExit = true;
       pushLine('Start.');
       pushLine(data.cmd);
     }
@@ -147,6 +148,7 @@
 
       running = false;
       completed = true;
+      blockExit = false;
     }
   }
 
@@ -235,6 +237,13 @@
        * Create symlink
        */
 
+      const fs: FileSystem = window.$app.getApi().getFileSystem();
+      const appFolders: AppFolders = window.$app.getApi().getAppFolders();
+
+      await fs.ln(
+        formData.getPath(),
+        `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
+      );
     }
   });
 

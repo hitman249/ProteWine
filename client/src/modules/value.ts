@@ -138,6 +138,10 @@ export default class Value {
         value: 'symlink',
         title: 'Create symlink',
       },
+      {
+        value: 'import',
+        title: 'Import',
+      },
     ],
   };
 

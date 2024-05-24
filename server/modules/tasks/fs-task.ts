@@ -19,6 +19,10 @@ export default class FileSystemTask extends AbstractTask {
     const operation: any = op === 'cp' ? this.fs.cp.bind(this.fs) : this.fs.mv.bind(this.fs);
     const title: string = op === 'cp' ? 'Copy' : 'Move';
 
+    if (!await this.checkDest(src, dest, title)) {
+      return;
+    }
+
     if (this.task) {
       if (!this.task.isFinish()) {
         this.task.kill();
@@ -66,11 +70,44 @@ export default class FileSystemTask extends AbstractTask {
       );
   }
 
+  public async checkDest(src: string, dest: string, title: string): Promise<boolean> {
+    if (await this.fs.exists(dest)) {
+      this.fireEvent(RoutesTaskEvent.RUN, `${title} "${src}" to "${dest}".`);
+      this.fireEvent(RoutesTaskEvent.LOG, `The folder already exists: "${dest}".`);
+      this.fireEvent(RoutesTaskEvent.EXIT);
+
+      return false;
+    }
+
+    return true;
+  }
+
   public async cp(src: string, dest: string): Promise<void> {
     return this.handler(src, dest, 'cp');
   }
 
   public async mv(src: string, dest: string): Promise<void> {
     return this.handler(src, dest, 'mv');
+  }
+
+  public async ln(src: string, dest: string): Promise<void> {
+    this.fireEvent(RoutesTaskEvent.RUN, `Create symlink "${src}" to "${dest}".`);
+
+    if (await this.fs.exists(dest)) {
+      this.fireEvent(RoutesTaskEvent.LOG, `The folder already exists: "${dest}".`);
+      this.fireEvent(RoutesTaskEvent.EXIT);
+
+      return;
+    }
+
+    await this.fs.ln(src, dest);
+
+    if (await this.fs.exists(dest)) {
+      this.fireEvent(RoutesTaskEvent.LOG, `Created symlink: "${dest}".`);
+    } else {
+      this.fireEvent(RoutesTaskEvent.LOG, `Error creating symlink: "${dest}".`);
+    }
+
+    this.fireEvent(RoutesTaskEvent.EXIT);
   }
 }

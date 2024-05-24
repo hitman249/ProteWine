@@ -18,6 +18,10 @@ export default class FileSystem extends AbstractModule {
     return await window.electronAPI.invoke(RoutesFileSystem.MOVE, src, dest);
   }
 
+  public async ln(src: string, dest: string): Promise<void> {
+    return await window.electronAPI.invoke(RoutesFileSystem.SYMLINK, src, dest);
+  }
+
   public async basename(path: string): Promise<string> {
     return await window.electronAPI.invoke(RoutesFileSystem.BASENAME, path);
   }

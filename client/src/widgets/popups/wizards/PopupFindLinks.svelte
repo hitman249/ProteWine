@@ -4,24 +4,16 @@
   import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
   import Menu, {type MenuItem} from '../../../modules/menu';
   import List from '../../../components/list/List.svelte';
-  import File from '../../../models/file';
   import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
-  import FormData, {FileManagerMode, GameOperation} from '../../../models/form-data';
   import Loader from '../../Loader.svelte';
-  import {PopupNames} from '../../../modules/popup';
-  import FileSystem from '../../../modules/api/modules/file-system';
-  import type Iso from '../../../modules/api/modules/iso';
-
-  const fsApi: FileSystem = window.$app.getApi().getFileSystem();
+  import FormData, {GameOperation} from '../../../models/form-data';
+  import type {LinkInfoData} from '../../../../../server/modules/link-info';
+  import File from '../../../models/file';
 
   let list: List;
-  let data: File[] = undefined;
-  let currentPath: string = '';
-  let pathIndices: {[path: string]: number} = {};
+  let data: LinkInfoData[] = undefined;
 
   const formData: FormData<MenuItem> = window.$app.getPopup().getData();
-  const mode: FileManagerMode = formData.getFileManagerMode();
-  const root: string = formData.getFileManagerRootPath();
 
   const value: Value = new Value({
     value: 'select',
@@ -41,7 +33,6 @@
       }
 
       list.keyDown();
-      pathIndices[currentPath] = list.getIndex();
     }
 
     if (KeyboardKey.UP === key && list) {
@@ -51,68 +42,9 @@
       }
 
       list.keyUp();
-      pathIndices[currentPath] = list.getIndex();
     }
 
-    if (KeyboardKey.ENTER === key) {
-      const item: File = list?.getItem();
-
-      if (isSelectList) {
-        if (item) {
-          const select: ValueType = selectList.getItem();
-
-          switch (select.value) {
-            case 'execute':
-              formData.setFileManagerMountImage(false);
-              formData.setExtension(item.getExtension());
-              formData.setPath(item.getPath());
-
-              break;
-            case 'mount':
-              formData.setFileManagerMountImage(true);
-              formData.setFileManagerImage(true);
-              formData.setPath(item.getPath());
-
-              break;
-            case 'copy':
-            case 'move':
-            case 'symlink':
-              formData.setFileManagerMountImage(false);
-              formData.setFileManagerImage(false);
-              formData.setPath(item.getPath());
-
-              break;
-          }
-
-          window.$app.getPopup().open(PopupNames.EXECUTING, formData);
-        }
-
-        return;
-      }
-
-      if (item && item.isDirectory()) {
-        loading = true;
-
-        fsApi.ls(item.path).then((files: File[]) => {
-          currentPath = item.path;
-          data = files.filter((file: File) => {
-            if (FileManagerMode.EXECUTABLE === mode) {
-              return file.isDirectory() || file.isExecutable();
-            } else if (FileManagerMode.DIRECTORY === mode) {
-              return file.isDirectory();
-            } else if (FileManagerMode.IMAGE === mode) {
-              return file.isDirectory() || file.isDiskImage();
-            }
-          });
-          list.changeIndex(pathIndices?.[currentPath] || 0);
-          loading = false;
-        });
-      } else if (item && !item.isDirectory()) {
-        key = KeyboardKey.RIGHT;
-      }
-    }
-
-    if (KeyboardKey.RIGHT === key && list) {
+    if (((KeyboardKey.ENTER === key) || (KeyboardKey.RIGHT === key)) && list) {
       if (isSelectList) {
         return;
       }
@@ -123,29 +55,15 @@
         return;
       }
 
-      const operation: GameOperation = formData.getOperation();
+      selectListItems = value.getList().filter((value: ValueType) => {
+        switch (value.value) {
+          case 'import':
+            return formData.getOperation() === GameOperation.IMPORT_LINK;
+        }
 
-      if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_IMAGE === operation)) {
-        return keyboardWatch(event, KeyboardKey.ENTER);
-      } else {
-        selectListItems = value.getList().filter((value: ValueType) => {
-          switch (value.value) {
-            case 'execute':
-              return item.isExecutable() && formData.isFileManagerExecutable();
-            case 'mount':
-              return item.isDiskImage();
-            case 'copy':
-              return formData.getOperation() === GameOperation.COPY_GAME;
-            case 'move':
-              return formData.getOperation() === GameOperation.MOVE_GAME;
-            case 'symlink':
-              return formData.getOperation() === GameOperation.SYMLINK_GAME;
-          }
-
-          return false;
-        });
-        isSelectList = true;
-      }
+        return false;
+      });
+      isSelectList = true;
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
@@ -154,37 +72,8 @@
         return;
       }
 
-      let minLength: number = 0;
-
-      if (root) {
-        minLength = root.split('/').length - 1;
-      }
-
-      const path: string[] = currentPath.split('/').slice(0, -1);
-
-      if (path.length === minLength) {
-        unbindEvents();
-        window.$app.getPopup().back();
-        return;
-      }
-
-      currentPath = path.join('/');
-      loading = true;
-
-      (currentPath ? fsApi.ls(currentPath) : fsApi.getStorages())
-        .then((files: File[]) => {
-          data = files.filter((file: File) => {
-            if (FileManagerMode.EXECUTABLE === mode) {
-              return file.isDirectory() || file.isExecutable();
-            } else if (FileManagerMode.DIRECTORY === mode) {
-              return file.isDirectory();
-            } else if (FileManagerMode.IMAGE === mode) {
-              return file.isDirectory() || file.isDiskImage();
-            }
-          });
-          list.changeIndex(pathIndices?.[currentPath] || 0);
-          loading = false;
-        });
+      unbindEvents();
+      window.$app.getPopup().back();
     }
   };
 
@@ -199,35 +88,22 @@
   onMount(() => {
     bindEvents();
 
-    (root ? fsApi.ls(root) : fsApi.getStorages()).then((files: File[]) => {
-      data = files;
+    window.$app.getApi().getGames().findLinks().then((links: LinkInfoData[]) => {
+      data = links;
       loading = false;
     });
   });
 
   onDestroy(async () => {
     unbindEvents();
-
-    if (formData.isFileManagerImage() && !window.$app.getPopup().isOpen(PopupNames.EXECUTING)) {
-      const iso: Iso = window.$app.getApi().getIso();
-      await iso.unmount();
-    }
   });
 </script>
 
 <div class="popup">
   <div class="header">
-    <div class="left">{currentPath}</div>
+    <div class="left"></div>
     <div class="right">
-      {#if FileManagerMode.EXECUTABLE === mode}
-        Select installation file
-      {:else if FileManagerMode.DIRECTORY === mode}
-        Select the game folder
-      {:else if FileManagerMode.IMAGE === mode}
-        Select disk image
-      {:else}
-        File Manager
-      {/if}
+      Find links
     </div>
   </div>
   <div class="content">
@@ -243,7 +119,7 @@
           itemCenter={true}
           horizontal={false}
           extendItemClass="vertical-item"
-          type={StickerType.FILE}
+          type={StickerType.LINK}
           style="opacity: {data.length > 0 ? 1 : 0};"
         />
 

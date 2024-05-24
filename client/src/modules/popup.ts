@@ -5,6 +5,7 @@ export enum PopupNames {
   GAME_OPERATION = 'game-operation',
   FILE_MANAGER = 'file-manager',
   EXECUTING = 'executing',
+  FIND_LINKS = 'find-links',
 }
 
 export enum PopupEvents {

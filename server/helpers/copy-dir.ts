@@ -84,8 +84,8 @@ export default class CopyDir extends EventListener {
       this.fireEvent(CopyDirEvent.PROGRESS, {
         success: false,
         progress: 100,
-        path: source.src,
-        name: this.fs.basename(source.src),
+        path: source.dest,
+        name: this.fs.basename(source.dest),
         itemsCount: this.count,
         itemsComplete,
         totalBytes: this.size,
@@ -106,8 +106,8 @@ export default class CopyDir extends EventListener {
       this.fireEvent(CopyDirEvent.PROGRESS, {
         success: false,
         progress: 100,
-        path: source.src,
-        name: this.fs.basename(source.src),
+        path: source.dest,
+        name: this.fs.basename(source.dest),
         itemsCount: this.count,
         itemsComplete,
         totalBytes: this.size,
@@ -128,8 +128,8 @@ export default class CopyDir extends EventListener {
         this.fireEvent(CopyDirEvent.PROGRESS, {
           success: false,
           progress: ((transferredBytes / this.size) * 100),
-          path: source.src,
-          name: this.fs.basename(source.src),
+          path: source.dest,
+          name: this.fs.basename(source.dest),
           itemsCount: this.count,
           itemsComplete,
           totalBytes: this.size,

@@ -183,4 +183,12 @@ export default class Tasks extends AbstractModule {
 
     return this.current.mv(src, dest);
   }
+
+  public async ln(src: string, dest: string): Promise<void> {
+    this.before();
+    this.current = new FileSystemTask(this.command, this.kernels, this.fs);
+    this.after();
+
+    return this.current.ln(src, dest);
+  }
 }

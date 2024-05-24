@@ -24,6 +24,7 @@ export default class FileSystemRoutes extends AbstractModule {
     this.bindStorages();
     this.bindCopy();
     this.bindMove();
+    this.bindSymlink();
     this.bindBasename();
     this.bindDirname();
   }
@@ -127,6 +128,13 @@ export default class FileSystemRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesFileSystem.MOVE,
       async (event: IpcMainInvokeEvent, src: string, dest: string): Promise<any> => this.app.getTasks().mv(src, dest),
+    );
+  }
+
+  private bindSymlink(): void {
+    this.ipc.handle(
+      RoutesFileSystem.SYMLINK,
+      async (event: IpcMainInvokeEvent, src: string, dest: string): Promise<any> => this.app.getTasks().ln(src, dest),
     );
   }
 

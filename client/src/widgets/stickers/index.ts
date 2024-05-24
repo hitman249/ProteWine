@@ -7,4 +7,5 @@ export enum StickerType {
   FILE = 'file',
   OPERATION = 'operation',
   LOG = 'log',
+  LINK = 'link',
 }
