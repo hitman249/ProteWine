@@ -74,6 +74,7 @@ export default {
     RoutesFileSystem.DIRNAME,
     RoutesGames.LIST,
     RoutesGames.FIND_LINKS,
+    RoutesGames.CREATE,
     RoutesTaskMethod.KILL,
     RoutesTaskMethod.TYPE,
     RoutesTaskMethod.FINISH,

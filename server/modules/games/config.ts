@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {AbstractModule} from '../abstract-module';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
@@ -5,14 +6,13 @@ import type Settings from '../settings';
 import Utils from '../../helpers/utils';
 
 export type ConfigType = {
-  id: number,
+  createAt: number,
   game: {
     path: string,
-    exe: string,
     arguments: string,
     name: string,
-    sort: number,
-    time: number,
+    sort?: number,
+    time?: number,
   },
   env: {
     [field: string]: string,
@@ -81,12 +81,20 @@ export default class Config extends AbstractModule {
     return this.config;
   }
 
+  public set(path: string, value: any): void {
+    _.set(this.config, path, value);
+  }
+
+  public setPath(path: string): void {
+    const chunks: string[] = path.split('/drive_c/');
+    this.set('game.path', `/${chunks[chunks.length - 1]}`);
+  }
+
   public getDefaultConfig(): any {
     return {
-      id: 0,
+      createAt: 0,
       game: {
         path: '',
-        exe: '',
         arguments: '',
         name: '',
         sort: 500,

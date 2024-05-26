@@ -11,6 +11,10 @@ export default class Games extends AbstractModule {
     return (await window.electronAPI.invoke(RoutesGames.LIST));
   }
 
+  public async create(data: ConfigType['game']): Promise<ConfigType[]> {
+    return (await window.electronAPI.invoke(RoutesGames.CREATE, data));
+  }
+
   public async findLinks(): Promise<LinkInfoData[]> {
     return (await window.electronAPI.invoke(RoutesGames.FIND_LINKS));
   }

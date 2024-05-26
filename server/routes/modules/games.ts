@@ -1,7 +1,8 @@
-import type {BrowserWindow, IpcMain} from 'electron';
+import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
 import type {App} from '../../app';
 import {AbstractModule} from '../../modules/abstract-module';
 import {RoutesGames} from '../routes';
+import type {ConfigType} from '../../modules/games/config';
 
 export default class GamesRoutes extends AbstractModule {
   private readonly app: App;
@@ -18,6 +19,7 @@ export default class GamesRoutes extends AbstractModule {
   public async init(): Promise<any> {
     this.bindList();
     this.bindFindLinks();
+    this.bindCreate();
   }
 
   private bindList(): void {
@@ -31,6 +33,13 @@ export default class GamesRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesGames.FIND_LINKS,
       async (): Promise<any> => this.app.getLinkInfo().findLinks(),
+    );
+  }
+
+  private bindCreate(): void {
+    this.ipc.handle(
+      RoutesGames.CREATE,
+      async (event: IpcMainInvokeEvent, data: ConfigType['game']): Promise<any> => this.app.getGames().create(data),
     );
   }
 }

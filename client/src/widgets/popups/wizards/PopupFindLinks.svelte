@@ -8,7 +8,6 @@
   import Loader from '../../Loader.svelte';
   import FormData, {GameOperation} from '../../../models/form-data';
   import type {LinkInfoData} from '../../../../../server/modules/link-info';
-  import File from '../../../models/file';
 
   let list: List;
   let data: LinkInfoData[] = undefined;
@@ -45,13 +44,29 @@
     }
 
     if (((KeyboardKey.ENTER === key) || (KeyboardKey.RIGHT === key)) && list) {
-      if (isSelectList) {
+      const item: LinkInfoData = list?.getItem();
+
+      if (!item) {
         return;
       }
 
-      const item: File = list?.getItem();
+      if (isSelectList) {
+        const select: ValueType = selectList.getItem();
 
-      if (!item) {
+        switch (select.value) {
+          case 'import':
+            window.$app.getApi().getGames()
+              .create({
+                name: item.title,
+                arguments: item.arguments,
+                path: item.path,
+              })
+              .then(() => {
+                unbindEvents();
+                window.$app.getPopup().back();
+              });
+        }
+
         return;
       }
 

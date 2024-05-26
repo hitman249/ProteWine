@@ -27,6 +27,7 @@ export default class AppFolders extends AbstractModule {
   private savesDir: string = '/data/saves';
   private savesFoldersFile: string = '/data/saves/folders.json';
   private configsDir: string = '/data/configs';
+  private configsGamesDir: string = '/data/configs/games';
   private dxvkConfFile: string = '/data/configs/dxvk.conf';
   private dosboxConfFile: string = '/data/configs/dosbox.conf';
   private dosboxRuLangFile: string = '/data/configs/russian.txt';
@@ -65,6 +66,7 @@ export default class AppFolders extends AbstractModule {
         await this.getLogsDir(),
         await this.getCacheDir(),
         await this.getConfigsDir(),
+        await this.getConfigsGamesDir(),
         await this.getShareDir(),
         await this.getGamesDir(),
         await this.getSavesDir(),
@@ -209,6 +211,10 @@ export default class AppFolders extends AbstractModule {
 
   public async getConfigsDir(): Promise<string> {
     return await this.getRootDir() + this.configsDir;
+  }
+
+  public async getConfigsGamesDir(): Promise<string> {
+    return await this.getRootDir() + this.configsGamesDir;
   }
 
   public async getLogsDir(): Promise<string> {
