@@ -135,7 +135,7 @@
       pushLine('Kernel exit.');
 
       if (
-        GameOperation.INSTALL_IMAGE !== formData.getOperation()
+        GameOperation.INSTALL_DISK_IMAGE !== formData.getOperation()
         && GameOperation.PREFIX !== formData.getOperation()
       ) {
         running = false;
@@ -188,7 +188,7 @@
         `${await kernel.getLauncherByFileType(formData.getExtension())} "${formData.getPath()}"`
       );
 
-    } else if (GameOperation.INSTALL_IMAGE === formData.getOperation()) {
+    } else if (GameOperation.INSTALL_DISK_IMAGE === formData.getOperation()) {
       /**
        * Mount image
        */

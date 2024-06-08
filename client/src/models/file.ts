@@ -45,7 +45,7 @@ const ARCHIVE: string[] = [
 
 const IMAGE: string[] = [
   'gif',
-  'ico',
+  // 'ico',
   'jpeg',
   'jpg',
   'png',
@@ -163,7 +163,7 @@ export default class File {
     }
   }
 
-  public async getSize(): Promise<number> {
+  public getSize(): number {
     return this.size;
   }
 
@@ -177,6 +177,10 @@ export default class File {
 
   public isDiskImage(): boolean {
     return FileType.DISK_IMAGE === this.type;
+  }
+
+  public isImage(): boolean {
+    return FileType.IMAGE === this.type;
   }
 
   public getExtension(): string {

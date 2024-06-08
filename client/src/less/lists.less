@@ -74,10 +74,6 @@
       .icon {
         transition: opacity 0.2s;
       }
-
-      .footer {
-        transition: opacity 0.2s;
-      }
     }
   }
 }
@@ -145,4 +141,12 @@
 
 .vertical-item.active .description.exist {
   display: flex;
+}
+
+.popup .content.active {
+  .list {
+    .horizontal-item:not(.active) {
+      opacity: 0 !important;
+    }
+  }
 }

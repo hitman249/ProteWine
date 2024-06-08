@@ -28,7 +28,7 @@ export default class Games extends AbstractModule {
       return;
     }
 
-    const files: string[] = await this.fs.glob(await this.appFolders.getConfigsGamesDir() + '/*.json');
+    const files: string[] = await this.fs.glob(await this.appFolders.getConfigsGamesDir() + '/*/link.json');
     const configs: Config[] = [];
 
     for await (const file of files) {
@@ -46,10 +46,10 @@ export default class Games extends AbstractModule {
   public async create(data: ConfigType['game']): Promise<void> {
     const createAt: number = new Date().getTime();
     const configsGamesDir: string = await this.appFolders.getConfigsGamesDir();
-    let fileName: string = `${configsGamesDir}/${data.name}.json`;
+    let fileName: string = `${configsGamesDir}/${data.name}/link.json`;
 
     if (await this.fs.exists(fileName)) {
-      fileName = `${configsGamesDir}/${data.name}-${createAt}.json`;
+      fileName = `${configsGamesDir}/${data.name}-${createAt}/link.json`;
     }
 
     const config: Config = new Config(fileName, this.appFolders, this.fs, this.settings);

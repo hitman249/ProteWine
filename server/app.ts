@@ -16,6 +16,7 @@ import Tasks from './modules/tasks';
 import Games from './modules/games';
 import Iso from './modules/iso';
 import Prefix from './modules/prefix';
+import Gallery from './modules/gallery';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -35,6 +36,7 @@ export class App {
   private readonly TASKS: Tasks;
   private readonly GAMES: Games;
   private readonly PREFIX: Prefix;
+  private readonly GALLERY: Gallery;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -43,6 +45,7 @@ export class App {
     this.COMMAND = new Command();
     this.NETWORK = new Network();
     this.APP_FOLDERS = new AppFolders();
+    this.GALLERY = new Gallery();
     this.FILE_SYSTEM = new FileSystem(this.APP_FOLDERS);
     this.CACHE = new GlobalCache(this.APP_FOLDERS);
     this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE);
@@ -72,6 +75,7 @@ export class App {
       this.TASKS,
       this.GAMES,
       this.PREFIX,
+      this.GALLERY,
     ];
   }
 
@@ -161,6 +165,10 @@ export class App {
 
   public getPrefix(): Prefix {
     return this.PREFIX;
+  }
+
+  public getGallery(): Gallery {
+    return this.GALLERY;
   }
 
   public getMountWine(): Mount {

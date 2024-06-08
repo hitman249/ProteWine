@@ -9,7 +9,7 @@
   import Menu, {type MenuItem} from '../../../modules/menu';
 
   let list: List;
-  const data: FormData<MenuItem> = window.$app.getPopup().getData();
+  const formData: FormData<MenuItem> = window.$app.getPopup().getData();
 
   const items: ValueType[] = [
     {
@@ -17,7 +17,7 @@
       title: 'Install file',
     },
     {
-      value: GameOperation.INSTALL_IMAGE,
+      value: GameOperation.INSTALL_DISK_IMAGE,
       title: 'Install file from disk image',
     },
     {
@@ -55,13 +55,13 @@
       unbindEvents();
       const operation: GameOperation = list?.getItem()?.value;
 
-      data.setOperation(operation);
+      formData.setOperation(operation);
 
       if (GameOperation.IMPORT_LINK === operation) {
-        window.$app.getPopup().open(PopupNames.FIND_LINKS, data);
+        window.$app.getPopup().open(PopupNames.FIND_LINKS, formData);
       } else {
-        data.setFileManagerExecutable(true);
-        window.$app.getPopup().open(PopupNames.FILE_MANAGER, data);
+        formData.setFileManagerExecutable(true);
+        window.$app.getPopup().open(PopupNames.FILE_MANAGER, formData);
       }
 
       return;
@@ -86,7 +86,7 @@
 
     if (list) {
       let index: number;
-      const operation: GameOperation = data.getOperation();
+      const operation: GameOperation = formData.getOperation();
 
       for (let i: number = 0, max: number = items.length; i < max; i++) {
         if (operation === items[i].value) {

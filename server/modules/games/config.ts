@@ -66,6 +66,12 @@ export default class Config extends AbstractModule {
       await this.load();
     }
 
+    const folder: string = this.fs.dirname(path);
+
+    if (!await this.fs.exists(folder)) {
+      await this.fs.mkdir(folder);
+    }
+
     if (await this.fs.exists(path)) {
       await this.fs.rm(path);
     }

@@ -35,6 +35,11 @@ export enum RoutesAppFolders {
   GAMES = 'app-folders:games',
 }
 
+export enum RoutesGallery {
+  PORTRAITS = 'gallery:find-portraits',
+  ICONS = 'gallery:find-icons',
+}
+
 export enum RoutesPrefix {
   EXIST = 'prefix:exist',
   CREATE = 'prefix:create',
@@ -86,6 +91,8 @@ export default {
     RoutesPrefix.PROCESSED,
     RoutesPrefix.PROGRESS,
     RoutesAppFolders.GAMES,
+    RoutesGallery.PORTRAITS,
+    RoutesGallery.ICONS,
   ] as string[],
   send: [] as string[],
   receive: [

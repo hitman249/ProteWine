@@ -20,7 +20,7 @@
       return 'executable';
     }
 
-    if (GameOperation.INSTALL_IMAGE === item.value) {
+    if (GameOperation.INSTALL_DISK_IMAGE === item.value) {
       return 'disk-image';
     }
 

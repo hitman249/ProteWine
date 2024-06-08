@@ -55,24 +55,12 @@ export default class Value {
     ],
     manage: [
       {
-        value: 'create-icon',
-        title: 'Create icon',
-      },
-      {
-        value: 'create-icon',
-        title: 'Remove icon',
-      },
-      {
-        value: 'change-icon',
-        title: 'Change icon',
-      },
-      {
         value: 'change-poster',
         title: 'Change poster',
       },
       {
-        value: 'change-background',
-        title: 'Change background',
+        value: 'change-icon',
+        title: 'Change icon',
       },
       {
         value: 'remove-game',

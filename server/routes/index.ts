@@ -8,6 +8,7 @@ import GamesRoutes from './modules/games';
 import IsoRoutes from './modules/iso';
 import PrefixRoutes from './modules/prefix';
 import AppFoldersRoutes from './modules/app-folders';
+import GalleryRoutes from './modules/gallery';
 
 export default class Index {
   private readonly app: App;
@@ -21,6 +22,7 @@ export default class Index {
   private readonly ISO: IsoRoutes;
   private readonly PREFIX: PrefixRoutes;
   private readonly APP_FOLDERS: AppFoldersRoutes;
+  private readonly GALLERY: GalleryRoutes;
 
   private readonly modules: AbstractModule[] = [];
 
@@ -36,6 +38,7 @@ export default class Index {
     this.ISO = new IsoRoutes(ipcMain, window, app);
     this.PREFIX = new PrefixRoutes(ipcMain, window, app);
     this.APP_FOLDERS = new AppFoldersRoutes(ipcMain, window, app);
+    this.GALLERY = new GalleryRoutes(ipcMain, window, app);
 
     this.modules.push(
       this.FILE_SYSTEM,
@@ -45,6 +48,7 @@ export default class Index {
       this.ISO,
       this.PREFIX,
       this.APP_FOLDERS,
+      this.GALLERY,
     );
   }
 

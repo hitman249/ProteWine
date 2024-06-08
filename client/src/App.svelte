@@ -9,6 +9,7 @@
   import PopupExecuting from './widgets/popups/PopupExecuting.svelte';
   import FormData, {GameOperation} from './models/form-data';
   import PopupFindLinks from './widgets/popups/wizards/PopupFindLinks.svelte';
+  import PopupGallery from './widgets/popups/PopupGallery.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -62,6 +63,8 @@
       <PopupExecuting bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.FIND_LINKS}
       <PopupFindLinks bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.GALLERY}
+      <PopupGallery bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

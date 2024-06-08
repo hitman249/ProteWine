@@ -10,15 +10,21 @@
   export let item: File = undefined;
 
   $: descriptionExist = Boolean(active && !item?.isDirectory());
+  $: isImage = Boolean(item?.isImage()) && (item?.getSize() || 0) <= 2 * 1024 * 1024;
+  $: scale = isImage ? 0.8 : 0.3;
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
-  <div class="icon" style:transform="scale({1 + (0.3 * percent / 100)})">
+  <div class="icon" style:transform="scale({1 + (scale * percent / 100)})">
     {#if item}
-      <Icon
-        icon={item?.getType()}
-        status={active && percent > 90 ? 'focused' : 'normal'}
-      />
+      {#if isImage}
+        <img src={`local://${item.getPath()}`} alt="" class="preview">
+      {:else}
+        <Icon
+          icon={item?.getType()}
+          status={active && percent > 90 ? 'focused' : 'normal'}
+        />
+      {/if}
     {/if}
   </div>
   <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
@@ -63,6 +69,11 @@
     flex-shrink: 0;
     transition: filter 0.6s;
     filter: drop-shadow(transparent 0px 0px 0px);
+  }
+
+  .preview {
+    max-width: 80px;
+    max-height: 80px;
   }
 
   .footer {

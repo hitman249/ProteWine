@@ -82,6 +82,14 @@
               formData.setPath(item.getPath());
 
               break;
+            case 'import':
+              if (FileManagerMode.IMAGE === mode) {
+                unbindEvents();
+                window.$app.getPopup().back();
+                return;
+              }
+
+              break;
           }
 
           window.$app.getPopup().open(PopupNames.EXECUTING, formData);
@@ -101,6 +109,8 @@
             } else if (FileManagerMode.DIRECTORY === mode) {
               return file.isDirectory();
             } else if (FileManagerMode.IMAGE === mode) {
+              return file.isDirectory() || file.isImage();
+            } else if (FileManagerMode.DISK_IMAGE === mode) {
               return file.isDirectory() || file.isDiskImage();
             }
           });
@@ -125,7 +135,7 @@
 
       const operation: GameOperation = formData.getOperation();
 
-      if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_IMAGE === operation)) {
+      if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_DISK_IMAGE === operation || GameOperation.SELECT_IMAGE === operation)) {
         return keyboardWatch(event, KeyboardKey.ENTER);
       } else {
         selectListItems = value.getList().filter((value: ValueType) => {
@@ -140,10 +150,13 @@
               return formData.getOperation() === GameOperation.MOVE_GAME;
             case 'symlink':
               return formData.getOperation() === GameOperation.SYMLINK_GAME;
+            case 'import':
+              return formData.getOperation() === GameOperation.SELECT_IMAGE;
           }
 
           return false;
         });
+
         isSelectList = true;
       }
     }
@@ -179,6 +192,8 @@
             } else if (FileManagerMode.DIRECTORY === mode) {
               return file.isDirectory();
             } else if (FileManagerMode.IMAGE === mode) {
+              return file.isDirectory() || file.isImage();
+            } else if (FileManagerMode.DISK_IMAGE === mode) {
               return file.isDirectory() || file.isDiskImage();
             }
           });
@@ -223,8 +238,10 @@
         Select installation file
       {:else if FileManagerMode.DIRECTORY === mode}
         Select the game folder
-      {:else if FileManagerMode.IMAGE === mode}
+      {:else if FileManagerMode.DISK_IMAGE === mode}
         Select disk image
+      {:else if FileManagerMode.IMAGE === mode}
+        Select image
       {:else}
         File Manager
       {/if}

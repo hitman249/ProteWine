@@ -96,6 +96,14 @@
 
     return StickerType.LINK === type;
   }
+
+  function isImage(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.IMAGE === type;
+  }
 </script>
 <script lang="ts">
   import type {MenuItem} from '../../modules/menu';
@@ -108,6 +116,7 @@
   import Operation from './Operation.svelte';
   import Log from './Log.svelte';
   import Link from './Link.svelte';
+  import Image from './Image.svelte';
 
   export let active: boolean;
   export let dummy: boolean;
@@ -201,6 +210,15 @@
   />
 {:else if isLink(type)}
   <Link
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+  />
+{:else if isImage(type)}
+  <Image
     {active}
     {dummy}
     {itemClass}

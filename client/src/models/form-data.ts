@@ -1,16 +1,18 @@
 export enum GameOperation {
   INSTALL_FILE = 'install-file',
-  INSTALL_IMAGE = 'install-image',
+  INSTALL_DISK_IMAGE = 'install-disk-image',
   COPY_GAME = 'copy-game',
   MOVE_GAME = 'move-game',
   SYMLINK_GAME = 'symlink-game',
   IMPORT_LINK = 'import-link',
   WINETRICKS = 'winetricks',
   PREFIX = 'prefix',
+  SELECT_IMAGE = 'select-image',
 }
 
 export enum FileManagerMode {
   EXECUTABLE = 'executable',
+  DISK_IMAGE = 'disk-image',
   IMAGE = 'image',
   DIRECTORY = 'directory',
 }
@@ -19,6 +21,7 @@ export default class FormData<T> {
   public operation: GameOperation;
   public path: string;
   public data: T;
+  public additionalData: any;
   public fileManagerMode: FileManagerMode;
   public fileManagerRootPath: string;
   public fileManagerExecutable: boolean = false;
@@ -30,8 +33,12 @@ export default class FormData<T> {
     this.data = data;
   }
 
-  public getAdditionalData(): T {
-    return this.data;
+  public getAdditionalData(): any {
+    return this.additionalData;
+  }
+
+  public setAdditionalData(data: any): any {
+    this.additionalData = data;
   }
 
   public setOperation(operation: GameOperation): this {
@@ -39,7 +46,9 @@ export default class FormData<T> {
 
     if (GameOperation.INSTALL_FILE === operation) {
       this.fileManagerMode = FileManagerMode.EXECUTABLE;
-    } else if (GameOperation.INSTALL_IMAGE === operation) {
+    } else if (GameOperation.INSTALL_DISK_IMAGE === operation) {
+      this.fileManagerMode = FileManagerMode.DISK_IMAGE;
+    } else if (GameOperation.SELECT_IMAGE === operation) {
       this.fileManagerMode = FileManagerMode.IMAGE;
     } else if (GameOperation.COPY_GAME === operation || GameOperation.MOVE_GAME === operation || GameOperation.SYMLINK_GAME === operation) {
       this.fileManagerMode = FileManagerMode.DIRECTORY;

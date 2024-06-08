@@ -2,8 +2,10 @@ import EventListener from '../../../server/helpers/event-listener';
 import Helpers from './helpers';
 import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 import {PopupNames} from './popup';
+import type Config from '../models/config';
+import type {ConfigType} from '../../../server/modules/games/config';
 
-type MenuItemType = {
+export type MenuItemType = {
   id: string,
   title: string,
   icon?: string,
@@ -11,7 +13,7 @@ type MenuItemType = {
   description?: string,
   template?: ValueLabels,
   click?: () => void,
-  items?: () => MenuItemType[],
+  items?: () => Promise<MenuItemType[]>,
   value?: ValueParams,
   popup?: PopupNames,
 };
@@ -223,78 +225,29 @@ export default class Menu extends EventListener {
 
   private currentIndex: number = 0;
 
-  private games: MenuItemType['items'] = () => [
-    {
-      id: 'game1',
-      title: 'Grand Theft Auto - Vice City',
-      poster: '/home/neiron/Изображения/4eb6720c6cd70ee9e67ca6e4dc12e3df.png',
-    },
-    {
-      id: 'game2',
-      title: 'Project IGI',
-      poster: '/home/neiron/Изображения/597a12fdb539422eaa8553ac41d42682.jpg',
-    },
-    {
-      id: 'game2',
-      title: 'Hard Reset Redux',
-      poster: '/home/neiron/Изображения/5a5a76e2f8b0aa27f2c2dec653ab35e7.png',
-    },
-    {
-      id: 'game1',
-      title: 'Final Fantasy XV',
-      poster: '/home/neiron/Изображения/6e283ace2b5701cca6df1baf865dc407.png',
-    },
-    {
-      id: 'game2',
-      title: 'Dark Soul III',
-      poster: '/home/neiron/Изображения/9085f5ef67f2f7f0f38e869ffb5016a1.png',
-    },
-    {
-      id: 'game2',
-      title: 'Mafia',
-      poster: '/home/neiron/Изображения/349b4d0760cb85b962fa79800c168927.png',
-    },
-    {
-      id: 'game2',
-      title: 'Lost Planet',
-      poster: '/home/neiron/Изображения/96a65578dd725718afb62869c9c1c3b3.png',
-    },
-    {
-      id: 'game2',
-      title: 'Iron Storm',
-      poster: '/home/neiron/Изображения/c84f4c33b8ed07f61e6356c3a7418bd3.png',
-    },
-    {
-      id: 'game2',
-      title: 'Smash Cars',
-      poster: '/home/neiron/Изображения/0b38ba7ab744745e87cfb4962051c92f.png',
-    },
-    {
-      id: 'game2',
-      title: 'Sekiro: Shadows Die Twice',
-      poster: '/home/neiron/Изображения/7c867647488e862e745b6992a0f882e4.png',
-    },
-  ];
+  private async fetchGames(): Promise<MenuItemType[]> {
+    return (await window.$app.getApi().getGames().getList()).map((config: Config) => config.toObject());
+  }
 
   public readonly items: MenuItem[] = ([
     {
       id: 'games',
       icon: 'storage',
       title: 'Storage',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'games',
           icon: 'gamepad',
           title: 'Games',
           template: ValueLabels.GAME,
-          items: this.games,
+          items: this.fetchGames,
         },
         {
           id: 'manage',
           icon: 'manage',
           title: 'Manage',
           template: ValueLabels.MANAGE,
-          items: this.games,
+          items: this.fetchGames,
         },
         {
           id: 'add-game',
@@ -302,13 +255,13 @@ export default class Menu extends EventListener {
           title: 'Add game',
           popup: PopupNames.GAME_OPERATION,
         },
-      ],
+      ]),
     },
     {
       id: 'prefix',
       icon: 'prefix',
       title: 'Prefix',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'wine',
           icon: 'wine',
@@ -330,7 +283,7 @@ export default class Menu extends EventListener {
           id: 'settings',
           icon: 'settings',
           title: 'Plugins',
-          items: () => [
+          items: () => Promise.resolve([
             {
               id: 'dxvk',
               icon: 'settings',
@@ -408,15 +361,15 @@ export default class Menu extends EventListener {
                 type: ValueTypes.SELECT,
               },
             },
-          ],
+          ]),
         },
-      ],
+      ]),
     },
     {
       id: 'layers',
       icon: 'layers',
       title: 'Layers',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'layers-list',
           icon: 'layers-list',
@@ -427,13 +380,13 @@ export default class Menu extends EventListener {
           icon: 'layers-add',
           title: 'New layer',
         },
-      ],
+      ]),
     },
     {
       id: 'updates',
       icon: 'updates',
       title: 'Updates',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'update-self',
           icon: 'update-self',
@@ -449,13 +402,13 @@ export default class Menu extends EventListener {
           icon: 'update-layer',
           title: 'VKD3D',
         },
-      ],
+      ]),
     },
     {
       id: 'settings',
       icon: 'settings',
       title: 'Settings',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'mango-hud',
           icon: 'settings',
@@ -509,13 +462,13 @@ export default class Menu extends EventListener {
             type: ValueTypes.SELECT,
           },
         },
-      ],
+      ]),
     },
     {
       id: 'build',
       icon: 'build',
       title: 'Build',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'wine-unpack',
           icon: 'unpack',
@@ -531,13 +484,13 @@ export default class Menu extends EventListener {
           icon: 'compile',
           title: 'Build portable',
         },
-      ],
+      ]),
     },
     {
       id: 'database',
       icon: 'database',
       title: 'Database',
-      items: () => [
+      items: () => Promise.resolve([
         {
           id: 'layers-item',
           icon: 'layers-item',
@@ -548,7 +501,7 @@ export default class Menu extends EventListener {
           icon: 'layers-item',
           title: 'd3dcompiler',
         },
-      ],
+      ]),
     },
   ] as MenuItemType[]).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
 

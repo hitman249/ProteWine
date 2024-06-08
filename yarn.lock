@@ -1351,6 +1351,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.7.2":
+  version: 1.7.2
+  resolution: "axios@npm:1.7.2"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/cbd47ce380fe045313364e740bb03b936420b8b5558c7ea36a4563db1258c658f05e40feb5ddd41f6633fdd96d37ac2a76f884dad599c5b0224b4c451b3fa7ae
+  languageName: node
+  linkType: hard
+
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
@@ -2526,6 +2537,16 @@ __metadata:
   version: 3.2.9
   resolution: "flatted@npm:3.2.9"
   checksum: 10c0/5c91c5a0a21bbc0b07b272231e5b4efe6b822bcb4ad317caf6bb06984be4042a9e9045026307da0fdb4583f1f545e317a67ef1231a59e71f7fced3cc429cfc53
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.6":
+  version: 1.15.6
+  resolution: "follow-redirects@npm:1.15.6"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 10c0/9ff767f0d7be6aa6870c82ac79cf0368cd73e01bbc00e9eb1c2a16fbb198ec105e3c9b6628bb98e9f3ac66fe29a957b9645bcb9a490bb7aa0d35f908b6b85071
   languageName: node
   linkType: hard
 
@@ -4256,6 +4277,7 @@ __metadata:
     node-fetch: "npm:^3.3.2"
     sharp: "npm:^0.33.3"
     simple-vdf: "npm:^1.1.1"
+    steamgriddb: "npm:^2.2.0"
     tree-kill: "npm:^1.2.2"
     ts-loader: "npm:^9.5.1"
     tslib: "npm:^2.6.2"
@@ -4265,6 +4287,13 @@ __metadata:
     webpack-cli: "npm:^5.1.4"
   languageName: unknown
   linkType: soft
+
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: 10c0/fe7dd8b1bdbbbea18d1459107729c3e4a2243ca870d26d34c2c1bcd3e4425b7bcc5112362df2d93cc7fb9746f6142b5e272fd1cc5c86ddf8580175186f6ad42b
+  languageName: node
+  linkType: hard
 
 "pump@npm:^3.0.0":
   version: 3.0.0
@@ -4828,6 +4857,15 @@ __metadata:
   version: 1.0.0
   resolution: "stat-mode@npm:1.0.0"
   checksum: 10c0/89b66a538dbfd45038fefdaf5b2104dc6e911605af1c201793e9629592ed9fdc7bdd1bca42806d0d4167c6d9cacac1f3fda41ddfe334a5c1f898113da38fae74
+  languageName: node
+  linkType: hard
+
+"steamgriddb@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "steamgriddb@npm:2.2.0"
+  dependencies:
+    axios: "npm:^1.7.2"
+  checksum: 10c0/803e2ca2be514edbd8e09346c96420514c99d2a9036e2f12700584ce08900951b97a1bc1fed4c400f4ccc195dc8983a7361261f538ce2039c94db7edac59308a
   languageName: node
   linkType: hard
 

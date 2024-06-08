@@ -1,55 +1,45 @@
 <script lang="ts">
-  import {MenuItem} from '../../modules/menu';
   import Icon from '../icons/Icon.svelte';
+  import Image from '../../models/image';
 
   export let style: string;
   export let itemClass: string;
   export let active: boolean = false;
   export let dummy: boolean = false;
   export let percent: number;
-  export let item: MenuItem = undefined;
+  export let item: Image = undefined;
 </script>
 
-<div aria-hidden="true" class="item {itemClass}" on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
-  <div class="icon">
-    {#if item}
-      {#if item.poster}
-        <img
-          class="poster"
-          style="transform: scale({(100 + percent * 1.5) / 100})"
-          style:opacity={Math.max(percent / 100, 0.2)}
-          src={'local://' + item.poster}
-          alt=""
-        >
-      {:else}
-        <Icon
-          icon="dice"
-          status={active ? 'focused' : ''}
-          style="transform: scale({(100 + percent) / 100}); opacity: {Math.max(percent / 100, 0.2)};"
-        />
-      {/if}
-    {/if}
-  </div>
-  <div class="footer" style:opacity={percent / 100}>
-    <div class="title">
-      {item?.title || ''}
+<div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
+  {#if item?.isFile()}
+    <div class="icon" class:focused={active} style="transform: scale({1.3 + (0.5 * percent / 100)})">
+      <Icon
+        icon={'plus'}
+        style="position: relative; left: -12px;"
+        status={active && percent > 90 ? 'focused' : 'normal'}
+      />
+    </div>
 
-      <div class="value" style:display={active && item?.value && item?.value?.isVisible() ? 'flex' : 'none'}>
-        {item?.value?.getValueFormatted() || ''}
-      </div>
+    <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
+      <p class="title">Select image</p>
     </div>
-    <div class="description" class:exist={Boolean(item?.description || active && item?.value && item?.value?.isVisible())}>
-      {item?.description || ''}
+  {:else}
+    <div class="icon" class:focused={active} style="transform: scale({1.3 + (0.5 * percent / 100)})">
+      <img
+        class="poster"
+        src={item?.thumb || ''}
+        alt=""
+      >
     </div>
-  </div>
+  {/if}
 </div>
 
 <style lang="less">
   .item {
     display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 110px;
+    flex-direction: column;
+    width: 210px;
+    height: 210px;
     padding: 8px 16px;
     margin: 0;
     box-sizing: border-box;
@@ -95,15 +85,15 @@
 
         @keyframes item-focused {
           0% {
-            box-shadow: 0 0 10px 0 rgba(255,255,255,0.1);
+            box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1);
           }
 
           50% {
-            box-shadow: 0 0 10px 0 rgba(255,255,255,1);
+            box-shadow: 0 0 10px 0 rgba(255, 255, 255, 1);
           }
 
           100% {
-            box-shadow: 0 0 10px 0 rgba(255,255,255,0.1);
+            box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1);
           }
         }
       }
@@ -127,15 +117,14 @@
     flex-direction: column;
     flex: 1;
     position: relative;
-    height: 100%;
-    padding-left: 20px;
+    width: 100%;
     line-height: 1.5;
     font-size: 24px;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     font-weight: 400;
     justify-content: center;
-    align-items: start;
-    text-align: left;
+    align-items: center;
+    text-align: center;
     vertical-align: center;
     filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
     //opacity: 0;
@@ -144,35 +133,5 @@
     //&.focused {
     //  opacity: 1;
     //}
-  }
-
-  .title {
-    position: relative;
-    display: flex;
-    width: 100%;
-    height: auto;
-  }
-
-  .value {
-    display: flex;
-    position: absolute;
-    width: 300px;
-    height: 35px;
-    right: 0;
-    top: 0;
-    font-size: 16px;
-    justify-content: right;
-    align-items: end;
-  }
-
-  .description {
-    display: none;
-    width: 100%;
-    height: auto;
-    margin-top: 4px;
-    padding-top: 4px;
-    font-size: 16px;
-    border-top: rgb(255 255 255 / 40%) solid 1px;
-    //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
   }
 </style>

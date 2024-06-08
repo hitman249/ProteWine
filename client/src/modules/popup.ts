@@ -6,6 +6,7 @@ export enum PopupNames {
   FILE_MANAGER = 'file-manager',
   EXECUTING = 'executing',
   FIND_LINKS = 'find-links',
+  GALLERY = 'gallery',
 }
 
 export enum PopupEvents {

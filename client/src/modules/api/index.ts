@@ -6,6 +6,7 @@ import Games from './modules/games';
 import Iso from './modules/iso';
 import Prefix from './modules/prefix';
 import AppFolders from './modules/app-folders';
+import Gallery from './modules/gallery';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -15,6 +16,7 @@ export default class Api extends AbstractModule {
   private readonly ISO: Iso = new Iso();
   private readonly PREFIX: Prefix = new Prefix();
   private readonly APP_FOLDERS: AppFolders = new AppFolders();
+  private readonly GALLERY: Gallery = new Gallery();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
@@ -24,6 +26,7 @@ export default class Api extends AbstractModule {
     this.ISO,
     this.PREFIX,
     this.APP_FOLDERS,
+    this.GALLERY,
   ];
 
   public async init(): Promise<any> {
@@ -54,6 +57,10 @@ export default class Api extends AbstractModule {
 
   public getPrefix(): Prefix {
     return this.PREFIX;
+  }
+
+  public getGallery(): Gallery {
+    return this.GALLERY;
   }
 
   public getAppFolders(): AppFolders {
