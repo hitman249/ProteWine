@@ -24,6 +24,7 @@ export enum RoutesGames {
   CREATE = 'games:create',
   REMOVE = 'games:remove',
   SAVE = 'games:save',
+  UPDATE_IMAGE = 'games:update-image',
 }
 
 export enum RoutesIso {
@@ -80,6 +81,8 @@ export default {
     RoutesGames.LIST,
     RoutesGames.FIND_LINKS,
     RoutesGames.CREATE,
+    RoutesGames.REMOVE,
+    RoutesGames.UPDATE_IMAGE,
     RoutesTaskMethod.KILL,
     RoutesTaskMethod.TYPE,
     RoutesTaskMethod.FINISH,

@@ -7,6 +7,7 @@ export enum PopupNames {
   EXECUTING = 'executing',
   FIND_LINKS = 'find-links',
   GALLERY = 'gallery',
+  YES_NO = 'yes-no',
 }
 
 export enum PopupEvents {

@@ -14,7 +14,7 @@ let routes: Routes;
 
 function registerHandlers(): void {
   protocol.handle('local', (request: Request) =>
-    net.fetch('file://' + request.url.slice('local://'.length)));
+    net.fetch('file://' + request.url.slice('local://'.length).split('?')[0]));
 }
 
 function createWindow(): void {

@@ -21,14 +21,19 @@ export default class Config {
   }
 
   public get poster(): string {
-    return '';
+    return this.config.poster;
+  }
+
+  public get icon(): string {
+    return this.config.icon;
   }
 
   public toObject(): MenuItemType {
     return {
       id: this.id,
       title: this.title,
-      poster: this.poster,
+      poster: this.poster || this.icon,
+      icon: this.icon,
     };
   }
 }

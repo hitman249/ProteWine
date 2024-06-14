@@ -8,23 +8,33 @@
   export let dummy: boolean = false;
   export let percent: number;
   export let item: MenuItem = undefined;
+
+  let size: {w: number, h: number} = {w: 0, h: 0};
+
+  function onLoad(event: Event): void {
+    const img: HTMLImageElement = event?.target as HTMLImageElement;
+
+    if (img) {
+      size = {w: img.width, h: img.height};
+    }
+  }
 </script>
 
-<div aria-hidden="true" class="item {itemClass}" on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
+<div aria-hidden="true" class="item {itemClass}" class:focused={active} on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
   <div class="icon">
     {#if item}
       {#if item.poster}
         <img
           class="poster"
-          style="transform: scale({(100 + percent * 1.5) / 100})"
+          style="transform: scale({(100 + percent * ((160 - size.w) / size.w)) / 100})"
           style:opacity={Math.max(percent / 100, 0.2)}
-          src={'local://' + item.poster}
+          src={'local://' + item.poster + `?t=${new Date().getTime()}`}
           alt=""
+          on:load={onLoad}
         >
       {:else}
         <Icon
           icon="dice"
-          status={active ? 'focused' : ''}
           style="transform: scale({(100 + percent) / 100}); opacity: {Math.max(percent / 100, 0.2)};"
         />
       {/if}
@@ -58,6 +68,30 @@
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     //border: 1px white solid;
+
+    &.focused {
+      .title {
+        transition: text-shadow 1.2s;
+        animation-delay: 0.3s;
+        animation-duration: 1.2s;
+        animation-name: title-focused;
+        animation-iteration-count: infinite;
+
+        @keyframes title-focused {
+          0% {
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+          }
+
+          50% {
+            text-shadow: 0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,0.5);
+          }
+
+          100% {
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+          }
+        }
+      }
+    }
   }
 
   .icon {
@@ -81,32 +115,6 @@
       bottom: 0;
       border-radius: 2px;
       border-width: 1px;
-      border-color: white;
-      border-style: solid;
-    }
-
-    &.focused {
-      img {
-        transition: box-shadow 1.2s;
-        animation-delay: 0.3s;
-        animation-duration: 1.2s;
-        animation-name: item-focused;
-        animation-iteration-count: infinite;
-
-        @keyframes item-focused {
-          0% {
-            box-shadow: 0 0 10px 0 rgba(255,255,255,0.1);
-          }
-
-          50% {
-            box-shadow: 0 0 10px 0 rgba(255,255,255,1);
-          }
-
-          100% {
-            box-shadow: 0 0 10px 0 rgba(255,255,255,0.1);
-          }
-        }
-      }
     }
   }
 
@@ -137,7 +145,7 @@
     align-items: start;
     text-align: left;
     vertical-align: center;
-    filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
+    //filter: drop-shadow(rgba(0, 0, 0, 0.5) 4px 4px 2px);
     //opacity: 0;
     //transition: opacity ease 0.3s;
 

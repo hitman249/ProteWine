@@ -4,7 +4,6 @@ export default class Image {
   public readonly thumb: string;
   public readonly url: string;
   public readonly type: ImageType['type'];
-  private path: string;
 
   constructor(params: ImageType) {
     this.thumb = params.thumb;
@@ -12,15 +11,15 @@ export default class Image {
     this.type = params.type || 'url';
   }
 
-  public getPath(): string {
-    return this.path;
-  }
-
-  public setPath(path: string): void {
-    this.path = path;
-  }
-
   public isFile(): boolean {
     return 'file' === this.type;
+  }
+
+  public toObject(): ImageType {
+    return {
+      type: this.type,
+      thumb: this.thumb,
+      url: this.url,
+    };
   }
 }

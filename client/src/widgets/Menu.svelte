@@ -2,7 +2,7 @@
 </script>
 <script lang="ts">
   import {onDestroy, onMount, tick} from 'svelte';
-  import Menu, {type MenuItem} from '../modules/menu';
+  import Menu, {type MenuItem, type MenuItemType} from '../modules/menu';
   import {KeyboardKey, KeyboardPressEvent} from '../modules/keyboard';
   import ListPreloader from '../components/list/ListPreloader.svelte';
   import {ValueLabels, type ValueType} from '../modules/value';
@@ -11,6 +11,7 @@
   import {StickerType} from './stickers';
   import Popup, {PopupNames} from '../modules/popup';
   import FormData from '../models/form-data';
+  import type Image from '../models/image';
 
   export let popup: Popup;
   export let style: string = '';
@@ -42,6 +43,10 @@
   const menu: Menu = new Menu();
   const items: MenuItem[] = menu.getItems();
   let categories: MenuItem[] = menu.getCategories(verticalListActiveIndex);
+
+  export function getMenu(): Menu {
+    return menu;
+  }
 
   function keyRight() {
     if (horizontalList.hasRight()) {
@@ -172,15 +177,57 @@
         isInnerList = true;
       } else if (item.value) {
         if (selectListItems) {
-          if (ValueLabels.GAME === item.template) {
-            const value: ValueType = selectList.getItem();
-            item.value.setValue(value.value);
+          const value: ValueType = selectList.getItem();
+          item.value.setValue(value.value);
 
-            if ('run' === value.value) {
-              popup.open(PopupNames.RUN_GAME, item);
+          const data: FormData<MenuItem> = new FormData(item);
+
+          if (ValueLabels.GAME === item.template) {
+            switch (value.value) {
+              case 'run':
+                popup.open(PopupNames.RUN_GAME, data);
+                break;
             }
 
             return;
+          }
+
+          if (ValueLabels.MANAGE === item.template) {
+            switch (value.value) {
+              case 'change-poster':
+                data.setCallback(async (image: Image) => {
+                  await window.$app.getApi().getGames().updateImage(image, item.id, 'poster');
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.GALLERY, data, 'poster');
+                break;
+
+              case 'change-icon':
+                data.setCallback(async (image: Image) => {
+                  await window.$app.getApi().getGames().updateImage(image, item.id, 'icon');
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.GALLERY, data, 'icon');
+                break;
+
+              case 'remove-game':
+                data.setCallback(async () => {
+                  await window.$app.getApi().getGames().removeById(item.id);
+                  menu.clearGames();
+                  innerListItem.setCurrentIndex(0);
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, data, {
+                  title: 'Remove game link',
+                  description: `To delete the game link "${item.title}" press the confirmation button.`,
+                });
+                break;
+            }
           }
         } else {
           selectListItems = item.value.getList();

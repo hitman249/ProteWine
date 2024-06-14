@@ -7,6 +7,8 @@ import Utils from '../../helpers/utils';
 
 export type ConfigType = {
   createAt: number,
+  poster?: string,
+  icon?: string,
   game: {
     path: string,
     arguments: string,
@@ -83,8 +85,16 @@ export default class Config extends AbstractModule {
     return this.config?.game.sort ?? 500;
   }
 
-  public getConfig(): ConfigType {
-    return this.config;
+  public get id(): string {
+    return String(this.config?.createAt);
+  }
+
+  public async getConfig(): Promise<ConfigType> {
+    return {
+      ...this.config,
+      poster: await this.getPoster(),
+      icon: await this.getIcon(),
+    };
   }
 
   public set(path: string, value: any): void {
@@ -94,6 +104,56 @@ export default class Config extends AbstractModule {
   public setPath(path: string): void {
     const chunks: string[] = path.split('/drive_c/');
     this.set('game.path', `/${chunks[chunks.length - 1]}`);
+  }
+
+  public getFolder(): string {
+    return this.fs.dirname(this.path);
+  }
+
+  public async removePoster(): Promise<void> {
+    const path: string = `${this.getFolder()}/poster.png`;
+
+    if (await this.fs.exists(path)) {
+      await this.fs.rm(path);
+    }
+  }
+
+  public async removeIcon(): Promise<void> {
+    const path: string = `${this.getFolder()}/icon.png`;
+
+    if (await this.fs.exists(path)) {
+      await this.fs.rm(path);
+    }
+  }
+
+  public async remove(): Promise<void> {
+    const folder: string = this.getFolder();
+
+    if (await this.fs.exists(folder)) {
+      await this.fs.rm(folder);
+    }
+  }
+
+  public async getPoster(): Promise<string> {
+    const extensions: string[] = ['png', 'jpeg', 'jpg', 'webp', 'gif'];
+    const folder: string = this.getFolder();
+
+    for await (const ext of extensions) {
+      const path: string = `${folder}/poster.${ext}`;
+
+      if (await this.fs.exists(path)) {
+        return path;
+      }
+    }
+  }
+
+  public async getIcon(): Promise<string> {
+    const folder: string = this.getFolder();
+    const path: string = `${folder}/icon.png`;
+
+    if (await this.fs.exists(path)) {
+      return path;
+    }
   }
 
   public getDefaultConfig(): any {

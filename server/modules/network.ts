@@ -89,14 +89,14 @@ export default class Network extends AbstractModule {
       .then((response: Response) => response.json());
   }
 
-  public async download(url: string, filepath: string, progress: (value: Progress) => void): Promise<void> {
+  public async download(url: string, filepath: string, progress?: (value: Progress) => void): Promise<void> {
     return this.isConnected()
       .then(() => fetch(url, this.options))
       .then((response: Response) => {
         const contentLength: number = Utils.toInt(response.headers.get('content-length'));
         let downloadedLength: number = 0;
 
-        progress({
+        progress?.({
           success: false,
           progress: 0,
           totalBytes: contentLength,
@@ -118,11 +118,11 @@ export default class Network extends AbstractModule {
 
           response.body.pipe(fileStream);
           response.body.on('end', () => {
-            progress(Utils.getFullProgress('download'));
+            progress?.(Utils.getFullProgress('download'));
             resolve();
           });
           response.body.on('error', () => {
-            progress(Utils.getFullProgress('download'));
+            progress?.(Utils.getFullProgress('download'));
             reject();
           });
 
@@ -130,7 +130,7 @@ export default class Network extends AbstractModule {
             response.body.on('data', (chunk: Buffer) => {
               downloadedLength += chunk.byteLength;
 
-              progress({
+              progress?.({
                 success: contentLength > 0,
                 progress: 100 / contentLength * downloadedLength,
                 totalBytes: contentLength,

@@ -3,6 +3,7 @@ import type {App} from '../../app';
 import {AbstractModule} from '../../modules/abstract-module';
 import {RoutesGames} from '../routes';
 import type {ConfigType} from '../../modules/games/config';
+import type {ImageType} from '../../modules/gallery';
 
 export default class GamesRoutes extends AbstractModule {
   private readonly app: App;
@@ -20,6 +21,8 @@ export default class GamesRoutes extends AbstractModule {
     this.bindList();
     this.bindFindLinks();
     this.bindCreate();
+    this.bindRemove();
+    this.bindUpdateImage();
   }
 
   private bindList(): void {
@@ -40,6 +43,21 @@ export default class GamesRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesGames.CREATE,
       async (event: IpcMainInvokeEvent, data: ConfigType['game']): Promise<any> => this.app.getGames().create(data),
+    );
+  }
+
+  private bindRemove(): void {
+    this.ipc.handle(
+      RoutesGames.REMOVE,
+      async (event: IpcMainInvokeEvent, id: string | number): Promise<any> => this.app.getGames().removeById(id),
+    );
+  }
+
+  private bindUpdateImage(): void {
+    this.ipc.handle(
+      RoutesGames.UPDATE_IMAGE,
+      async (event: IpcMainInvokeEvent, image: ImageType, id: string, type: 'poster' | 'icon'): Promise<any> =>
+        this.app.getGames().updateImage(image, id, type),
     );
   }
 }

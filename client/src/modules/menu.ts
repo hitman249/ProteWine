@@ -88,6 +88,15 @@ export class MenuItem {
     });
   }
 
+  public async reload(): Promise<void> {
+    this.clear();
+    await this.load();
+  }
+
+  public clear(): void {
+    this.items = undefined;
+  }
+
   public isLoaded(): boolean {
     return undefined !== this.items;
   }
@@ -508,6 +517,11 @@ export default class Menu extends EventListener {
   constructor() {
     super();
     this.items[this.currentIndex].updateFocusedItem();
+  }
+
+  public clearGames(): void {
+    this.items?.[0]?.items?.[0]?.clear?.();
+    this.items?.[0]?.items?.[1]?.clear?.();
   }
 
   public setFocusedItem(item: MenuItem): void {

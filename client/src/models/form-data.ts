@@ -28,6 +28,7 @@ export default class FormData<T> {
   public fileManagerImage: boolean = false;
   public fileManagerMountImage: boolean = false;
   public extension: string;
+  public callback: (result?: any) => void;
 
   constructor(data?: T) {
     this.data = data;
@@ -37,8 +38,20 @@ export default class FormData<T> {
     return this.additionalData;
   }
 
+  public getData(): any {
+    return this.data;
+  }
+
   public setAdditionalData(data: any): any {
     this.additionalData = data;
+  }
+
+  public setCallback(func: (result?: any) => void): any {
+    this.callback = func;
+  }
+
+  public runCallback(result?: any): void {
+    this.callback?.(result);
   }
 
   public setOperation(operation: GameOperation): this {

@@ -10,6 +10,7 @@
   import FormData, {GameOperation} from './models/form-data';
   import PopupFindLinks from './widgets/popups/wizards/PopupFindLinks.svelte';
   import PopupGallery from './widgets/popups/PopupGallery.svelte';
+  import PopupYesNo from './widgets/popups/PopupYesNo.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -26,6 +27,10 @@
     showMenu = false;
     namePopup = name;
     showPopup = true;
+
+    if (PopupNames.FIND_LINKS === name) {
+      menu?.getMenu()?.clearGames();
+    }
   });
 
   popup.on(PopupEvents.CLOSE, (event: PopupEvents.CLOSE, name: PopupNames) => {
@@ -65,6 +70,8 @@
       <PopupFindLinks bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.GALLERY}
       <PopupGallery bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.YES_NO}
+      <PopupYesNo bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

@@ -11,6 +11,7 @@
   import {PopupNames} from '../../../modules/popup';
   import FileSystem from '../../../modules/api/modules/file-system';
   import type Iso from '../../../modules/api/modules/iso';
+  import Image from '../../../models/image';
 
   const fsApi: FileSystem = window.$app.getApi().getFileSystem();
 
@@ -85,7 +86,13 @@
             case 'import':
               if (FileManagerMode.IMAGE === mode) {
                 unbindEvents();
+                formData.runCallback(new Image({
+                  thumb: item.getPath(),
+                  url: item.getPath(),
+                  type: 'file',
+                }));
                 window.$app.getPopup().back();
+
                 return;
               }
 

@@ -1,91 +1,122 @@
 <script lang="ts">
-import Progress from '../Progress.svelte';
-import {onDestroy, onMount} from 'svelte';
-import type {MenuItem} from '../../modules/menu';
-import List from '../../components/list/List.svelte';
-import _ from 'lodash';
-import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
+  import Progress from '../Progress.svelte';
+  import {onDestroy, onMount} from 'svelte';
+  import type {MenuItem} from '../../modules/menu';
+  import List from '../../components/list/List.svelte';
+  import _ from 'lodash';
+  import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
+  import type FormData from '../../models/form-data';
 
-let item: MenuItem = window.$app.getPopup().getData();
+  type RectType = {width: number, height: number, left: number, top: number};
 
-let list: List;
+  let data: FormData<MenuItem> = window.$app.getPopup().getData();
+  let item: MenuItem = data.getData();
 
-let left: HTMLDivElement;
-let img: HTMLImageElement;
-let title: HTMLDivElement;
+  const parentImg: HTMLImageElement = document.querySelector('.inner-list .list-item.active img');
+  const parentRect: DOMRect = parentImg.getBoundingClientRect();
 
-let animate: boolean = false;
-let value: number = 0;
+  let rect: RectType = {
+    width: parentRect.width,
+    height: parentRect.height,
+    top: parentRect.top,
+    left: parentRect.left,
+  };
 
-function percentUp() {
-  setTimeout(() => {
-    if (value >= 100) {
-      value = 0;
-    } else {
-      value = value + 5;
+  $: poster = item?.poster || item?.icon;
+
+  let list: List;
+
+  let leftDiv: HTMLDivElement;
+  let img: HTMLImageElement;
+  let title: HTMLDivElement;
+
+  let animate: boolean = false;
+  let value: number = 0;
+
+  function percentUp() {
+    setTimeout(() => {
+      if (value >= 100) {
+        value = 0;
+      } else {
+        value = value + 5;
+      }
+
+      percentUp();
+    }, 500);
+  }
+
+  function updateImageRect(): void {
+    const leftRect: DOMRect = leftDiv.getBoundingClientRect();
+    const aspect: number = parentImg.height / parentImg.width;
+    const width: number = 250;
+    const height: number = width * aspect;
+    const left: number = leftRect.left + (leftRect.width / 2) - (width / 4);
+    const top: number = leftRect.top + (leftRect.height / 2) - (height / 2);
+
+    rect = {width, height, left, top};
+  }
+
+  percentUp();
+
+  function getTitleTranslation(): string {
+    let titleRect: DOMRect = title.getBoundingClientRect();
+
+    return `transform: translate(${titleRect.left}px, ${titleRect.top - 101}px);`;
+  }
+
+  const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+    if (KeyboardKey.DOWN === key) {
+      list?.keyDown();
     }
 
-    percentUp();
-  }, 500);
-}
+    if (KeyboardKey.UP === key) {
+      list?.keyUp();
+    }
 
-percentUp();
+    if (KeyboardKey.ENTER === key) {
 
-function getImgTranslation(): string {
-  let imgRect: DOMRect = img.getBoundingClientRect();
-  let leftRect: DOMRect = left.getBoundingClientRect();
+    }
 
-  return `transform: translate(${imgRect.left - leftRect.left}px, ${imgRect.top - leftRect.top}px);`;
-}
-
-function getTitleTranslation(): string {
-  let titleRect: DOMRect = title.getBoundingClientRect();
-
-  return `transform: translate(${titleRect.left}px, ${titleRect.top - 101}px);`;
-}
-
-const keyboardWatch = _.throttle((event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
-  if (KeyboardKey.DOWN === key) {
-    list?.keyDown();
-  }
-
-  if (KeyboardKey.UP === key) {
-    list?.keyUp();
-  }
-
-  if (KeyboardKey.ENTER === key) {
-
-  }
-
-  if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
-    window.$app.getPopup().back();
-  }
-}, 100);
-
-export function bindEvents(): void {
-  window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
-}
-
-export function unbindEvents(): void {
-  window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
-}
-
-onMount(() => {
-  bindEvents();
-
-  setTimeout(() => {
-    if (item) {
-      animate = true;
+    if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key) {
+      unbindEvents();
+      window.$app.getPopup().back();
     }
   }, 100);
-});
 
-onDestroy(() => {
-  unbindEvents();
-});
+  export function bindEvents(): void {
+    window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+  }
+
+  export function unbindEvents(): void {
+    window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
+  }
+
+  onMount(() => {
+    bindEvents();
+
+    setTimeout(() => {
+      if (item) {
+        updateImageRect();
+        animate = true;
+      }
+    }, 100);
+  });
+
+  onDestroy(() => {
+    unbindEvents();
+  });
 </script>
 
 <div class="popup" class:animate={animate}>
+  <img
+    class="poster"
+    src={parentImg.src}
+    style:width="{rect.width}px"
+    style:height="{rect.height}px"
+    style:transform="translate({rect.left}px, {rect.top}px)"
+    alt=""
+  >
+
   <div class="header">
     Running
   </div>
@@ -93,16 +124,13 @@ onDestroy(() => {
     <div class="title" style="{animate ? getTitleTranslation() : ''}">
       {item?.title}
     </div>
-    <div class="left" bind:this={left}>
-      <img class="show-img" src="local://{item?.poster}" alt="" style="{animate ? getImgTranslation() : ''}">
-      <img class="hidden-img" src="local://{item?.poster}" alt="" bind:this={img}>
-    </div>
+    <div class="left" bind:this={leftDiv} />
     <div class="right">
       <div class="detail">
         <div class="hidden-title" style="opacity: 0" bind:this={title}>
           {item?.title}
         </div>
-        <Progress {value} style="{animate ? 'opacity: 1;' : 'opacity: 0;'}"/>
+        <Progress {value} style="{animate ? 'opacity: 1;' : 'opacity: 0;'}" />
       </div>
     </div>
   </div>
@@ -119,6 +147,14 @@ onDestroy(() => {
     height: 100%;
     top: 0;
     left: 0;
+
+    .poster {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.5s, width 0.5s, height 0.5s;
+      border-radius: 5px;
+    }
 
     .header {
       display: flex;
@@ -206,44 +242,6 @@ onDestroy(() => {
       transition: all 0.5s;
       transform: translate(446px, 218px);
       filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
-    }
-
-    .hidden-img {
-      position: absolute;
-      opacity: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 250px;
-      height: auto;
-      max-width: 100%;
-      max-height: 100%;
-      margin: auto 0;
-    }
-
-    .show-img {
-      .hidden-img;
-      right: unset;
-      left: 0;
-      opacity: 1;
-      width: 124px;
-      margin: 0;
-      border-radius: 5px;
-      transition: transform 0.5s, width 0.5s, height 0.5s;
-      transform: translate(209px, 143px);
-    }
-
-    &.animate {
-      .show-img {
-        .hidden-img;
-        opacity: 1;
-        right: unset;
-        left: 0;
-        margin: 0;
-        width: 250px;
-        border-radius: 5px;
-        border: rgba(255, 255, 255, 80%) 1px solid;
-      }
     }
   }
 </style>

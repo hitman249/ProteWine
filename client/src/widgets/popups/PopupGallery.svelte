@@ -8,6 +8,7 @@
   import FormData, {GameOperation} from '../../models/form-data';
   import Image from '../../models/image';
   import {PopupNames} from '../../modules/popup';
+  import type {ImageType} from '../../../../server/modules/gallery';
 
   const ITEM_SIZE: number = 280;
 
@@ -77,7 +78,9 @@
         switch (select.value) {
           case 'import':
             unbindEvents();
+            formData.runCallback(item);
             window.$app.getPopup().back();
+
             break;
         }
 
@@ -126,7 +129,14 @@
   onMount(() => {
     bindEvents();
 
-    window.$app.getApi().getGallery().findPortraits('Final Fantasy XV').then((images: Image[]) => {
+    const type: 'poster' | 'icon' = window.$app.getPopup().getArguments();
+    const title: string = formData.getData().title;
+
+    const promise: Promise<ImageType[]> = 'icon' === type
+      ? window.$app.getApi().getGallery().findIcons(title)
+      : window.$app.getApi().getGallery().findPortraits(title);
+
+    promise.then((images: Image[]) => {
       data = [new Image({type: 'file', url: '', thumb: ''}), ...images];
       loading = false;
     });
