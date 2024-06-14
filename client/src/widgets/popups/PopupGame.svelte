@@ -6,20 +6,23 @@
   import _ from 'lodash';
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
   import type FormData from '../../models/form-data';
+  import Icon from '../icons/Icon.svelte';
 
-  type RectType = {width: number, height: number, left: number, top: number};
+  type RectType = {width: number, height: number, left: number, top: number, scale: number};
 
   let data: FormData<MenuItem> = window.$app.getPopup().getData();
   let item: MenuItem = data.getData();
 
-  const parentImg: HTMLImageElement = document.querySelector('.inner-list .list-item.active img');
-  const parentRect: DOMRect = parentImg.getBoundingClientRect();
+  const parentImg: HTMLImageElement = window.document.querySelector('.inner-list .list-item.active img');
+  const parentSvg: HTMLImageElement = window.document.querySelector('.inner-list .list-item.active svg');
+  const parentRect: DOMRect = (parentImg || parentSvg).getBoundingClientRect();
 
   let rect: RectType = {
     width: parentRect.width,
     height: parentRect.height,
-    top: parentRect.top,
-    left: parentRect.left,
+    top: parentRect.top + (parentImg ? 0 : 40),
+    left: parentRect.left + (parentImg ? 0 : 40),
+    scale: 2,
   };
 
   $: poster = item?.poster || item?.icon;
@@ -27,7 +30,6 @@
   let list: List;
 
   let leftDiv: HTMLDivElement;
-  let img: HTMLImageElement;
   let title: HTMLDivElement;
 
   let animate: boolean = false;
@@ -46,14 +48,15 @@
   }
 
   function updateImageRect(): void {
+    const parent: DOMRect = (parentImg || parentSvg).getBoundingClientRect();
     const leftRect: DOMRect = leftDiv.getBoundingClientRect();
-    const aspect: number = parentImg.height / parentImg.width;
+    const aspect: number = parent.height / parent.width;
     const width: number = 250;
     const height: number = width * aspect;
-    const left: number = leftRect.left + (leftRect.width / 2) - (width / 4);
-    const top: number = leftRect.top + (leftRect.height / 2) - (height / 2);
+    const left: number = leftRect.left + (leftRect.width / 2) - (width / 4) + (parentImg ? 0 : 80);
+    const top: number = leftRect.top + (leftRect.height / 2) - (height / 2) + (parentImg ? 0 : 80);
 
-    rect = {width, height, left, top};
+    rect = {width, height, left, top, scale: 4};
   }
 
   percentUp();
@@ -108,14 +111,21 @@
 </script>
 
 <div class="popup" class:animate={animate}>
-  <img
-    class="poster"
-    src={parentImg.src}
-    style:width="{rect.width}px"
-    style:height="{rect.height}px"
-    style:transform="translate({rect.left}px, {rect.top}px)"
-    alt=""
-  >
+  {#if parentImg}
+    <img
+      class="poster"
+      src={parentImg.src}
+      style:width="{rect.width}px"
+      style:height="{rect.height}px"
+      style:transform="translate({rect.left}px, {rect.top}px)"
+      alt=""
+    >
+  {:else}
+    <Icon
+      icon="dice"
+      style="position: absolute; top: {rect.top}px; left: {rect.left}px; transition: top 0.5s, left 0.5s, transform 0.5s; transform: scale({rect.scale});"
+    />
+  {/if}
 
   <div class="header">
     Running
