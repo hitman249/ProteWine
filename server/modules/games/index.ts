@@ -3,25 +3,34 @@ import {AbstractModule} from '../abstract-module';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Settings from '../settings';
-import Config, {type ConfigType} from './config';
+import type Network from '../network';
+import type Monitor from '../monitor';
+import type Tasks from '../tasks';
+import type WatchProcess from '../../helpers/watch-process';
 import type {ImageType} from '../gallery';
+import Config, {type ConfigType} from './config';
 import Resizer from '../../helpers/resizer';
-import Network from '../network';
+import {KernelOperation} from '../kernels/abstract-kernel';
 
 export default class Games extends AbstractModule {
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly settings: Settings;
   private readonly network: Network;
+  private readonly tasks: Tasks;
+  private readonly monitor: Monitor;
 
   private configs: Config[];
+  private runningGame: {config: Config, process: WatchProcess};
 
-  constructor(appFolders: AppFolders, fs: FileSystem, settings: Settings, network: Network) {
+  constructor(appFolders: AppFolders, fs: FileSystem, settings: Settings, network: Network, tasks: Tasks, monitor: Monitor) {
     super();
     this.appFolders = appFolders;
     this.fs = fs;
     this.settings = settings;
     this.network = network;
+    this.tasks = tasks;
+    this.monitor = monitor;
   }
 
   public async init(): Promise<any> {
@@ -48,6 +57,37 @@ export default class Games extends AbstractModule {
     );
   }
 
+  public async runById(id: string | number, operation: KernelOperation = KernelOperation.RUN): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    await this.monitor.save();
+
+    const process: WatchProcess = await this.tasks.kernel(config.getCmd(), operation);
+    this.runningGame = {config, process};
+
+    process.wait().then(async () => {
+      this.runningGame = undefined;
+      await this.monitor.restore();
+    });
+  }
+
+  public async debugById(id: string | number): Promise<void> {
+    return await this.runById(id, KernelOperation.INSTALL);
+  }
+
+  public getRunningGame(): Config | undefined {
+    return this.runningGame?.config;
+  }
+
+  public kill(): void {
+    this.runningGame?.process.kill();
+    this.runningGame = undefined;
+  }
+
   public async create(data: ConfigType['game']): Promise<void> {
     const createAt: number = new Date().getTime();
     const configsGamesDir: string = await this.appFolders.getConfigsGamesDir();
@@ -64,7 +104,7 @@ export default class Games extends AbstractModule {
     config.set('game.sort', 500);
     config.set('game.name', data.name);
     config.set('game.arguments', data.arguments);
-    config.setPath(data.path);
+    await config.setPath(data.path);
 
     await config.save();
 
@@ -93,6 +133,48 @@ export default class Games extends AbstractModule {
     if (config) {
       await config.remove();
     }
+
+    this.configs = undefined;
+    await this.load();
+  }
+
+  public async updateExeById(id: string | number, path: string): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    await config.setPath(path);
+    await config.save();
+
+    this.configs = undefined;
+    await this.load();
+  }
+
+  public async updateArgumentsById(id: string | number, cmd: string): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    await config.setArguments(cmd);
+    await config.save();
+
+    this.configs = undefined;
+    await this.load();
+  }
+
+  public async updateTitleById(id: string | number, cmd: string): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    await config.setTitle(cmd);
+    await config.save();
 
     this.configs = undefined;
     await this.load();

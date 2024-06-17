@@ -21,8 +21,11 @@
   let pathIndices: {[path: string]: number} = {};
 
   const formData: FormData<MenuItem> = window.$app.getPopup().getData();
+  const operation: GameOperation = formData.getOperation();
   const mode: FileManagerMode = formData.getFileManagerMode();
   const root: string = formData.getFileManagerRootPath();
+
+  currentPath = root || '';
 
   const value: Value = new Value({
     value: 'select',
@@ -97,6 +100,16 @@
               }
 
               break;
+            case 'select':
+              if (GameOperation.SELECT_EXE === operation) {
+                unbindEvents();
+                formData.runCallback(item);
+                window.$app.getPopup().back();
+
+                return;
+              }
+
+              break;
           }
 
           window.$app.getPopup().open(PopupNames.EXECUTING, formData);
@@ -140,25 +153,25 @@
         return;
       }
 
-      const operation: GameOperation = formData.getOperation();
-
-      if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_DISK_IMAGE === operation || GameOperation.SELECT_IMAGE === operation)) {
+      if (item.isDirectory() && (GameOperation.INSTALL_FILE === operation || GameOperation.INSTALL_DISK_IMAGE === operation || GameOperation.SELECT_IMAGE === operation || GameOperation.SELECT_EXE === operation)) {
         return keyboardWatch(event, KeyboardKey.ENTER);
       } else {
         selectListItems = value.getList().filter((value: ValueType) => {
           switch (value.value) {
             case 'execute':
-              return item.isExecutable() && formData.isFileManagerExecutable();
+              return item.isExecutable() && formData.isFileManagerExecutable() && GameOperation.SELECT_EXE !== operation;
             case 'mount':
               return item.isDiskImage();
             case 'copy':
-              return formData.getOperation() === GameOperation.COPY_GAME;
+              return GameOperation.COPY_GAME === operation;
             case 'move':
-              return formData.getOperation() === GameOperation.MOVE_GAME;
+              return GameOperation.MOVE_GAME === operation;
             case 'symlink':
-              return formData.getOperation() === GameOperation.SYMLINK_GAME;
+              return GameOperation.SYMLINK_GAME === operation;
             case 'import':
-              return formData.getOperation() === GameOperation.SELECT_IMAGE;
+              return GameOperation.SELECT_IMAGE === operation;
+            case 'select':
+              return GameOperation.SELECT_EXE === operation;
           }
 
           return false;
@@ -241,7 +254,9 @@
   <div class="header">
     <div class="left">{currentPath}</div>
     <div class="right">
-      {#if FileManagerMode.EXECUTABLE === mode}
+      {#if GameOperation.SELECT_EXE === operation}
+        Select executable file
+      {:else if FileManagerMode.EXECUTABLE === mode}
         Select installation file
       {:else if FileManagerMode.DIRECTORY === mode}
         Select the game folder

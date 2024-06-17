@@ -25,9 +25,12 @@
   import type {IsoData} from '../../../../server/routes/modules/iso';
   import type AppFolders from '../../modules/api/modules/app-folders';
   import type FileSystem from '../../modules/api/modules/file-system';
+  import type Config from '../../models/config';
 
   let list: List;
   const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
+  const item: MenuItem = formData.getData();
+
   let blockExit: boolean = GameOperation.PREFIX === formData.getOperation();
   let running: boolean = false;
   let completed: boolean = false;
@@ -64,8 +67,17 @@
       }
 
       if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key || KeyboardKey.LEFT === key) {
-        window.$app.getPopup().open(PopupNames.GAME_OPERATION, formData).clearHistory();
-        return;
+        if (GameOperation.DEBUG === formData.getOperation()) {
+          window.$app.getApi().getGames().getRunningGame().then((config: Config) => {
+            if (!config) {
+              unbindEvents();
+              window.$app.getPopup().back();
+            }
+          });
+        } else {
+          unbindEvents();
+          window.$app.getPopup().open(PopupNames.GAME_OPERATION, formData).clearHistory();
+        }
       }
     }
   };
@@ -188,6 +200,13 @@
         `${await kernel.getLauncherByFileType(formData.getExtension())} "${formData.getPath()}"`
       );
 
+    } else if (GameOperation.DEBUG === formData.getOperation()) {
+      /**
+       * Run game with debug mode
+       */
+
+      await window.$app.getApi().getGames().debugById(item.id);
+
     } else if (GameOperation.INSTALL_DISK_IMAGE === formData.getOperation()) {
       /**
        * Mount image
@@ -257,6 +276,8 @@
         if (!(await tasks.isFinish()) && TaskType.KERNEL === (await tasks.getType())) {
           await tasks.kill();
         }
+      } else if (GameOperation.DEBUG === formData.getOperation()) {
+        await window.$app.getApi().getGames().kill();
       } else if (GameOperation.PREFIX === formData.getOperation()) {
         window.$app.getPopup().clearHistory().back();
       }

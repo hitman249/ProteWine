@@ -45,11 +45,11 @@ export default class Value {
         title: 'Play',
       },
       {
-        value: 'run-debug',
+        value: 'debug',
         title: 'Debug',
       },
       {
-        value: 'game-info',
+        value: 'info',
         title: 'Info',
       },
     ],
@@ -63,8 +63,20 @@ export default class Value {
         title: 'Change icon',
       },
       {
+        value: 'change-exe',
+        title: 'Change exe',
+      },
+      {
+        value: 'change-arguments',
+        title: 'Change arguments',
+      },
+      {
+        value: 'change-title',
+        title: 'Change title',
+      },
+      {
         value: 'remove-game',
-        title: 'Remove game',
+        title: 'Remove',
       },
     ],
     install: [
@@ -129,6 +141,10 @@ export default class Value {
       {
         value: 'import',
         title: 'Import',
+      },
+      {
+        value: 'select',
+        title: 'Select',
       },
     ],
   };

@@ -1,12 +1,15 @@
 <script lang="ts">
-  import Progress from '../Progress.svelte';
+  import _ from 'lodash';
   import {onDestroy, onMount} from 'svelte';
   import type {MenuItem} from '../../modules/menu';
-  import List from '../../components/list/List.svelte';
-  import _ from 'lodash';
-  import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
   import type FormData from '../../models/form-data';
+  import type Tasks from '../../modules/api/modules/tasks';
+  import List from '../../components/list/List.svelte';
+  import Progress from '../Progress.svelte';
   import Icon from '../icons/Icon.svelte';
+  import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
+  import {RoutesTaskEvent} from '../../../../server/routes/routes';
+  import {TaskType} from '../../../../server/modules/tasks/types';
 
   type RectType = {width: number, height: number, left: number, top: number, scale: number};
 
@@ -25,8 +28,6 @@
     scale: 2,
   };
 
-  $: poster = item?.poster || item?.icon;
-
   let list: List;
 
   let leftDiv: HTMLDivElement;
@@ -44,7 +45,7 @@
       }
 
       percentUp();
-    }, 500);
+    }, 1000);
   }
 
   function updateImageRect(): void {
@@ -86,6 +87,13 @@
     }
   }, 100);
 
+  function onExit(event: RoutesTaskEvent.EXIT, data: {type: TaskType}): void {
+    if (TaskType.KERNEL === data.type) {
+      unbindEvents();
+      window.$app.getPopup().back();
+    }
+  }
+
   export function bindEvents(): void {
     window.$app.getKeyboard().on(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
   }
@@ -94,8 +102,13 @@
     window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
   }
 
-  onMount(() => {
+  onMount(async () => {
     bindEvents();
+
+    const tasks: Tasks = window.$app.getApi().getTasks();
+    tasks.on(RoutesTaskEvent.EXIT, onExit);
+
+    await window.$app.getApi().getGames().runById(item.id);
 
     setTimeout(() => {
       if (item) {
@@ -106,6 +119,7 @@
   });
 
   onDestroy(() => {
+    window.$app.getApi().getGames().kill();
     unbindEvents();
   });
 </script>

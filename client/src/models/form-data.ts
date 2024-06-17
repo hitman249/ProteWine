@@ -8,6 +8,8 @@ export enum GameOperation {
   WINETRICKS = 'winetricks',
   PREFIX = 'prefix',
   SELECT_IMAGE = 'select-image',
+  SELECT_EXE = 'select-exe',
+  DEBUG = 'debug',
 }
 
 export enum FileManagerMode {
@@ -57,7 +59,7 @@ export default class FormData<T> {
   public setOperation(operation: GameOperation): this {
     this.operation = operation;
 
-    if (GameOperation.INSTALL_FILE === operation) {
+    if (GameOperation.INSTALL_FILE === operation || GameOperation.DEBUG === operation || GameOperation.SELECT_EXE === operation) {
       this.fileManagerMode = FileManagerMode.EXECUTABLE;
     } else if (GameOperation.INSTALL_DISK_IMAGE === operation) {
       this.fileManagerMode = FileManagerMode.DISK_IMAGE;

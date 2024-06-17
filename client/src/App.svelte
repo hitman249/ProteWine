@@ -11,6 +11,7 @@
   import PopupFindLinks from './widgets/popups/wizards/PopupFindLinks.svelte';
   import PopupGallery from './widgets/popups/PopupGallery.svelte';
   import PopupYesNo from './widgets/popups/PopupYesNo.svelte';
+  import PopupInput from './widgets/popups/PopupInput.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -72,6 +73,8 @@
       <PopupGallery bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.YES_NO}
       <PopupYesNo bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.INPUT}
+      <PopupInput bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

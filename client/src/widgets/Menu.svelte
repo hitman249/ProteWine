@@ -10,8 +10,10 @@
   import List from '../components/list/List.svelte';
   import {StickerType} from './stickers';
   import Popup, {PopupNames} from '../modules/popup';
-  import FormData from '../models/form-data';
+  import FormData, {GameOperation} from '../models/form-data';
   import type Image from '../models/image';
+  import type File from '../models/file';
+  import type Config from '../models/config';
 
   export let popup: Popup;
   export let style: string = '';
@@ -87,7 +89,7 @@
     }
   }
 
-  const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+  const keyboardWatch = async (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
       if (isSelectList) {
         selectList?.keyDown();
@@ -180,12 +182,20 @@
           const value: ValueType = selectList.getItem();
           item.value.setValue(value.value);
 
-          const data: FormData<MenuItem> = new FormData(item);
+          const formData: FormData<MenuItem> = new FormData(item);
 
           if (ValueLabels.GAME === item.template) {
             switch (value.value) {
               case 'run':
-                popup.open(PopupNames.RUN_GAME, data);
+                popup.open(PopupNames.RUN_GAME, formData);
+                break;
+
+              case 'debug':
+                formData.setOperation(GameOperation.DEBUG);
+                popup.open(PopupNames.EXECUTING, formData);
+                break;
+
+              case 'info':
                 break;
             }
 
@@ -193,36 +203,83 @@
           }
 
           if (ValueLabels.MANAGE === item.template) {
+            let config: Config;
+
             switch (value.value) {
               case 'change-poster':
-                data.setCallback(async (image: Image) => {
+                formData.setCallback(async (image: Image) => {
                   await window.$app.getApi().getGames().updateImage(image, item.id, 'poster');
                   menu.clearGames();
                   await innerListItem.reload();
                   innerListItem = innerListItem;
                 });
-                popup.open(PopupNames.GALLERY, data, 'poster');
+                popup.open(PopupNames.GALLERY, formData, 'poster');
                 break;
 
               case 'change-icon':
-                data.setCallback(async (image: Image) => {
+                formData.setCallback(async (image: Image) => {
                   await window.$app.getApi().getGames().updateImage(image, item.id, 'icon');
                   menu.clearGames();
                   await innerListItem.reload();
                   innerListItem = innerListItem;
                 });
-                popup.open(PopupNames.GALLERY, data, 'icon');
+                popup.open(PopupNames.GALLERY, formData, 'icon');
+                break;
+
+              case 'change-exe':
+                formData.setCallback(async (file: File) => {
+                  await window.$app.getApi().getGames().updateExe(item.id, file.getPath());
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                formData.setFileManagerExecutable(true);
+                formData.setOperation(GameOperation.SELECT_EXE);
+                formData.setFileManagerRootPath(await window.$app.getApi().getAppFolders().getGamesDir());
+                popup.open(PopupNames.FILE_MANAGER, formData);
+                break;
+
+              case 'change-arguments':
+                formData.setCallback(async (text: string) => {
+                  await window.$app.getApi().getGames().updateArguments(item.id, text);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+
+                config = await window.$app.getApi().getGames().getById(item.id);
+
+                popup.open(PopupNames.INPUT, formData, {
+                  title: 'Arguments',
+                  value: config.arguments,
+                });
+                break;
+
+              case 'change-title':
+                formData.setCallback(async (text: string) => {
+                  await window.$app.getApi().getGames().updateTitle(item.id, text);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+
+                config = await window.$app.getApi().getGames().getById(item.id);
+
+                popup.open(PopupNames.INPUT, formData, {
+                  title: 'Title',
+                  value: config.title,
+                });
                 break;
 
               case 'remove-game':
-                data.setCallback(async () => {
+                formData.setCallback(async () => {
                   await window.$app.getApi().getGames().removeById(item.id);
                   menu.clearGames();
                   innerListItem.setCurrentIndex(0);
                   await innerListItem.reload();
                   innerListItem = innerListItem;
                 });
-                popup.open(PopupNames.YES_NO, data, {
+                popup.open(PopupNames.YES_NO, formData, {
                   title: 'Remove game link',
                   description: `To delete the game link "${item.title}" press the confirmation button.`,
                 });

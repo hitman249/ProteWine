@@ -28,6 +28,10 @@ export default class Config {
     return this.config.icon;
   }
 
+  public get arguments(): string {
+    return this.config.game.arguments;
+  }
+
   public toObject(): MenuItemType {
     return {
       id: this.id,

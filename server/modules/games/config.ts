@@ -101,9 +101,19 @@ export default class Config extends AbstractModule {
     _.set(this.config, path, value);
   }
 
-  public setPath(path: string): void {
-    const chunks: string[] = path.split('/drive_c/');
-    this.set('game.path', `/${chunks[chunks.length - 1]}`);
+  public async setPath(path: string): Promise<void> {
+    let chunks: string[] = path.split('/drive_c/');
+    const gamesDir: string = await this.appFolders.getGamesDir();
+    chunks = chunks[chunks.length - 1].split(gamesDir).join('Games').split(gamesDir);
+    this.set('game.path', `/${_.trimStart(chunks[chunks.length - 1], '/')}`);
+  }
+
+  public async setArguments(cmd: string): Promise<void> {
+    this.set('game.arguments', cmd);
+  }
+
+  public async setTitle(title: string): Promise<void> {
+    this.set('game.name', title);
   }
 
   public getFolder(): string {
@@ -154,6 +164,10 @@ export default class Config extends AbstractModule {
     if (await this.fs.exists(path)) {
       return path;
     }
+  }
+
+  public getCmd(): string {
+    return `"C:${this.config.game.path}" ${this.config.game.arguments}`;
   }
 
   public getDefaultConfig(): any {
