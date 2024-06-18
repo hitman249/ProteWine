@@ -7,7 +7,7 @@ import Utils from '../helpers/utils';
 import Memory from '../helpers/memory';
 import {AbstractModule} from './abstract-module';
 
-type GPU = {vendor: string, driver: string, version: string, mesa?: string, info?: string};
+export type GPU = {vendor: string, driver: string, version: string, mesa?: string, info?: string};
 
 export default class Driver extends AbstractModule {
   private memory: Memory = new Memory();

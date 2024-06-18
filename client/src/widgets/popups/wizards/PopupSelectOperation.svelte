@@ -59,6 +59,8 @@
 
       if (GameOperation.IMPORT_LINK === operation) {
         window.$app.getPopup().open(PopupNames.FIND_LINKS, formData);
+      } else if (GameOperation.WINETRICKS === operation) {
+        window.$app.getPopup().open(PopupNames.WINETRICKS, formData);
       } else {
         formData.setFileManagerExecutable(true);
         window.$app.getPopup().open(PopupNames.FILE_MANAGER, formData);
@@ -115,7 +117,7 @@
       <List
         bind:this={list}
         {items}
-        headersDummy={2}
+        headersDummy={Math.trunc((window.innerHeight - Menu.ITEM_HEIGHT) / (Menu.ITEM_HEIGHT - 20) / 2) - 1}
         paddingIndent={-30}
         itemSize={Menu.ITEM_HEIGHT - 20}
         itemSpace={40}

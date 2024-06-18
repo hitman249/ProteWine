@@ -3,11 +3,12 @@ import type FileSystem from '../file-system';
 import type Command from '../command';
 import type GlobalCache from '../global-cache';
 import type AppFolders from '../app-folders';
-import type WatchProcess from '../../helpers/watch-process';
+import WatchProcess, {WatchProcessEvent} from '../../helpers/watch-process';
 import EventListener from '../../helpers/event-listener';
 import Container from '../container';
 import Memory from '../../helpers/memory';
 import Utils from '../../helpers/utils';
+import type {App} from '../../app';
 
 export enum KernelEvent {
   LOG = 'log',
@@ -19,6 +20,7 @@ export enum KernelEvent {
 export enum KernelOperation {
   RUN = 'run',
   INSTALL = 'install',
+  WINETRICKS = 'winetricks',
   CREATE_PREFIX = 'create-prefix',
   REGISTER = 'regedit',
   LIBRARY = 'regsvr32',
@@ -59,6 +61,7 @@ export default abstract class AbstractKernel extends EventListener {
   protected command: Command;
   protected cache: GlobalCache;
   protected appFolders: AppFolders;
+  protected app: App;
   protected process: WatchProcess;
   protected container: Container;
 
@@ -78,7 +81,7 @@ export default abstract class AbstractKernel extends EventListener {
     games: '/drive_c/Games',
   };
 
-  constructor(path: string, system: System) {
+  constructor(path: string, system: System, app: App) {
     super();
 
     this.memory
@@ -93,6 +96,7 @@ export default abstract class AbstractKernel extends EventListener {
     this.command = system.command;
     this.cache = system.cache;
     this.appFolders = system.appFolders;
+    this.app = app;
 
     this.container = new Container(this.appFolders, this.fs, this.system, this.command);
   }
@@ -101,7 +105,27 @@ export default abstract class AbstractKernel extends EventListener {
     return this.container.init();
   }
 
-  protected envToCmd(cmd: string, env: {[field: string]: string} = {}): string {
+  protected async commandHandler(cmd: string): Promise<WatchProcess> {
+    this.fireEvent(KernelEvent.RUN, cmd);
+
+    this.process = await this.command.watch(cmd);
+
+    this.process.on(WatchProcessEvent.STDERR, (event: WatchProcessEvent.STDERR, line: string) => {
+      this.fireEvent(KernelEvent.LOG, line);
+    });
+
+    this.process.on(WatchProcessEvent.STDOUT, (event: WatchProcessEvent.STDOUT, line: string) => {
+      this.fireEvent(KernelEvent.LOG, line);
+    });
+
+    this.process.wait().finally(() => {
+      this.fireEvent(KernelEvent.EXIT);
+    });
+
+    return this.process;
+  }
+
+  protected envToCmd(cmd: string, env: {[field: string]: string | number} = {}): string {
     const lines: string[] = Object.keys(env).map((field: string): string => `${field}="${env[field]}"`);
 
     if (lines.length > 0) {

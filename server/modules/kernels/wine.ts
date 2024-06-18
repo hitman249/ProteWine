@@ -1,13 +1,15 @@
 import AbstractKernel, {KernelEvent, SessionType} from './abstract-kernel';
-import System from '../system';
-import WatchProcess, {WatchProcessEvent} from '../../helpers/watch-process';
+import type System from '../system';
+import type WatchProcess from '../../helpers/watch-process';
+import type {App} from '../../app';
+import type Environment from './environment';
 
 export default class Wine extends AbstractKernel {
-  private env: {[env: string]: string};
+  private env: Environment;
   protected innerPrefix: string = '';
 
-  constructor(path: string, system: System) {
-    super(path, system);
+  constructor(path: string, system: System, app: App) {
+    super(path, system, app);
   }
 
   public async init(): Promise<any> {
@@ -17,14 +19,7 @@ export default class Wine extends AbstractKernel {
       return;
     }
 
-    const prefix: string = await this.appFolders.getPrefixDir();
-
-    this.env = {
-      WINEDEBUG: '-all',
-      WINEARCH: 'win64',
-      WINEPREFIX: prefix,
-      LC_ALL: await this.command.getLocale(),
-    };
+    this.env = await this.app.createEnv();
   }
 
   private async getWineFile(): Promise<string> {
@@ -62,25 +57,22 @@ export default class Wine extends AbstractKernel {
       return Promise.reject('Wine not found.');
     }
 
-    const container: string = await this.container.getCmd(this.envToCmd(`"${wineFile}" ${cmd}`, Object.assign({}, this.env, env)));
+    const container: string = await this.container.getCmd(this.envToCmd(`"${wineFile}" ${cmd}`, Object.assign({}, this.env.toObject(), env)));
 
-    this.fireEvent(KernelEvent.RUN, container);
+    return this.commandHandler(container);
+  }
 
-    this.process = await this.command.watch(container);
+  public async winetricks(cmd: string): Promise<WatchProcess> {
+    const wineDir: string = await this.findWineDir();
+    const wineTricks: string = await this.appFolders.getWineTricksFile();
 
-    this.process.on(WatchProcessEvent.STDERR, (event: WatchProcessEvent.STDERR, line: string) => {
-      this.fireEvent(KernelEvent.LOG, line);
-    });
+    const env: Environment = await this.app.createEnv();
+    env.addPath(`${wineDir}/bin`);
+    env.set('WINESERVER', `${wineDir}/bin/wineserver`);
 
-    this.process.on(WatchProcessEvent.STDOUT, (event: WatchProcessEvent.STDOUT, line: string) => {
-      this.fireEvent(KernelEvent.LOG, line);
-    });
+    const container: string = await this.container.getCmd(this.envToCmd(`"${wineTricks}" ${cmd}`, env.toObject()));
 
-    this.process.wait().finally(() => {
-      this.fireEvent(KernelEvent.EXIT);
-    });
-
-    return this.process;
+    return this.commandHandler(container);
   }
 
   public async kill(): Promise<void> {
@@ -113,5 +105,9 @@ export default class Wine extends AbstractKernel {
 
   public async getUserName(): Promise<string> {
     return this.system.getUserName();
+  }
+
+  public async findWineDir(): Promise<string> {
+    return this.appFolders.getWineDir();
   }
 }

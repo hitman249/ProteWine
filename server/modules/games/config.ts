@@ -9,12 +9,15 @@ export type ConfigType = {
   createAt: number,
   poster?: string,
   icon?: string,
+  size?: number,
+  sizeFormatted?: string,
   game: {
     path: string,
     arguments: string,
     name: string,
     sort?: number,
     time?: number,
+    timeFormatted?: string,
   },
   env: {
     [field: string]: string,
@@ -78,7 +81,7 @@ export default class Config extends AbstractModule {
       await this.fs.rm(path);
     }
 
-    return this.fs.filePutContents(path, Utils.jsonEncode(this.config));
+    return this.fs.filePutContents(path, Utils.jsonEncode(Object.assign({}, this.config, {size: undefined})));
   }
 
   public get sort(): number {
@@ -114,6 +117,17 @@ export default class Config extends AbstractModule {
 
   public async setTitle(title: string): Promise<void> {
     this.set('game.name', title);
+  }
+
+  public async loadSize(): Promise<void> {
+    if (undefined !== this.config?.size) {
+      return;
+    }
+
+    const gamesDir: string = await this.appFolders.getGamesDir();
+    const gameDir: string = _.get(this.config, 'game.path', '').split('/').slice(2, 3).join('/');
+
+    this.set('size', await this.fs.size(`${gamesDir}/${gameDir}`));
   }
 
   public getFolder(): string {

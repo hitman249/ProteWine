@@ -179,6 +179,8 @@
         isInnerList = true;
       } else if (item.value) {
         if (selectListItems) {
+          let config: Config;
+
           const value: ValueType = selectList.getItem();
           item.value.setValue(value.value);
 
@@ -196,6 +198,7 @@
                 break;
 
               case 'info':
+                popup.open(PopupNames.INFO, formData);
                 break;
             }
 
@@ -203,8 +206,6 @@
           }
 
           if (ValueLabels.MANAGE === item.template) {
-            let config: Config;
-
             switch (value.value) {
               case 'change-poster':
                 formData.setCallback(async (image: Image) => {

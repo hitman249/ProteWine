@@ -97,6 +97,14 @@
     return StickerType.LINK === type;
   }
 
+  function isWinetricks(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.WINETRICKS === type;
+  }
+
   function isImage(type: StickerType): boolean {
     if (!type) {
       return false;
@@ -117,6 +125,7 @@
   import Log from './Log.svelte';
   import Link from './Link.svelte';
   import Image from './Image.svelte';
+  import Winetricks from './Winetricks.svelte';
 
   export let active: boolean;
   export let dummy: boolean;
@@ -210,6 +219,15 @@
   />
 {:else if isLink(type)}
   <Link
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+  />
+{:else if isWinetricks(type)}
+  <Winetricks
     {active}
     {dummy}
     {itemClass}

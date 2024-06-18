@@ -9,6 +9,8 @@ export enum PopupNames {
   GALLERY = 'gallery',
   YES_NO = 'yes-no',
   INPUT = 'input',
+  INFO = 'info',
+  WINETRICKS = 'winetricks',
 }
 
 export enum PopupEvents {

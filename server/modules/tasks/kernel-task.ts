@@ -39,6 +39,8 @@ export default class KernelTask extends AbstractTask {
       this.task = await this.kernel.register(this.cmd);
     } else if (KernelOperation.LIBRARY === operation) {
       this.task = await this.kernel.regsvr32(this.cmd);
+    } else if (KernelOperation.WINETRICKS === operation) {
+      this.task = await this.kernel.winetricks(this.cmd);
     }
 
     return this.task;

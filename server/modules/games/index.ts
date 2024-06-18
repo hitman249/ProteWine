@@ -11,6 +11,8 @@ import type {ImageType} from '../gallery';
 import Config, {type ConfigType} from './config';
 import Resizer from '../../helpers/resizer';
 import {KernelOperation} from '../kernels/abstract-kernel';
+import Utils from '../../helpers/utils';
+import Time from '../../helpers/time';
 
 export default class Games extends AbstractModule {
   private readonly appFolders: AppFolders;
@@ -178,6 +180,23 @@ export default class Games extends AbstractModule {
 
     this.configs = undefined;
     await this.load();
+  }
+
+  public async getInfoById(id: string | number): Promise<ConfigType> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    await config.loadSize();
+
+    const clone: ConfigType = _.cloneDeep(await config.getConfig());
+
+    clone.sizeFormatted = Utils.convertBytes(clone.size || 0);
+    clone.game.timeFormatted = Time.secondPrint(clone.game.time || 0);
+
+    return clone;
   }
 
   public async updateImage(image: ImageType, id: string, type: 'poster' | 'icon'): Promise<void> {

@@ -8,11 +8,7 @@ import type {Progress} from '../modules/archiver';
 
 type CounterType = {count: number, codepage: string, str: string};
 
-const SYMBOLS: string[] = (
-  '0123456789' +
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-  'абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-).split('');
+const regexp: RegExp = /[\0\1\2\3\4\5\6\7\8\9abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]/gm;
 
 const CODEPAGES: string[] = ['utf-8', 'cp1251', 'cp866', 'koi8-r'];
 
@@ -108,13 +104,9 @@ export default class Utils {
       const str: string = iconv.decode(buffer, codepage).toString();
       const counter: CounterType = {
         codepage,
-        count: 0,
+        count: _.uniq(str.match(regexp)).length,
         str,
       };
-
-      for (const char of SYMBOLS) {
-        counter.count += str.split(char).length;
-      }
 
       result.push(counter);
     }

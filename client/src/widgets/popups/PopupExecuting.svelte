@@ -26,6 +26,7 @@
   import type AppFolders from '../../modules/api/modules/app-folders';
   import type FileSystem from '../../modules/api/modules/file-system';
   import type Config from '../../models/config';
+  import type {WineTrickItemType} from '../../../../server/modules/winetricks';
 
   let list: List;
   const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
@@ -263,6 +264,13 @@
         formData.getPath(),
         `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
       );
+    } else if (GameOperation.WINETRICKS === formData.getOperation()) {
+      /**
+       * Winetricks
+       */
+
+      const item: WineTrickItemType = window.$app.getPopup().getArguments();
+      await window.$app.getApi().getKernel().winetricks(item.name);
     }
   });
 
@@ -301,6 +309,8 @@
         Moving the game folder
       {:else if GameOperation.SYMLINK_GAME === formData.getOperation()}
         Creating a link to the game folder
+      {:else if GameOperation.WINETRICKS === formData.getOperation()}
+        Winetricks
       {:else}
         Running
       {/if}

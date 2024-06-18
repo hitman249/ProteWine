@@ -30,6 +30,7 @@ export default class GamesRoutes extends AbstractModule {
     this.bindUpdateExe();
     this.bindUpdateImage();
     this.bindUpdateTitle();
+    this.bindInfo();
   }
 
   private bindList(): void {
@@ -64,6 +65,13 @@ export default class GamesRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesGames.RUN,
       async (event: IpcMainInvokeEvent, id: string | number): Promise<any> => this.app.getGames().runById(id),
+    );
+  }
+
+  private bindInfo(): void {
+    this.ipc.handle(
+      RoutesGames.INFO,
+      async (event: IpcMainInvokeEvent, id: string | number): Promise<ConfigType> => (await this.app.getGames().getInfoById(id)),
     );
   }
 

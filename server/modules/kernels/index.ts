@@ -7,6 +7,7 @@ import type FileSystem from '../file-system';
 import type Command from '../command';
 import type GlobalCache from '../global-cache';
 import type AppFolders from '../app-folders';
+import type {App} from '../../app';
 
 export type Kernel = Proton | Wine;
 
@@ -16,10 +17,11 @@ export default class Kernels extends AbstractModule {
   protected command: Command;
   protected cache: GlobalCache;
   protected appFolders: AppFolders;
+  protected app: App;
 
   private kernel: AbstractKernel;
 
-  constructor(system: System) {
+  constructor(system: System, app: App) {
     super();
 
     this.system = system;
@@ -27,6 +29,7 @@ export default class Kernels extends AbstractModule {
     this.command = system.command;
     this.cache = system.cache;
     this.appFolders = system.appFolders;
+    this.app = app;
   }
 
   public async init(): Promise<any> {
@@ -37,9 +40,9 @@ export default class Kernels extends AbstractModule {
     }
 
     if (await this.fs.exists(`${path}/proton`)) {
-      this.kernel = new Proton(path, this.system);
+      this.kernel = new Proton(path, this.system, this.app);
     } else {
-      this.kernel = new Wine(path, this.system);
+      this.kernel = new Wine(path, this.system, this.app);
     }
 
     await this.kernel.init();

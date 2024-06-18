@@ -12,16 +12,16 @@ export default class Update extends AbstractModule {
 
   private readonly version: string = '1.0.0';
   private readonly api: string = 'https://api.github.com/repos/hitman249/wine-launcher/releases';
-  private readonly appFolder: AppFolders;
+  private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly network: Network;
 
   private data: Object[];
 
-  constructor(appFolder: AppFolders, fs: FileSystem, network: Network) {
+  constructor(appFolders: AppFolders, fs: FileSystem, network: Network) {
     super();
 
-    this.appFolder = appFolder;
+    this.appFolders = appFolders;
     this.fs = fs;
     this.network = network;
   }
@@ -29,9 +29,9 @@ export default class Update extends AbstractModule {
   public async init(): Promise<any> {
   }
 
-  public async downloadWineTricks(progress: (value: Progress) => void): Promise<void> {
+  public async downloadWineTricks(progress?: (value: Progress) => void): Promise<void> {
     const url: string = 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks';
-    const path: string = await this.appFolder.getWineTricksFile();
+    const path: string = await this.appFolders.getWineTricksFile();
 
     if (await this.fs.exists(path)) {
       const createAt: Date = await this.fs.getCreateDate(path);
@@ -47,7 +47,7 @@ export default class Update extends AbstractModule {
 
   public async downloadSquashFuse(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/squashfuse');
-    const path: string = await this.appFolder.getSquashFuseFile();
+    const path: string = await this.appFolders.getSquashFuseFile();
 
     if (!(await this.fs.exists(path)) || (await this.fs.size(path)) !== 548328) {
       return this.network.download(url, path, progress);
@@ -56,7 +56,7 @@ export default class Update extends AbstractModule {
 
   public async downloadDosbox(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/dosbox');
-    const path: string = await this.appFolder.getDosboxFile();
+    const path: string = await this.appFolders.getDosboxFile();
 
     if (!(await this.fs.exists(path)) || (await this.fs.size(path)) !== 2776552) {
       return this.network.download(url, path, progress);
@@ -65,16 +65,16 @@ export default class Update extends AbstractModule {
 
   public async downloadFuseIso(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/fuseiso');
-    const path: string = await this.appFolder.getFuseIsoFile();
+    const path: string = await this.appFolders.getFuseIsoFile();
 
     if (!await this.fs.exists(path)) {
       return this.network.download(url, path, progress);
     }
   }
 
-  public async downloadCabExtract(progress: (value: Progress) => void): Promise<void> {
+  public async downloadCabExtract(progress?: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/cabextract');
-    const path: string = await this.appFolder.getCabExtractFile();
+    const path: string = await this.appFolders.getCabExtractFile();
 
     if (!await this.fs.exists(path)) {
       return this.network.download(url, path, progress);

@@ -17,6 +17,8 @@ import Games from './modules/games';
 import Iso from './modules/iso';
 import Prefix from './modules/prefix';
 import Gallery from './modules/gallery';
+import WineTricks from './modules/winetricks';
+import Environment from './modules/kernels/environment';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -37,6 +39,7 @@ export class App {
   private readonly GAMES: Games;
   private readonly PREFIX: Prefix;
   private readonly GALLERY: Gallery;
+  private readonly WINETRICKS: WineTricks;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -52,12 +55,13 @@ export class App {
     this.DRIVER = new Driver(this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
     this.UPDATE = new Update(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK);
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
-    this.KERNELS = new Kernels(this.SYSTEM);
+    this.KERNELS = new Kernels(this.SYSTEM, this);
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM);
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS);
     this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM);
     this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS, this.NETWORK, this.TASKS, this.MONITOR);
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
+    this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
 
     this.initOrder = [
       this.COMMAND,
@@ -76,6 +80,7 @@ export class App {
       this.GAMES,
       this.PREFIX,
       this.GALLERY,
+      this.WINETRICKS,
     ];
   }
 
@@ -105,6 +110,13 @@ export class App {
     await iso.init();
 
     return iso;
+  }
+
+  public async createEnv(): Promise<Environment> {
+    const env: Environment = new Environment(this.APP_FOLDERS, this.COMMAND, this.DRIVER);
+    await env.init();
+
+    return env;
   }
 
   public getCommand(): Command {
@@ -169,6 +181,10 @@ export class App {
 
   public getGallery(): Gallery {
     return this.GALLERY;
+  }
+
+  public getWineTricks(): WineTricks {
+    return this.WINETRICKS;
   }
 
   public getMountWine(): Mount {

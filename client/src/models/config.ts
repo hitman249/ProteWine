@@ -16,8 +16,16 @@ export default class Config {
     return this.config.game.name;
   }
 
-  public get time(): number {
-    return this.config.game.time;
+  public get time(): string {
+    return this.config.game.timeFormatted;
+  }
+
+  public get path(): string {
+    return this.config.game.path;
+  }
+
+  public get size(): string {
+    return this.config.sizeFormatted;
   }
 
   public get poster(): string {

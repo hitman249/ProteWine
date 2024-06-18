@@ -6,3 +6,4 @@ cache
 data
 /prefix
 /wine*
+/bin/winetricks

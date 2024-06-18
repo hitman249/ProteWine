@@ -146,6 +146,10 @@ export default class Value {
         value: 'select',
         title: 'Select',
       },
+      {
+        value: 'install',
+        title: 'Install',
+      },
     ],
   };
 

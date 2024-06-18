@@ -15,8 +15,8 @@ export default class Games extends AbstractModule {
   }
 
   public async getById(id: number | string): Promise<Config> {
-    const configs: Config[] = await this.getList();
     id = String(id);
+    const configs: Config[] = await this.getList();
 
     return configs.find((config: Config) => config.id === id);
   }
@@ -27,6 +27,13 @@ export default class Games extends AbstractModule {
 
   public async removeById(id: string | number): Promise<void> {
     return (await window.electronAPI.invoke(RoutesGames.REMOVE, id));
+  }
+
+  public async getInfoById(id: string | number): Promise<Config> {
+    id = String(id);
+    const config: ConfigType = (await window.electronAPI.invoke(RoutesGames.INFO, id));
+
+    return new Config(config);
   }
 
   public async runById(id: string | number): Promise<void> {

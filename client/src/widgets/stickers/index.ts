@@ -8,5 +8,6 @@ export enum StickerType {
   OPERATION = 'operation',
   LOG = 'log',
   LINK = 'link',
+  WINETRICKS = 'winetricks',
   IMAGE = 'image',
 }

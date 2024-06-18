@@ -1,9 +1,8 @@
-import AppFoldersRoutes from './modules/app-folders';
-
 export enum RoutesKernel {
   VERSION = 'kernel:version',
   RUN = 'kernel:run',
   INSTALL = 'kernel:install',
+  WINETRICKS = 'kernel:winetricks',
   CREATE_PREFIX = 'kernel:create-prefix',
   LAUNCHER = 'kernel:launcher',
 }
@@ -26,6 +25,7 @@ export enum RoutesGames {
   LIST = 'games:list',
   REMOVE = 'games:remove',
   RUN = 'games:run',
+  INFO = 'games:info',
   RUNNING_GAME = 'games:running-game',
   SAVE = 'games:save',
   UPDATE_ARGUMENTS = 'games:update-arguments',
@@ -46,6 +46,10 @@ export enum RoutesAppFolders {
 export enum RoutesGallery {
   PORTRAITS = 'gallery:find-portraits',
   ICONS = 'gallery:find-icons',
+}
+
+export enum RoutesWineTricks {
+  LIST = 'winetricks:list',
 }
 
 export enum RoutesPrefix {
@@ -78,6 +82,7 @@ export default {
     RoutesKernel.INSTALL,
     RoutesKernel.CREATE_PREFIX,
     RoutesKernel.VERSION,
+    RoutesKernel.WINETRICKS,
     RoutesFileSystem.LS,
     RoutesFileSystem.STORAGES,
     RoutesFileSystem.COPY,
@@ -92,6 +97,7 @@ export default {
     RoutesGames.LIST,
     RoutesGames.REMOVE,
     RoutesGames.RUN,
+    RoutesGames.INFO,
     RoutesGames.RUNNING_GAME,
     RoutesGames.UPDATE_ARGUMENTS,
     RoutesGames.UPDATE_TITLE,
@@ -110,6 +116,7 @@ export default {
     RoutesAppFolders.GAMES,
     RoutesGallery.PORTRAITS,
     RoutesGallery.ICONS,
+    RoutesWineTricks.LIST,
   ] as string[],
   send: [] as string[],
   receive: [

@@ -12,6 +12,8 @@
   import PopupGallery from './widgets/popups/PopupGallery.svelte';
   import PopupYesNo from './widgets/popups/PopupYesNo.svelte';
   import PopupInput from './widgets/popups/PopupInput.svelte';
+  import PopupInfo from './widgets/popups/PopupInfo.svelte';
+  import PopupWinetricks from './widgets/popups/PopupWinetricks.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -75,6 +77,10 @@
       <PopupYesNo bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.INPUT}
       <PopupInput bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.INFO}
+      <PopupInfo bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.WINETRICKS}
+      <PopupWinetricks bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

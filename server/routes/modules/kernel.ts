@@ -22,6 +22,7 @@ export default class KernelRoutes extends AbstractModule {
     this.bindLauncher();
     this.bindRun();
     this.bindInstall();
+    this.bindWinetricks();
     this.bindCreatePrefix();
   }
 
@@ -48,6 +49,16 @@ export default class KernelRoutes extends AbstractModule {
       async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
         this.app.getTasks()
           .kernel(cmd, KernelOperation.INSTALL)
+          .then(() => undefined),
+    );
+  }
+
+  private bindWinetricks(): void {
+    this.ipc.handle(
+      RoutesKernel.WINETRICKS,
+      async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
+        this.app.getTasks()
+          .kernel(cmd, KernelOperation.WINETRICKS)
           .then(() => undefined),
     );
   }
