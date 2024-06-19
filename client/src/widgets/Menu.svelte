@@ -186,6 +186,32 @@
 
           const formData: FormData<MenuItem> = new FormData(item);
 
+          if ('reset' === item.id) {
+            switch (value.value) {
+              case true:
+                if (isSelectList) {
+                  isSelectList = false;
+                  selectListItems = undefined;
+                }
+
+                window.$app.getApi().getPrefix().refresh().then(() => undefined);
+                formData.setOperation(GameOperation.PREFIX);
+                popup.open(PopupNames.EXECUTING, formData);
+                break;
+
+              case false:
+                if (isSelectList) {
+                  isSelectList = false;
+                  timeout = setTimeout(() => {
+                    selectListItems = undefined;
+                    timeout = undefined;
+                  }, 200);
+                }
+
+                break;
+            }
+          }
+
           if (ValueLabels.GAME === item.template) {
             switch (value.value) {
               case 'run':

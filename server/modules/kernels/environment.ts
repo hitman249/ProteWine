@@ -81,10 +81,6 @@ export default class Environment {
     } else {
       this.set('vblank_mode', 0);
       this.set('mesa_glthread', 'true');
-
-      // if (this.config.isOverrideMesaOpenGL()) {
-      //   this.set('MESA_GL_VERSION_OVERRIDE', await this.driver.getOpenGLVersion());
-      // }
     }
   }
 }

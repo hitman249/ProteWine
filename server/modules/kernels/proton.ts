@@ -26,6 +26,7 @@ export default class Proton extends AbstractKernel {
 
     this.env = await this.app.createEnv();
     this.env.set('STEAM_COMPAT_CLIENT_INSTALL_PATH', await this.getSteamDir());
+    await this.env.fixDriver();
   }
 
   private async getSteamDir(): Promise<string> {

@@ -4,11 +4,11 @@
   import PopupGame from './widgets/popups/PopupGame.svelte';
   import type Popup from './modules/popup';
   import {PopupEvents, PopupNames} from './modules/popup';
-  import PopupSelectOperation from './widgets/popups/wizards/PopupSelectOperation.svelte';
-  import PopupFileManager from './widgets/popups/wizards/PopupFileManager.svelte';
+  import PopupSelectOperation from './widgets/popups/PopupSelectOperation.svelte';
+  import PopupFileManager from './widgets/popups/PopupFileManager.svelte';
   import PopupExecuting from './widgets/popups/PopupExecuting.svelte';
   import FormData, {GameOperation} from './models/form-data';
-  import PopupFindLinks from './widgets/popups/wizards/PopupFindLinks.svelte';
+  import PopupFindLinks from './widgets/popups/PopupFindLinks.svelte';
   import PopupGallery from './widgets/popups/PopupGallery.svelte';
   import PopupYesNo from './widgets/popups/PopupYesNo.svelte';
   import PopupInput from './widgets/popups/PopupInput.svelte';

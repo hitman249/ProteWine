@@ -1,13 +1,13 @@
 <script lang="ts">
   import {onDestroy, onMount} from 'svelte';
-  import {StickerType} from '../../stickers';
-  import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
-  import Menu, {type MenuItem} from '../../../modules/menu';
-  import List from '../../../components/list/List.svelte';
-  import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
-  import Loader from '../../Loader.svelte';
-  import FormData, {GameOperation} from '../../../models/form-data';
-  import type {LinkInfoData} from '../../../../../server/modules/link-info';
+  import {StickerType} from '../stickers';
+  import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
+  import Menu, {type MenuItem} from '../../modules/menu';
+  import List from '../../components/list/List.svelte';
+  import Value, {ValueLabels, type ValueType, ValueTypes} from '../../modules/value';
+  import Loader from '../Loader.svelte';
+  import FormData, {GameOperation} from '../../models/form-data';
+  import type {LinkInfoData} from '../../../../server/modules/link-info';
 
   let list: List;
   let data: LinkInfoData[] = undefined;
@@ -127,7 +127,7 @@
         <List
           bind:this={list}
           items={data}
-          headersDummy={2}
+          headersDummy={Math.trunc((window.innerHeight - Menu.ITEM_HEIGHT) / (Menu.ITEM_HEIGHT - 20) / 2) - 1}
           paddingIndent={-30}
           itemSize={Menu.ITEM_HEIGHT - 20}
           itemSpace={40}
@@ -156,7 +156,7 @@
         bind:this={selectList}
         items={selectListItems}
         paddingIndent={-30}
-        headersDummy={9}
+        headersDummy={Math.trunc((window.innerHeight - 35) / 35 / 2)}
         itemSize={35}
         itemSpace={30}
         horizontal={false}

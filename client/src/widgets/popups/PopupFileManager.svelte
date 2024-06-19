@@ -1,17 +1,17 @@
 <script lang="ts">
   import {onDestroy, onMount} from 'svelte';
-  import {StickerType} from '../../stickers';
-  import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
-  import Menu, {type MenuItem} from '../../../modules/menu';
-  import List from '../../../components/list/List.svelte';
-  import File from '../../../models/file';
-  import Value, {ValueLabels, type ValueType, ValueTypes} from '../../../modules/value';
-  import FormData, {FileManagerMode, GameOperation} from '../../../models/form-data';
-  import Loader from '../../Loader.svelte';
-  import {PopupNames} from '../../../modules/popup';
-  import FileSystem from '../../../modules/api/modules/file-system';
-  import type Iso from '../../../modules/api/modules/iso';
-  import Image from '../../../models/image';
+  import {StickerType} from '../stickers';
+  import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
+  import Menu, {type MenuItem} from '../../modules/menu';
+  import List from '../../components/list/List.svelte';
+  import File from '../../models/file';
+  import Value, {ValueLabels, type ValueType, ValueTypes} from '../../modules/value';
+  import FormData, {FileManagerMode, GameOperation} from '../../models/form-data';
+  import Loader from '../Loader.svelte';
+  import {PopupNames} from '../../modules/popup';
+  import FileSystem from '../../modules/api/modules/file-system';
+  import type Iso from '../../modules/api/modules/iso';
+  import Image from '../../models/image';
 
   const fsApi: FileSystem = window.$app.getApi().getFileSystem();
 
@@ -275,7 +275,7 @@
         <List
           bind:this={list}
           items={data}
-          headersDummy={2}
+          headersDummy={Math.trunc((window.innerHeight - Menu.ITEM_HEIGHT) / (Menu.ITEM_HEIGHT - 20) / 2) - 1}
           paddingIndent={-30}
           itemSize={Menu.ITEM_HEIGHT - 20}
           itemSpace={40}
@@ -304,7 +304,7 @@
         bind:this={selectList}
         items={selectListItems}
         paddingIndent={-30}
-        headersDummy={9}
+        headersDummy={Math.trunc((window.innerHeight - 35) / 35 / 2)}
         itemSize={35}
         itemSpace={30}
         horizontal={false}

@@ -69,6 +69,7 @@ export default class Wine extends AbstractKernel {
     const env: Environment = await this.app.createEnv();
     env.addPath(`${wineDir}/bin`);
     env.set('WINESERVER', `${wineDir}/bin/wineserver`);
+    await this.env.fixDriver();
 
     const container: string = await this.container.getCmd(this.envToCmd(`"${wineTricks}" ${cmd}`, env.toObject()));
 

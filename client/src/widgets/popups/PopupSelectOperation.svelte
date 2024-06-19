@@ -1,12 +1,12 @@
 <script lang="ts">
   import {onDestroy, onMount} from 'svelte';
-  import {StickerType} from '../../stickers';
-  import List from '../../../components/list/List.svelte';
-  import {KeyboardKey, KeyboardPressEvent} from '../../../modules/keyboard';
-  import {PopupNames} from '../../../modules/popup';
-  import FormData, {GameOperation} from '../../../models/form-data';
-  import type {ValueType} from '../../../modules/value';
-  import Menu, {type MenuItem} from '../../../modules/menu';
+  import {StickerType} from '../stickers';
+  import List from '../../components/list/List.svelte';
+  import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
+  import {PopupNames} from '../../modules/popup';
+  import FormData, {GameOperation} from '../../models/form-data';
+  import type {ValueType} from '../../modules/value';
+  import Menu, {type MenuItem} from '../../modules/menu';
 
   let list: List;
   const formData: FormData<MenuItem> = window.$app.getPopup().getData();
@@ -15,6 +15,14 @@
     {
       value: GameOperation.INSTALL_FILE,
       title: 'Install file',
+    },
+    {
+      value: GameOperation.IMPORT_LINK,
+      title: 'Import game link from *.lnk files',
+    },
+    {
+      value: GameOperation.WINETRICKS,
+      title: 'Winetricks',
     },
     {
       value: GameOperation.INSTALL_DISK_IMAGE,
@@ -31,14 +39,6 @@
     {
       value: GameOperation.SYMLINK_GAME,
       title: 'Symlink to existing game folder',
-    },
-    {
-      value: GameOperation.IMPORT_LINK,
-      title: 'Import game link from *.lnk files',
-    },
-    {
-      value: GameOperation.WINETRICKS,
-      title: 'Winetricks',
     },
   ];
 
