@@ -259,9 +259,21 @@
       {:else if FileManagerMode.EXECUTABLE === mode}
         Select installation file
       {:else if FileManagerMode.DIRECTORY === mode}
-        Select the game folder
+        {#if GameOperation.SYMLINK_GAME === operation}
+          Symlink to existing game folder
+        {:else if GameOperation.MOVE_GAME === operation}
+          Move existing game folder
+        {:else if GameOperation.COPY_GAME === operation}
+          Copy existing game folder
+        {:else}
+          Select the game folder
+        {/if}
       {:else if FileManagerMode.DISK_IMAGE === mode}
-        Select disk image
+        {#if GameOperation.INSTALL_DISK_IMAGE === operation}
+          Install file from disk image
+        {:else}
+          Select disk image
+        {/if}
       {:else if FileManagerMode.IMAGE === mode}
         Select image
       {:else}
