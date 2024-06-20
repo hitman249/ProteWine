@@ -28,7 +28,6 @@ export default class Environment {
     }
 
     this.set('WINEDEBUG', '-all');
-    this.set('WINESTART', 'C:\\windows\\command\\start.exe');
     this.set('WINEPREFIX', prefix);
     this.set('WINEARCH', 'win64');
     this.set('STEAM_COMPAT_DATA_PATH', prefix);

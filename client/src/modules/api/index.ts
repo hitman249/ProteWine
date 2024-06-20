@@ -8,6 +8,7 @@ import Prefix from './modules/prefix';
 import AppFolders from './modules/app-folders';
 import Gallery from './modules/gallery';
 import WineTricks from './modules/winetricks';
+import Repositories from './modules/repositories';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -19,6 +20,7 @@ export default class Api extends AbstractModule {
   private readonly APP_FOLDERS: AppFolders = new AppFolders();
   private readonly GALLERY: Gallery = new Gallery();
   private readonly WINETRICKS: WineTricks = new WineTricks();
+  private readonly REPOSITORIES: Repositories = new Repositories();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
@@ -30,6 +32,7 @@ export default class Api extends AbstractModule {
     this.APP_FOLDERS,
     this.GALLERY,
     this.WINETRICKS,
+    this.REPOSITORIES,
   ];
 
   public async init(): Promise<any> {
@@ -68,6 +71,10 @@ export default class Api extends AbstractModule {
 
   public getWineTricks(): WineTricks {
     return this.WINETRICKS;
+  }
+
+  public getRepositories(): Repositories {
+    return this.REPOSITORIES;
   }
 
   public getAppFolders(): AppFolders {

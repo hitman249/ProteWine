@@ -6,13 +6,14 @@ import type FileSystem from '../file-system';
 import Archiver, {ArchiverEvent, type Progress} from '../archiver';
 import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType} from './types';
+import type {App} from '../../app';
 
 export default class ArchiverTask extends AbstractTask {
   protected type: TaskType = TaskType.ARCHIVER;
   private archiver: Archiver;
 
-  constructor(command: Command, kernels: Kernels, fs: FileSystem) {
-    super(command, kernels, fs);
+  constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
+    super(command, kernels, fs, app);
 
     this.onProgress = this.onProgress.bind(this);
   }

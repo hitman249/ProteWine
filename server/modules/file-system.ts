@@ -333,4 +333,16 @@ export default class FileSystem extends AbstractModule {
   public getAppFolders(): AppFolders {
     return this.appFolders;
   }
+
+  public async createTmpDir(): Promise<string> {
+    const path: string = `${await this.appFolders.getCacheDir()}/tmp_${Utils.rand(10000, 99999)}`;
+
+    if (await this.exists(path)) {
+      return await this.createTmpDir();
+    }
+
+    await this.mkdir(path);
+
+    return path;
+  }
 }

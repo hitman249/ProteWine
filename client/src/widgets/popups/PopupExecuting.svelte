@@ -27,12 +27,14 @@
   import type FileSystem from '../../modules/api/modules/file-system';
   import type Config from '../../models/config';
   import type {WineTrickItemType} from '../../../../server/modules/winetricks';
+  import type {ItemType} from '../../../../server/modules/repositories';
 
   let list: List;
   const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
   const item: MenuItem = formData.getData();
+  const operation: GameOperation = formData.getOperation();
 
-  let blockExit: boolean = GameOperation.PREFIX === formData.getOperation();
+  let blockExit: boolean = GameOperation.PREFIX === operation;
   let running: boolean = false;
   let completed: boolean = false;
   let progress: boolean = false;
@@ -68,13 +70,16 @@
       }
 
       if (KeyboardKey.ENTER === key || KeyboardKey.RIGHT === key || KeyboardKey.LEFT === key) {
-        if (GameOperation.DEBUG === formData.getOperation()) {
+        if (GameOperation.DEBUG === operation) {
           window.$app.getApi().getGames().getRunningGame().then((config: Config) => {
             if (!config) {
               unbindEvents();
               window.$app.getPopup().back();
             }
           });
+        } else if (GameOperation.RUNNER_INSTALL === operation) {
+          unbindEvents();
+          window.$app.getPopup().clearHistory().back();
         } else {
           unbindEvents();
           window.$app.getPopup().open(PopupNames.GAME_OPERATION, formData).clearHistory();
@@ -108,10 +113,16 @@
       pushLine('Start.');
       pushLine(data.cmd);
     }
+
+    if (TaskType.REPOSITORIES === data.type) {
+      running = true;
+      blockExit = true;
+      pushLine(data.cmd);
+    }
   }
 
   function onLog(event: RoutesTaskEvent.LOG, data: {type: TaskType, line: string}): void {
-    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type) {
+    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) {
       pushLine(data.line);
     }
   }
@@ -123,7 +134,7 @@
     }
 
     if ('prefix' === body.module && 'created' === body.event) {
-      if (GameOperation.PREFIX === formData.getOperation()) {
+      if (GameOperation.PREFIX === operation) {
         window.$app.getPopup().clearHistory().back();
       }
     }
@@ -148,15 +159,15 @@
       pushLine('Kernel exit.');
 
       if (
-        GameOperation.INSTALL_DISK_IMAGE !== formData.getOperation()
-        && GameOperation.PREFIX !== formData.getOperation()
+        GameOperation.INSTALL_DISK_IMAGE !== operation
+        && GameOperation.PREFIX !== operation
       ) {
         running = false;
         completed = true;
       }
     }
 
-    if (TaskType.FILE_SYSTEM === data.type) {
+    if (TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) {
       pushLine('Complete.');
 
       running = false;
@@ -191,7 +202,7 @@
   onMount(async () => {
     bindEvents();
 
-    if (GameOperation.INSTALL_FILE === formData.getOperation()) {
+    if (GameOperation.INSTALL_FILE === operation) {
       /**
        * Install file
        */
@@ -201,14 +212,14 @@
         `${await kernel.getLauncherByFileType(formData.getExtension())} "${formData.getPath()}"`
       );
 
-    } else if (GameOperation.DEBUG === formData.getOperation()) {
+    } else if (GameOperation.DEBUG === operation) {
       /**
        * Run game with debug mode
        */
 
       await window.$app.getApi().getGames().debugById(item.id);
 
-    } else if (GameOperation.INSTALL_DISK_IMAGE === formData.getOperation()) {
+    } else if (GameOperation.INSTALL_DISK_IMAGE === operation) {
       /**
        * Mount image
        */
@@ -221,14 +232,14 @@
 
       window.$app.getPopup().open(PopupNames.FILE_MANAGER, formData);
 
-    } else if (GameOperation.PREFIX === formData.getOperation()) {
+    } else if (GameOperation.PREFIX === operation) {
       /**
        * Creating prefix
        */
 
       await window.$app.getApi().getPrefix().sendLastProgress();
 
-    } else if (GameOperation.COPY_GAME === formData.getOperation()) {
+    } else if (GameOperation.COPY_GAME === operation) {
       /**
        * Copy game folder
        */
@@ -240,7 +251,7 @@
         formData.getPath(),
         `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
       );
-    } else if (GameOperation.MOVE_GAME === formData.getOperation()) {
+    } else if (GameOperation.MOVE_GAME === operation) {
       /**
        * Move game folder
        */
@@ -252,7 +263,7 @@
         formData.getPath(),
         `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
       );
-    } else if (GameOperation.SYMLINK_GAME === formData.getOperation()) {
+    } else if (GameOperation.SYMLINK_GAME === operation) {
       /**
        * Create symlink
        */
@@ -264,13 +275,20 @@
         formData.getPath(),
         `${await appFolders.getGamesDir()}/${await fs.basename(formData.getPath())}`
       );
-    } else if (GameOperation.WINETRICKS === formData.getOperation()) {
+    } else if (GameOperation.WINETRICKS === operation) {
       /**
        * Winetricks
        */
 
       const item: WineTrickItemType = window.$app.getPopup().getArguments();
       await window.$app.getApi().getKernel().winetricks(item.name);
+    } else if (GameOperation.RUNNER_INSTALL === operation) {
+      /**
+       * Runner install
+       */
+
+      const item: ItemType = window.$app.getPopup().getArguments();
+      await window.$app.getApi().getRepositories().installRunner(item.url || item.path);
     }
   });
 
@@ -278,15 +296,15 @@
     unbindEvents();
 
     if (running) {
-      if (GameOperation.INSTALL_FILE === formData.getOperation()) {
+      if (GameOperation.INSTALL_FILE === operation) {
         const tasks: Tasks = window.$app.getApi().getTasks();
 
         if (!(await tasks.isFinish()) && TaskType.KERNEL === (await tasks.getType())) {
           await tasks.kill();
         }
-      } else if (GameOperation.DEBUG === formData.getOperation()) {
+      } else if (GameOperation.DEBUG === operation) {
         await window.$app.getApi().getGames().kill();
-      } else if (GameOperation.PREFIX === formData.getOperation()) {
+      } else if (GameOperation.PREFIX === operation) {
         window.$app.getPopup().clearHistory().back();
       }
     }
@@ -301,15 +319,17 @@
 <div class="popup">
   <div class="header">
     {#if !completed}
-      {#if GameOperation.PREFIX === formData.getOperation()}
+      {#if GameOperation.PREFIX === operation}
         Prefix initialization
-      {:else if GameOperation.COPY_GAME === formData.getOperation()}
+      {:else if GameOperation.COPY_GAME === operation}
         Copying the game folder
-      {:else if GameOperation.MOVE_GAME === formData.getOperation()}
+      {:else if GameOperation.MOVE_GAME === operation}
         Moving the game folder
-      {:else if GameOperation.SYMLINK_GAME === formData.getOperation()}
+      {:else if GameOperation.SYMLINK_GAME === operation}
         Creating a link to the game folder
-      {:else if GameOperation.WINETRICKS === formData.getOperation()}
+      {:else if GameOperation.RUNNER_INSTALL === operation}
+        Runner install
+      {:else if GameOperation.WINETRICKS === operation}
         Winetricks
       {:else}
         Running
@@ -336,11 +356,11 @@
       <div class="message">{Math.trunc(progressData.progress)}%</div>
       <Progress value={progressData.progress} style="width: calc(100% - 500px); margin-top: 0px;"/>
       <div class="message">
-        {#if progressData.name && -1 === COPY_FILES.indexOf(formData.getOperation())}
-          {#if GameOperation.PREFIX !== formData.getOperation()}
+        {#if progressData.name && -1 === COPY_FILES.indexOf(operation)}
+          {#if GameOperation.PREFIX !== operation}
             {_.capitalize(progressData.event)}:
           {/if}
-          {progressData.name}.
+          {progressData.name}
         {/if}
 
         {#if progressData.totalBytesFormatted}
@@ -348,7 +368,7 @@
         {/if}
 
         {#if progressData.itemsCount}
-          {#if GameOperation.PREFIX === formData.getOperation()}
+          {#if GameOperation.PREFIX === operation}
             Step:
           {:else}
             Files:

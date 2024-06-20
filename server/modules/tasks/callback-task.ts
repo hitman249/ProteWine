@@ -6,13 +6,14 @@ import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType} from './types';
 import type {Progress} from '../archiver';
 import type WatchProcess from '../../helpers/watch-process';
+import type {App} from '../../app';
 
 export default class CallbackTask extends AbstractTask {
   protected type: TaskType = TaskType.CALLBACK;
   private finish: boolean = false;
 
-  constructor(command: Command, kernels: Kernels, fs: FileSystem) {
-    super(command, kernels, fs);
+  constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
+    super(command, kernels, fs, app);
   }
 
   public async run(callback: (task: this) => Promise<void>): Promise<WatchProcess> {

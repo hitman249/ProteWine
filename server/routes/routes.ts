@@ -52,6 +52,12 @@ export enum RoutesWineTricks {
   LIST = 'winetricks:list',
 }
 
+export enum RoutesRepositories {
+  LIST = 'repositories:list',
+  LIST_BY_NAME = 'repositories:list-by-name',
+  INSTALL = 'repositories:install',
+}
+
 export enum RoutesPrefix {
   EXIST = 'prefix:exist',
   CREATE = 'prefix:create',
@@ -117,6 +123,9 @@ export default {
     RoutesGallery.PORTRAITS,
     RoutesGallery.ICONS,
     RoutesWineTricks.LIST,
+    RoutesRepositories.LIST,
+    RoutesRepositories.LIST_BY_NAME,
+    RoutesRepositories.INSTALL,
   ] as string[],
   send: [] as string[],
   receive: [

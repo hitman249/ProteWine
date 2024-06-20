@@ -11,6 +11,7 @@ export enum PopupNames {
   INPUT = 'input',
   INFO = 'info',
   WINETRICKS = 'winetricks',
+  RUNTIME = 'runtime',
 }
 
 export enum PopupEvents {

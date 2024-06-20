@@ -5,6 +5,7 @@ import type FileSystem from '../file-system';
 import type WatchProcess from '../../helpers/watch-process';
 import type {Progress} from '../archiver';
 import {KernelOperation, SessionType} from '../kernels/abstract-kernel';
+import {App} from '../../app';
 import KernelTask from './kernel-task';
 import ArchiverTask from './archiver-task';
 import WatchProcessTask from './watch-process-task';
@@ -12,20 +13,23 @@ import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType, BodyBus} from './types';
 import CallbackTask from './callback-task';
 import FileSystemTask from './fs-task';
+import RepositoriesTask from './repositories-task';
 
 export default class Tasks extends AbstractModule {
   private readonly command: Command;
   private readonly kernels: Kernels;
   private readonly fs: FileSystem;
+  private readonly app: App;
 
-  private current: KernelTask | ArchiverTask | WatchProcessTask | CallbackTask | FileSystemTask;
+  private current: KernelTask | ArchiverTask | WatchProcessTask | CallbackTask | FileSystemTask | RepositoriesTask;
 
-  constructor(command: Command, kernels: Kernels, fs: FileSystem) {
+  constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
     super();
 
     this.command = command;
     this.kernels = kernels;
     this.fs = fs;
+    this.app = app;
 
     this.onRun = this.onRun.bind(this);
     this.onLog = this.onLog.bind(this);
@@ -138,7 +142,7 @@ export default class Tasks extends AbstractModule {
 
   public async kernel(cmd: string, operation: KernelOperation, session: SessionType = SessionType.RUN): Promise<WatchProcess> {
     this.before();
-    this.current = new KernelTask(this.command, this.kernels, this.fs);
+    this.current = new KernelTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.run(cmd, operation, session);
@@ -146,7 +150,7 @@ export default class Tasks extends AbstractModule {
 
   public async unpack(src: string, dest: string = ''): Promise<WatchProcess> {
     this.before();
-    this.current = new ArchiverTask(this.command, this.kernels, this.fs);
+    this.current = new ArchiverTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.unpack(src, dest);
@@ -154,7 +158,7 @@ export default class Tasks extends AbstractModule {
 
   public async watch(callback: () => WatchProcess | Promise<WatchProcess>): Promise<WatchProcess> {
     this.before();
-    this.current = new WatchProcessTask(this.command, this.kernels, this.fs);
+    this.current = new WatchProcessTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.run(callback);
@@ -162,7 +166,7 @@ export default class Tasks extends AbstractModule {
 
   public async callback(callback: (task: CallbackTask) => Promise<void>): Promise<WatchProcess> {
     this.before();
-    this.current = new CallbackTask(this.command, this.kernels, this.fs);
+    this.current = new CallbackTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.run(callback);
@@ -170,7 +174,7 @@ export default class Tasks extends AbstractModule {
 
   public async cp(src: string, dest: string): Promise<void> {
     this.before();
-    this.current = new FileSystemTask(this.command, this.kernels, this.fs);
+    this.current = new FileSystemTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.cp(src, dest);
@@ -178,7 +182,7 @@ export default class Tasks extends AbstractModule {
 
   public async mv(src: string, dest: string): Promise<void> {
     this.before();
-    this.current = new FileSystemTask(this.command, this.kernels, this.fs);
+    this.current = new FileSystemTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.mv(src, dest);
@@ -186,9 +190,17 @@ export default class Tasks extends AbstractModule {
 
   public async ln(src: string, dest: string): Promise<void> {
     this.before();
-    this.current = new FileSystemTask(this.command, this.kernels, this.fs);
+    this.current = new FileSystemTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
     return this.current.ln(src, dest);
+  }
+
+  public async installRunner(url: string): Promise<WatchProcess> {
+    this.before();
+    this.current = new RepositoriesTask(this.command, this.kernels, this.fs, this.app);
+    this.after();
+
+    return this.current.install(url);
   }
 }

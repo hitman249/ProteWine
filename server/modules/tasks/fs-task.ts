@@ -6,13 +6,14 @@ import type FileSystem from '../file-system';
 import type {Progress} from '../archiver';
 import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType} from './types';
+import type {App} from '../../app';
 
 export default class FileSystemTask extends AbstractTask {
   protected type: TaskType = TaskType.FILE_SYSTEM;
   private finish: boolean = false;
 
-  constructor(command: Command, kernels: Kernels, fs: FileSystem) {
-    super(command, kernels, fs);
+  constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
+    super(command, kernels, fs, app);
   }
 
   private async handler(src: string, dest: string, op: 'cp' | 'mv'): Promise<void> {

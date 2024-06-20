@@ -51,7 +51,6 @@ export default class Archiver extends EventListener {
 
   private readonly src: string;
   private readonly dest: string;
-  private tempDir: string;
   private process: WatchProcess;
 
   private static readonly SKIP_PROGRESS: string[] = [
@@ -103,20 +102,9 @@ export default class Archiver extends EventListener {
       return this;
     }
 
-    if (await this.fs.exists(this.dest)) {
-      await this.fs.rm(this.dest);
-    }
-
-    this.tempDir = (await this.appFolders.getCacheDir()) + `/tmp_${Utils.rand(10000, 99999)}`;
-    await this.fs.mkdir(this.tempDir);
-
-    if (!await this.fs.exists(this.tempDir)) {
-      throw new Error(`Error create dir: ${this.tempDir}`);
-    }
-
     const size: number = await this.fs.size(this.src);
     const fileName: string = this.fs.basename(this.src);
-    const mvFile: string = `${this.tempDir}/${fileName}`;
+    const mvFile: string = `${this.dest}/${fileName}`;
 
     await this.fs.mv(this.src, mvFile, {overwrite: true}, (progress: Progress) => {
       this.fireEvent(ArchiverEvent.PROGRESS, {
@@ -143,13 +131,13 @@ export default class Archiver extends EventListener {
     const skipProgress: boolean = Archiver.SKIP_PROGRESS.includes(archiver);
 
     const bar: string = skipProgress ? '' : `"${await this.appFolders.getBarFile()}" -w 100 -n "${fileName}" |`;
-    this.process = await this.watch(`cd "${this.tempDir}" && ${bar} ${archiver} ${args}`);
+    this.process = await this.watch(`cd "${this.dest}" && ${bar} ${archiver} ${args}`);
 
     if (!skipProgress) {
       let prevPercent: string = undefined;
 
       this.process.on(WatchProcessEvent.STDERR, (event: WatchProcessEvent.STDERR, line: string) => {
-        const percent: string = Array.from(line.matchAll(/ ([0-9]{1,2})% \[/gm))[0]?.[1];
+        const percent: string = _.trim(line).match(/([0-9]{1,3})% \[/gm)?.join('').split('%')?.[0];
 
         if (undefined === percent || prevPercent === percent) {
           return;
@@ -188,8 +176,8 @@ export default class Archiver extends EventListener {
   }
 
   public async clear(): Promise<this> {
-    if (this.tempDir && await this.fs.exists(this.tempDir)) {
-      await this.fs.rm(this.tempDir);
+    if (this.dest && await this.fs.exists(this.dest)) {
+      await this.fs.rm(this.dest);
     }
 
     return this;

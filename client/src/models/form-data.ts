@@ -10,6 +10,7 @@ export enum GameOperation {
   SELECT_IMAGE = 'select-image',
   SELECT_EXE = 'select-exe',
   DEBUG = 'debug',
+  RUNNER_INSTALL = 'runner-install',
 }
 
 export enum FileManagerMode {

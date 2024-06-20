@@ -10,6 +10,7 @@ import PrefixRoutes from './modules/prefix';
 import AppFoldersRoutes from './modules/app-folders';
 import GalleryRoutes from './modules/gallery';
 import WineTricksRoutes from './modules/winetricks';
+import RepositoriesRoutes from './modules/repositories';
 
 export default class Index {
   private readonly app: App;
@@ -25,6 +26,7 @@ export default class Index {
   private readonly APP_FOLDERS: AppFoldersRoutes;
   private readonly GALLERY: GalleryRoutes;
   private readonly WINETRICKS: WineTricksRoutes;
+  private readonly REPOSITORIES: RepositoriesRoutes;
 
   private readonly modules: AbstractModule[] = [];
 
@@ -42,6 +44,7 @@ export default class Index {
     this.APP_FOLDERS = new AppFoldersRoutes(ipcMain, window, app);
     this.GALLERY = new GalleryRoutes(ipcMain, window, app);
     this.WINETRICKS = new WineTricksRoutes(ipcMain, window, app);
+    this.REPOSITORIES = new RepositoriesRoutes(ipcMain, window, app);
 
     this.modules.push(
       this.FILE_SYSTEM,
@@ -53,6 +56,7 @@ export default class Index {
       this.APP_FOLDERS,
       this.GALLERY,
       this.WINETRICKS,
+      this.REPOSITORIES,
     );
   }
 

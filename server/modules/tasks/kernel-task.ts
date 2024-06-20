@@ -6,6 +6,7 @@ import type Command from '../command';
 import type FileSystem from '../file-system';
 import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType} from './types';
+import type {App} from '../../app';
 
 export default class KernelTask extends AbstractTask {
   protected type: TaskType = TaskType.KERNEL;
@@ -13,8 +14,8 @@ export default class KernelTask extends AbstractTask {
   private cmd: string;
   private kernel: Kernel;
 
-  constructor(command: Command, kernels: Kernels, fs: FileSystem) {
-    super(command, kernels, fs);
+  constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
+    super(command, kernels, fs, app);
 
     this.onRun = this.onRun.bind(this);
     this.onLog = this.onLog.bind(this);

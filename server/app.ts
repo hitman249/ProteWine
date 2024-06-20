@@ -19,6 +19,7 @@ import Prefix from './modules/prefix';
 import Gallery from './modules/gallery';
 import WineTricks from './modules/winetricks';
 import Environment from './modules/kernels/environment';
+import Repositories from './modules/repositories';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -40,6 +41,7 @@ export class App {
   private readonly PREFIX: Prefix;
   private readonly GALLERY: Gallery;
   private readonly WINETRICKS: WineTricks;
+  private readonly REPOSITORIES: Repositories;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -58,10 +60,11 @@ export class App {
     this.KERNELS = new Kernels(this.SYSTEM, this);
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM);
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS);
-    this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM);
+    this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM, this);
     this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS, this.NETWORK, this.TASKS, this.MONITOR);
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
     this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
+    this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS);
 
     this.initOrder = [
       this.COMMAND,
@@ -81,6 +84,7 @@ export class App {
       this.PREFIX,
       this.GALLERY,
       this.WINETRICKS,
+      this.REPOSITORIES,
     ];
   }
 
@@ -185,6 +189,10 @@ export class App {
 
   public getWineTricks(): WineTricks {
     return this.WINETRICKS;
+  }
+
+  public getRepositories(): Repositories {
+    return this.REPOSITORIES;
   }
 
   public getMountWine(): Mount {

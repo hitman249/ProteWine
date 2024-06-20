@@ -34,7 +34,7 @@
     position: absolute;
     height: 100%;
     background-color: #ffffff;
-    transition: width 0.2s linear;
+    //transition: width 0.2s linear;
     contain: layout;
   }
 

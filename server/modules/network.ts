@@ -83,7 +83,7 @@ export default class Network extends AbstractModule {
       .then((response: Response) => response.text());
   }
 
-  public async getJSON(url: string): Promise<Object> {
+  public async getJSON(url: string): Promise<any> {
     return this.isConnected()
       .then(() => fetch(url, this.options))
       .then((response: Response) => response.json());
@@ -131,7 +131,7 @@ export default class Network extends AbstractModule {
               downloadedLength += chunk.byteLength;
 
               progress?.({
-                success: contentLength > 0,
+                success: false,
                 progress: 100 / contentLength * downloadedLength,
                 totalBytes: contentLength,
                 transferredBytes: downloadedLength,
