@@ -25,7 +25,6 @@ export default class AppFolders extends AbstractModule {
   private gamesDir: string = '/data/games';
   private gamesFile: string = '/data/games.squashfs';
   private savesDir: string = '/data/saves';
-  private savesFoldersFile: string = '/data/saves/folders.json';
   private configsDir: string = '/data/configs';
   private configsGamesDir: string = '/data/configs/games';
   private dxvkConfFile: string = '/data/configs/dxvk.conf';
@@ -96,15 +95,6 @@ export default class AppFolders extends AbstractModule {
 
     const settings: Settings = global.$app.getSettings();
     await settings.save();
-
-    const saveFolders: {} = settings.getDefaultSaveFolders();
-    const savesDir: string = await this.getSavesDir();
-
-    for await (const folder of Object.keys(saveFolders)) {
-      await this.fs.mkdir(`${savesDir}/${folder}`);
-    }
-
-    await this.fs.filePutContents(await this.getSavesFoldersFile(), Utils.jsonEncode(saveFolders));
   }
 
   public async isCreated(): Promise<boolean> {
@@ -179,10 +169,6 @@ export default class AppFolders extends AbstractModule {
 
   public async getSavesDir(): Promise<string> {
     return await this.getRootDir() + this.savesDir;
-  }
-
-  public async getSavesFoldersFile(): Promise<string> {
-    return await this.getRootDir() + this.savesFoldersFile;
   }
 
   public async getCacheDir(): Promise<string> {

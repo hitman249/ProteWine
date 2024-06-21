@@ -48,7 +48,7 @@ export default class Proton extends AbstractKernel {
       await this.fs.mkdir(prefix);
     }
 
-    return this.run('sc', SessionType.RUN, {WINEDEBUG: 'fixme-all'});
+    return this.run('getcompatpath ""', SessionType.PROTON, {WINEDEBUG: 'fixme-all'});
   }
 
   public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {
@@ -92,6 +92,11 @@ export default class Proton extends AbstractKernel {
 
     const wineDir: string = await this.appFolders.getWineDir();
     const versionFile: string = `${wineDir}/version`;
+    const runnerFile: string = `${wineDir}/runner`;
+
+    if (await this.fs.exists(runnerFile)) {
+      return await this.fs.fileGetContents(runnerFile);
+    }
 
     if (await this.fs.exists(versionFile)) {
       const version: string = await this.fs.fileGetContents(versionFile);

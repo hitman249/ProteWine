@@ -5,8 +5,6 @@ import type AppFolders from './app-folders';
 import type Command from './command';
 import type FileSystem from './file-system';
 import type System from './system';
-import type Kernels from './kernels';
-import type {Kernel} from './kernels';
 
 export default class Settings extends AbstractModule {
   private readonly path: string = '/data/configs/settings.json';
@@ -65,7 +63,7 @@ export default class Settings extends AbstractModule {
   }
 
   public isPulse(): boolean {
-    return _.get(this.config, 'fixes.pulse', false);
+    return _.get(this.config, 'fixes.pulse', true);
   }
 
   public getDefaultConfig(): {} {
@@ -93,17 +91,6 @@ export default class Settings extends AbstractModule {
         noCrashDialog: false,  // No crash dialog
         wineMenuBuilder: true,
       },
-    };
-  }
-
-  public getDefaultSaveFolders(): {} {
-    return {
-      'Documents': 'users/{USER}/Documents',
-      'Documents Extra': 'users/{USER}/Мои документы',
-      'Documents Public': 'users/Public/Documents',
-      'Documents Public Extra': 'users/Public/Мои документы',
-      'Application Data': 'users/{USER}/Application Data',
-      'Local Settings': 'users/{USER}/Local Settings',
     };
   }
 }

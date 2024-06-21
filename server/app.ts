@@ -53,7 +53,7 @@ export class App {
     this.GALLERY = new Gallery();
     this.FILE_SYSTEM = new FileSystem(this.APP_FOLDERS);
     this.CACHE = new GlobalCache(this.APP_FOLDERS);
-    this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE);
+    this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE, this);
     this.DRIVER = new Driver(this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
     this.UPDATE = new Update(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK);
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
@@ -64,7 +64,7 @@ export class App {
     this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS, this.NETWORK, this.TASKS, this.MONITOR);
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
     this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
-    this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS);
+    this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this);
 
     this.initOrder = [
       this.COMMAND,

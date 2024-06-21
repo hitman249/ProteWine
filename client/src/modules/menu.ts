@@ -276,7 +276,7 @@ export default class Menu extends EventListener {
           icon: 'wine',
           title: 'Runner change',
           description: 'Wine 9.0',
-          popup: PopupNames.RUNTIME,
+          popup: PopupNames.RUNNER,
         },
         {
           id: 'reset',

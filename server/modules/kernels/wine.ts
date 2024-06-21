@@ -93,6 +93,13 @@ export default class Wine extends AbstractKernel {
       return this.kernelVersion;
     }
 
+    const wineDir: string = await this.appFolders.getWineDir();
+    const runnerFile: string = `${wineDir}/runner`;
+
+    if (await this.fs.exists(runnerFile)) {
+      return await this.fs.fileGetContents(runnerFile);
+    }
+
     const process: WatchProcess = await this.run('--version', SessionType.RUN_IN_PREFIX);
     await process.wait();
 

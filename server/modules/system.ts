@@ -1,5 +1,6 @@
 import process from 'process';
-import AppFolders from './app-folders';
+import type AppFolders from './app-folders';
+import type {App} from '../app';
 import Command from './command';
 import FileSystem from './file-system';
 import Utils from '../helpers/utils';
@@ -40,10 +41,11 @@ export default class System extends AbstractModule {
   public readonly cache: GlobalCache;
   public readonly command: Command;
   public readonly fs: FileSystem;
+  public readonly app: App;
 
   private static shutdownFunctions: Function[];
 
-  constructor(appFolders: AppFolders, cache: GlobalCache) {
+  constructor(appFolders: AppFolders, cache: GlobalCache, app: App) {
     super();
 
     this.memory
@@ -75,6 +77,7 @@ export default class System extends AbstractModule {
 
     this.appFolders = appFolders;
     this.cache = cache;
+    this.app = app;
     this.command = new Command();
     this.fs = new FileSystem(appFolders);
   }
@@ -82,9 +85,6 @@ export default class System extends AbstractModule {
   public async init(): Promise<any> {
     if (undefined === System.shutdownFunctions) {
       this.createHandlerShutdownFunctions();
-      this.registerShutdownFunction(() => {
-        // todo before exit app
-      });
     }
   }
 
@@ -539,19 +539,7 @@ export default class System extends AbstractModule {
   }
 
   private createHandlerShutdownFunctions(): void {
-    // let processed: boolean            = false;
     System.shutdownFunctions = [];
-
-    // mainWindow.on('close', () => {
-    //   if (window.debugMode) {
-    //     return;
-    //   }
-    //
-    //   if (!processed) {
-    //     processed = true;
-    //     this.closeApp();
-    //   }
-    // });
   }
 
   public registerShutdownFunction(fn: Function): void {
@@ -561,26 +549,10 @@ export default class System extends AbstractModule {
   /**
    * @return {Promise<void>}
    */
-  // closeApp() {
-  //   const wine = window.app.getKernel();
-  //
-  //   if (Object.keys(wine.processList()).length) {
-  //     wine.kill();
-  //   }
-  //
-  //   return Promise.all(System.shutdownFunctions.map(fn => fn()))
-  //     .then(
-  //       () => ipcRenderer.send('app_quit'),
-  //       () => ipcRenderer.send('app_quit'),
-  //     );
-  // }
-
-  /**
-   * @return {{show: Function, hide: Function}}
-   */
-  // window() {
-  //   return mainWindow;
-  // }
+  public async closeApp(): Promise<void> {
+    await this.app.getKernels().getKernel()?.kill();
+    await Promise.all(System.shutdownFunctions.map(fn => fn()));
+  }
 
   /**
    * @return {boolean}

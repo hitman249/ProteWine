@@ -5,6 +5,8 @@ import type FileSystem from '../file-system';
 import type Network from '../network';
 import type System from '../system';
 import type Tasks from '../tasks';
+import type {App} from '../../app';
+import type Kernels from '../kernels';
 import Kron4ek from './kron4ek';
 import ProtonGE from './proton-ge';
 import Lutris from './lutris';
@@ -13,6 +15,7 @@ import BottlesDevs from './bottles-devs';
 import Steam from './steam';
 import Archiver, {ArchiverEvent, Progress} from '../archiver';
 import {RepositoriesEvent} from './types';
+import Utils from '../../helpers/utils';
 
 export type ItemType = {
   name: string,
@@ -37,8 +40,10 @@ export default class Repositories extends AbstractModule {
   protected readonly network: Network;
   protected readonly system: System;
   protected readonly tasks: Tasks;
+  protected readonly kernels: Kernels;
+  protected readonly app: App;
 
-  constructor(appFolders: AppFolders, fs: FileSystem, network: Network, system: System, tasks: Tasks) {
+  constructor(appFolders: AppFolders, fs: FileSystem, network: Network, system: System, tasks: Tasks, kernels: Kernels, app: App) {
     super();
 
     this.appFolders = appFolders;
@@ -46,6 +51,8 @@ export default class Repositories extends AbstractModule {
     this.network = network;
     this.system = system;
     this.tasks = tasks;
+    this.kernels = kernels;
+    this.app = app;
 
     this.KRON4EK = new Kron4ek(appFolders, fs, network, system);
     this.PROTON_GE = new ProtonGE(appFolders, fs, network, system);
@@ -105,9 +112,43 @@ export default class Repositories extends AbstractModule {
     const wine: string = await this.appFolders.getWineDir();
     const filename: string = this.fs.basename(url);
 
+    const chmod: () => Promise<void> = async (): Promise<void> => {
+      const dirs: string[] = [
+        `${wine}/bin`,
+        `${wine}/proton`,
+        `${wine}/files/bin`,
+      ];
+
+      for await (const dir of dirs) {
+        if (await this.fs.exists(dir)) {
+          await this.fs.chmod(dir);
+        }
+      }
+    };
+
+    const removeWine: () => Promise<void> = async (): Promise<void> => {
+      if (await this.fs.exists(wine)) {
+        await this.fs.rm(wine);
+      }
+    };
+
+    const setWineVersion: () => Promise<void> = async (): Promise<void> => {
+      this.fireEvent(RepositoriesEvent.LOG, 'Update runner version.');
+
+      await this.kernels.init();
+      const version: string = await this.kernels.getKernel().version();
+
+      if (version) {
+        await this.fs.filePutContents(`${wine}/runner`, version);
+      }
+    };
+
     if (isPath) {
       this.fireEvent(RepositoriesEvent.RUN, 'Copy');
+      await removeWine();
       await this.fs.cp(url, wine, undefined, progress);
+      await setWineVersion();
+      await chmod();
       this.fireEvent(RepositoriesEvent.EXIT);
 
       return;
@@ -122,7 +163,8 @@ export default class Repositories extends AbstractModule {
 
     const archiver: Archiver = new Archiver(this.fs, src, dest);
     archiver.on(ArchiverEvent.PROGRESS, (event: ArchiverEvent.PROGRESS, data: Progress) => progress(data));
-    await (await archiver.unpack()).getProcess().wait();
+    await (await archiver.unpack()).getProcess()?.wait();
+    archiver.removeAllListeners();
 
     if (await this.fs.exists(src)) {
       await this.fs.rm(src);
@@ -141,15 +183,15 @@ export default class Repositories extends AbstractModule {
       return;
     }
 
-    if (await this.fs.exists(wine)) {
-      await this.fs.rm(wine);
-    }
-
+    await removeWine();
     await this.fs.mv(path, wine, undefined, progress);
 
     if (await this.fs.exists(dest)) {
       await this.fs.rm(dest);
     }
+
+    await setWineVersion();
+    await chmod();
 
     this.fireEvent(RepositoriesEvent.EXIT);
   }

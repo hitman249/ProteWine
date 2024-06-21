@@ -361,13 +361,21 @@
             {_.capitalize(progressData.event)}:
           {/if}
           {progressData.name}
+
+          {#if progressData.totalBytesFormatted || progressData.itemsCount > 1}
+            <div class="hr"/>
+          {/if}
         {/if}
 
         {#if progressData.totalBytesFormatted}
-          Completed: {progressData.transferredBytesFormatted} \ {progressData.totalBytesFormatted}.
+          Completed: {progressData.transferredBytesFormatted} \ {progressData.totalBytesFormatted}
+
+          {#if progressData.itemsCount > 1}
+            <div class="hr"/>
+          {/if}
         {/if}
 
-        {#if progressData.itemsCount}
+        {#if progressData.itemsCount > 1}
           {#if GameOperation.PREFIX === operation}
             Step:
           {:else}
@@ -523,6 +531,15 @@
           height: 1px;
           background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
           filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+        }
+
+        .hr {
+          display: inline-block;
+          height: 20px;
+          width: 2px;
+          background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+          margin-left: 10px;
+          margin-right: 10px;
         }
       }
     }

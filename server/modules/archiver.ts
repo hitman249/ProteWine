@@ -206,11 +206,12 @@ export default class Archiver extends EventListener {
       throw new Error(`Error squashfs packing: "${this.src}"`);
     }
 
+    const total: number = await this.fs.size(this.src);
     const mksquashfs: string = await this.fs.getAppFolders().getMkSquashFsFile();
 
     const cmd: string = maxLevel
-      ? `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp lz4 -Xhc -percentage`
-      : `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp xz -Xdict-size 100% -percentage`;
+      ? `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp xz -Xdict-size 100% -percentage`
+      : `"${mksquashfs}" "${this.src}" "${this.src}.squashfs" -progress -b 1048576 -comp lz4 -Xhc -percentage`;
 
     this.process = await this.watch(`cd "${this.src}" && ${cmd}`);
 
@@ -225,13 +226,17 @@ export default class Archiver extends EventListener {
 
       prevPercent = percent;
 
+      const progress: number = Utils.toInt(percent);
+      const totalBytes: number = total;
+      const transferredBytes: number = total / 100 * progress;
+
       this.fireEvent(ArchiverEvent.PROGRESS, {
         success: false,
-        progress: Utils.toInt(percent),
-        totalBytes: 0,
-        transferredBytes: 0,
-        totalBytesFormatted: Utils.convertBytes(0),
-        transferredBytesFormatted: Utils.convertBytes(0),
+        progress,
+        totalBytes,
+        transferredBytes,
+        totalBytesFormatted: Utils.convertBytes(totalBytes),
+        transferredBytesFormatted: Utils.convertBytes(transferredBytes),
         itemsCount: 1,
         itemsComplete: 1,
         path: this.src,

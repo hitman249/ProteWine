@@ -11,6 +11,7 @@ import type {Kernel} from './kernels';
 import type System from './system';
 import type WatchProcess from '../helpers/watch-process';
 import type {Progress} from './archiver';
+import _ from 'lodash';
 
 export default class Prefix extends AbstractModule {
   private readonly command: Command;
@@ -25,6 +26,7 @@ export default class Prefix extends AbstractModule {
   private itemsComplete: number = 0;
   private itemsCount: number = 6;
   private lastProgress: Progress;
+  private registry: string[] = [];
 
   constructor(appFolders: AppFolders, command: Command, fs: FileSystem, kernels: Kernels, tasks: Tasks, settings: Settings, system: System) {
     super();
@@ -74,6 +76,7 @@ export default class Prefix extends AbstractModule {
     this.processed = true;
     this.itemsComplete = 0;
     this.lastProgress = undefined;
+    this.registry = [];
 
     this.tasks.sendBus({
       event: 'creating',
@@ -119,10 +122,9 @@ export default class Prefix extends AbstractModule {
       }
     }
 
-    await this.run(
-      'reg delete "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\Namespace\\{9D20AAE8-0625-44B0-9CA7-71889C2254D9}" /va /f',
+    this.registry.push(
+      "[-HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\Namespace\\{9D20AAE8-0625-44B0-9CA7-71889C2254D9}]\n"
     );
-
 
     this.sendProgress('Folders configuration', 60);
 
@@ -146,6 +148,7 @@ export default class Prefix extends AbstractModule {
      * Set Pulse or Alsa
      */
     await this.updateSound();
+    await this.applyRegistry();
 
     this.processed = false;
 
@@ -204,6 +207,30 @@ export default class Prefix extends AbstractModule {
     await this.fs.lnOfRoot(gamesDir, prefixGamesDir);
     await this.fs.lnOfRoot(logsDir, prefixLogsDir);
     await this.fs.lnOfRoot(cacheDir, prefixCacheDir);
+
+    const savesDir: string = await this.appFolders.getSavesDir();
+    const driveC: string = await kernel.getDriveCDir();
+    const user: string = await kernel.getUserName();
+    const userDir: string = `${driveC}/users/${user}`;
+
+    if (await this.fs.exists(savesDir)) {
+      await this.fs.rm(userDir);
+    } else {
+      await this.fs.mv(userDir, savesDir);
+    }
+
+    await this.fs.lnOfRoot(savesDir, userDir);
+
+    for await (const path of await this.fs.glob(`${savesDir}/**`)) {
+      if ((await this.fs.isSymbolicLink(path)) && (await this.fs.isDirectory(path))) {
+        const link: string = await this.fs.readSymbolicLink(path);
+
+        if (link && (_.startsWith(link, '/') || _.startsWith(link, '~/'))) {
+          await this.fs.rm(path);
+          await this.fs.mkdir(path);
+        }
+      }
+    }
   }
 
   private async updateSound(): Promise<void> {
@@ -213,21 +240,14 @@ export default class Prefix extends AbstractModule {
     const newPulse: boolean = this.settings.isPulse() && await this.system.isPulse();
 
     if (pulse !== newPulse) {
-      let regs: string[] = [
-        "Windows Registry Editor Version 5.00\n",
-        "[HKEY_CURRENT_USER\\Software\\Wine\\Drivers]\n",
-      ];
-
-      const path: string = `${(await kernel.getDriveCDir())}/sound.reg`;
+      this.registry.push("\n[HKEY_CURRENT_USER\\Software\\Wine\\Drivers]\n");
 
       if (newPulse) {
-        regs.push('"Audio"="pulse"\n');
+        this.registry.push('"Audio"="pulse"\n');
       } else {
-        regs.push('"Audio"="alsa"\n');
+        this.registry.push('"Audio"="alsa"\n');
       }
 
-      await this.fs.filePutContents(path, Utils.encode(regs.join('\n'), 'utf-16'));
-      await this.run(`regedit "${path}"`);
       await kernel.setMetadata('sound', newPulse);
     }
   }
@@ -239,83 +259,93 @@ export default class Prefix extends AbstractModule {
     const newWindowsVersion: string = this.settings.getWindowsVersion();
 
     if (windowsVersion !== newWindowsVersion) {
-      let regs: string[] = [
-        'Windows Registry Editor Version 5.00\n',
-      ];
-
-      let path: string = `${await kernel.getDriveCDir()}/windowsVersion.reg`;
       let append: {[key: string]: {[key: string]: string}} = {};
 
       switch (newWindowsVersion) {
         case 'win2k':
-          await this.run('reg delete "HKLM\\System\\CurrentControlSet\\Control\\ProductOptions" /v ProductType /f');
-          append = {
-            'HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion': {
-              'CSDVersion': 'Service Pack 4',
-              'CurrentBuildNumber': '2195',
-              'CurrentVersion': '5.0',
-            },
-            'HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows': {
-              'CSDVersion': 'dword:00000400',
-            },
-          };
+          this.registry.push(
+            "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+            '"ProductType"=-\n',
+
+            '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
+            '"CSDVersion"="Service Pack 4"',
+            '"CurrentBuildNumber"="2195"',
+            '"CurrentVersion"="5.0"\n',
+
+            '\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows]\n',
+            '"CSDVersion"="dword:00000400"\n',
+          );
           break;
 
         case 'winxp':
-          await this.run('reg delete "HKLM\\System\\CurrentControlSet\\Control\\ProductOptions" /v ProductType /f');
-          append = {
-            'HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion': {
-              'CSDVersion': 'Service Pack 3',
-              'CurrentBuildNumber': '2600',
-              'CurrentVersion': '5.1',
-            },
-            'HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows': {
-              'CSDVersion': 'dword:00000300',
-            },
-          };
+          this.registry.push(
+            "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+            '"ProductType"=-\n',
+
+            '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
+            '"CSDVersion"="Service Pack 3"',
+            '"CurrentBuildNumber"="2600"',
+            '"CurrentVersion"="5.1"\n',
+
+            '\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows]\n',
+            '"CSDVersion"="dword:00000400"\n',
+          );
           break;
 
         case 'win10':
-          await this.run('reg add "HKLM\\System\\CurrentControlSet\\Control\\ProductOptions" /v ProductType /d WinNT /f');
-          append = {
-            'HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion': {
-              'CSDVersion': '',
-              'CurrentBuildNumber': '10240',
-              'CurrentVersion': '10.0',
-            },
-            'HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows': {
-              'CSDVersion': 'dword:00000300',
-            },
-          };
+          this.registry.push(
+            "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+            '"ProductType"="WinNT"\n',
+
+            '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
+            '"CSDVersion"=""',
+            '"CurrentBuildNumber"="10240"',
+            '"CurrentVersion"="10.0"\n',
+
+            '\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows]\n',
+            '"CSDVersion"="dword:00000300"\n',
+          );
           break;
 
         case 'win7':
         default:
-          await this.run('reg add "HKLM\\System\\CurrentControlSet\\Control\\ProductOptions" /v ProductType /d WinNT /f');
-          append = {
-            'HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion': {
-              'CSDVersion': 'Service Pack 1',
-              'CurrentBuildNumber': '7601',
-              'CurrentVersion': '6.1',
-            },
-            'HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows': {
-              'CSDVersion': 'dword:00000100',
-            },
-          };
+          this.registry.push(
+            "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+            '"ProductType"="WinNT"\n',
+
+            '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
+            '"CSDVersion"="Service Pack 1"',
+            '"CurrentBuildNumber"="7601"',
+            '"CurrentVersion"="6.1"\n',
+
+            '\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows]\n',
+            '"CSDVersion"="dword:00000300"\n',
+          );
       }
 
       Object.keys(append).forEach((path: string): void => {
-        regs.push(`\n[${path}]\n`);
+        this.registry.push(`\n[${path}]\n`);
 
         Object.keys(append[path]).forEach(field => {
           let value: string = append[path][field];
-          regs.push(`"${field}"="${value}"`);
+          this.registry.push(`"${field}"="${value}"`);
         });
       });
 
-      await this.fs.filePutContents(path, Utils.encode(regs.join('\n'), 'utf-16'));
-      await this.run(`regedit "${path}"`);
       await kernel.setMetadata('windowsVersion', newWindowsVersion);
     }
+  }
+
+  private async applyRegistry(): Promise<void> {
+    const kernel: Kernel = this.kernels.getKernel();
+    let path: string = `${await kernel.getDriveCDir()}/registry.reg`;
+
+    const registry: string[] = [
+      'Windows Registry Editor Version 5.00\n',
+      ...this.registry,
+    ];
+
+    await this.fs.filePutContents(path, Utils.encode(registry.join('\n'), 'utf-16'));
+    await this.run(`regedit /S "${path}"`);
   }
 }

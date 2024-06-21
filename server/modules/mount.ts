@@ -93,7 +93,14 @@ export default class Mount extends AbstractModule {
     const iterator = async (): Promise<void> => {
       if (i++ >= 9) {
         if (this.isMounted()) {
-          this.killProcess();
+          await this.killProcess();
+
+          if (await this.fs.exists(this.folder)) {
+            try {
+              await this.fs.rm(this.folder);
+              this.mounted = false;
+            } catch (e) {}
+          }
         }
 
         return;
@@ -165,5 +172,7 @@ export default class Mount extends AbstractModule {
         }
       }
     }
+
+    await Utils.sleep(1000);
   }
 }

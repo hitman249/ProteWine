@@ -33,6 +33,7 @@ export enum FileType {
 }
 
 export enum SessionType {
+  PROTON = '',
   RUN = 'run',
   RUN_IN_PREFIX = 'runinprefix',
 }

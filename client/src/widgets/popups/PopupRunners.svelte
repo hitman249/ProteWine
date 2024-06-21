@@ -176,7 +176,7 @@
       {getTitle(data)}
     </div>
     <div class="right">
-      Runtime repositories
+      Runner repositories
     </div>
   </div>
   <div class="content">

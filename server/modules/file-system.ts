@@ -298,6 +298,18 @@ export default class FileSystem extends AbstractModule {
     await this.ln(await this.relativePath(path), dest);
   }
 
+  public async readSymbolicLink(path: string): Promise<string | undefined> {
+    return new Promise((resolve: (path: string) => void): void => {
+      fs.readlink(path, (err: NodeJS.ErrnoException, target: string): void => {
+        if (!err) {
+          resolve(target);
+        } else {
+          resolve(undefined);
+        }
+      });
+    });
+  }
+
   public async isEmptyDir(path: string): Promise<boolean> {
     return (await this.glob(`${_.trimEnd(path, '/')}/*`)).length === 0;
   }
