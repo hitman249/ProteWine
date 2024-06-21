@@ -313,6 +313,10 @@
       const iso: Iso = window.$app.getApi().getIso();
       await iso.unmount();
     }
+
+    if (GameOperation.RUNNER_INSTALL === operation) {
+      formData.runCallback();
+    }
   });
 </script>
 

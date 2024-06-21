@@ -28,7 +28,7 @@ export class MenuItem {
   public readonly icon: string;
   public readonly poster: string;
   public readonly title: string;
-  public readonly description: string;
+  public description: string;
   public readonly template: ValueLabels;
   public readonly value: Value;
   public readonly popup: PopupNames;
@@ -123,6 +123,10 @@ export class MenuItem {
 
   public getTitle(): string {
     return this.title;
+  }
+
+  public setDescription(value: string): void {
+    this.description = value;
   }
 
   public setCurrentIndex(index: number): void {
@@ -275,7 +279,7 @@ export default class Menu extends EventListener {
           id: 'wine',
           icon: 'wine',
           title: 'Runner change',
-          description: 'Wine 9.0',
+          description: '',
           popup: PopupNames.RUNNER,
         },
         {
@@ -290,7 +294,7 @@ export default class Menu extends EventListener {
           },
         },
         {
-          id: 'settings',
+          id: 'plugins',
           icon: 'settings',
           title: 'Plugins',
           items: () => Promise.resolve([
@@ -373,6 +377,66 @@ export default class Menu extends EventListener {
             },
           ]),
         },
+        {
+          id: 'settings',
+          icon: 'settings',
+          title: 'Settings',
+          items: () => Promise.resolve([
+            {
+              id: 'mango-hud',
+              icon: 'settings',
+              title: 'MangoHud',
+              description: 'Beautiful HUD to display FPS',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'win-ver',
+              icon: 'settings',
+              title: 'Windows version',
+              value: {
+                value: 'win7',
+                labels: ValueLabels.WINVER,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'no-crash-dialog',
+              icon: 'settings',
+              title: 'No crash dialog',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'fix-focus',
+              icon: 'settings',
+              title: 'Fix focus',
+              description: 'Required for games with focus loss',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'winemenubuilder',
+              icon: 'settings',
+              title: 'WineMenuBuilder',
+              description: 'Creation of labels and types (inside Wine)',
+              value: {
+                value: false,
+                labels: ValueLabels.BOOLEAN,
+                type: ValueTypes.SELECT,
+              },
+            },
+          ]),
+        },
       ]),
     },
     {
@@ -414,67 +478,7 @@ export default class Menu extends EventListener {
         },
       ]),
     },
-    {
-      id: 'settings',
-      icon: 'settings',
-      title: 'Settings',
-      items: () => Promise.resolve([
-        {
-          id: 'mango-hud',
-          icon: 'settings',
-          title: 'MangoHud',
-          description: 'Beautiful HUD to display FPS',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'win-ver',
-          icon: 'settings',
-          title: 'Windows version',
-          value: {
-            value: 'win7',
-            labels: ValueLabels.WINVER,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'no-crash-dialog',
-          icon: 'settings',
-          title: 'No crash dialog',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'fix-focus',
-          icon: 'settings',
-          title: 'Fix focus',
-          description: 'Required for games with focus loss',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
-          id: 'winemenubuilder',
-          icon: 'settings',
-          title: 'WineMenuBuilder',
-          description: 'Creation of labels and types (inside Wine)',
-          value: {
-            value: false,
-            labels: ValueLabels.BOOLEAN,
-            type: ValueTypes.SELECT,
-          },
-        },
-      ]),
-    },
-    {
+    /*{
       id: 'build',
       icon: 'build',
       title: 'Build',
@@ -495,8 +499,8 @@ export default class Menu extends EventListener {
           title: 'Build portable',
         },
       ]),
-    },
-    {
+    },*/
+    /*{
       id: 'database',
       icon: 'database',
       title: 'Database',
@@ -512,7 +516,7 @@ export default class Menu extends EventListener {
           title: 'd3dcompiler',
         },
       ]),
-    },
+    },*/
   ] as MenuItemType[]).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
 
   constructor() {
@@ -523,6 +527,14 @@ export default class Menu extends EventListener {
   public clearGames(): void {
     this.items?.[0]?.items?.[0]?.clear?.();
     this.items?.[0]?.items?.[1]?.clear?.();
+  }
+
+  public clearPrefix(): void {
+    this.items?.[1]?.items?.[0]?.clear?.();
+  }
+
+  public setWineVersion(version: string): void {
+    this.items?.[1]?.items?.[0]?.setDescription(version);
   }
 
   public setFocusedItem(item: MenuItem): void {

@@ -345,6 +345,8 @@ export default class Prefix extends AbstractModule {
       ...this.registry,
     ];
 
+    this.registry = [];
+
     await this.fs.filePutContents(path, Utils.encode(registry.join('\n'), 'utf-16'));
     await this.run(`regedit /S "${path}"`);
   }

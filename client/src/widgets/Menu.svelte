@@ -89,6 +89,17 @@
     }
   }
 
+  async function updateWineVersion(): Promise<void> {
+    const version: string = await window.$app.getApi().getKernel().version();
+    menu.setWineVersion(version);
+
+    const list: ListPreloader = verticalList[menu.getCategoryInstanceIndex()];
+
+    if (list) {
+      list.update();
+    }
+  }
+
   const keyboardWatch = async (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
       if (isSelectList) {
@@ -166,8 +177,9 @@
       const item: MenuItem = menu.getFocusedItem();
 
       if (item?.popup) {
-        const data: FormData<MenuItem> = new FormData(item);
-        popup.open(item?.popup, data);
+        const formData: FormData<MenuItem> = new FormData(item);
+        formData.setCallback(() => updateWineVersion());
+        popup.open(item?.popup, formData);
 
         return;
       } else if (item?.hasItems()) {
@@ -373,6 +385,7 @@
 
   onMount(() => {
     bindEvents();
+    updateWineVersion();
   });
 
   onDestroy(() => {

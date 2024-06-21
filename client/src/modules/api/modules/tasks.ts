@@ -58,7 +58,7 @@ export default class Tasks extends AbstractModule {
   }
 
   private onProgress(event: RoutesTaskEvent.PROGRESS, progress: {type: TaskType, progress: Progress}): void {
-    console.log(event, progress);
+    // console.log(event, progress);
     this.fireEvent(event, progress);
   }
 

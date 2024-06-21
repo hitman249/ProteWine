@@ -46,6 +46,10 @@
     }
   }
 
+  export function update(): void {
+    items = items;
+  }
+
   export function getIndex(): number {
     return list?.getIndex() || 0;
   }
