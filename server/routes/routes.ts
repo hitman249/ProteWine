@@ -48,6 +48,11 @@ export enum RoutesGallery {
   ICONS = 'gallery:find-icons',
 }
 
+export enum RoutesSettings {
+  LIST = 'settings:list',
+  SAVE = 'settings:save',
+}
+
 export enum RoutesWineTricks {
   LIST = 'winetricks:list',
 }
@@ -64,6 +69,7 @@ export enum RoutesPrefix {
   REFRESH = 'prefix:refresh',
   PROCESSED = 'prefix:processed',
   PROGRESS = 'prefix:progress',
+  INSTALL_PLUGINS = 'prefix:install-plugins',
 }
 
 export enum RoutesTaskEvent {
@@ -119,9 +125,12 @@ export default {
     RoutesPrefix.REFRESH,
     RoutesPrefix.PROCESSED,
     RoutesPrefix.PROGRESS,
+    RoutesPrefix.INSTALL_PLUGINS,
     RoutesAppFolders.GAMES,
     RoutesGallery.PORTRAITS,
     RoutesGallery.ICONS,
+    RoutesSettings.LIST,
+    RoutesSettings.SAVE,
     RoutesWineTricks.LIST,
     RoutesRepositories.LIST,
     RoutesRepositories.LIST_BY_NAME,

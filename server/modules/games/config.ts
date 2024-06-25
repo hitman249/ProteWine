@@ -4,6 +4,7 @@ import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Settings from '../settings';
 import Utils from '../../helpers/utils';
+import {FsrModes, FsrSharpening} from '../plugins/types';
 
 export type ConfigType = {
   createAt: number,
@@ -23,12 +24,16 @@ export type ConfigType = {
     [field: string]: string,
   },
   kernel: {
-    nod3d12: boolean,
-    nod3d11: boolean,
-    nod3d10: boolean,
-    nod3d9: boolean,
-    nod3d8: boolean,
+    d3d12: boolean,
+    d3d11: boolean,
+    d3d10: boolean,
+    d3d9: boolean,
+    d3d8: boolean,
     nvapi: boolean,
+    esync: boolean,
+    fsync: boolean,
+    fsrMode: FsrModes,
+    fsrStrength: FsrSharpening,
   },
 }
 
@@ -196,13 +201,57 @@ export default class Config extends AbstractModule {
       },
       env: {},
       kernel: {
-        nod3d12: false,
-        nod3d11: false,
-        nod3d10: false,
-        nod3d9: false,
-        nod3d8: false,
-        nvapi: false,
+        d3d12: true,
+        d3d11: true,
+        d3d10: true,
+        d3d9: true,
+        d3d8: true,
+        nvapi: true,
+        esync: true,
+        fsync: false,
+        fsrMode: '',
+        fsrStrength: '2',
       },
     };
+  }
+
+  public isEsync(): boolean {
+    return _.get(this.config, 'kernel.esync', true);
+  }
+
+  public isFsync(): boolean {
+    return _.get(this.config, 'kernel.fsync', false);
+  }
+
+  public isNvapi(): boolean {
+    return _.get(this.config, 'kernel.nvapi', true);
+  }
+
+  public isD3d12(): boolean {
+    return _.get(this.config, 'kernel.d3d12', true);
+  }
+
+  public isD3d11(): boolean {
+    return _.get(this.config, 'kernel.d3d11', true);
+  }
+
+  public isD3d10(): boolean {
+    return _.get(this.config, 'kernel.d3d10', true);
+  }
+
+  public isD3d9(): boolean {
+    return _.get(this.config, 'kernel.d3d9', true);
+  }
+
+  public isD3d8(): boolean {
+    return _.get(this.config, 'kernel.d3d8', true);
+  }
+
+  public getFrsMode(): string {
+    return _.get(this.config, 'kernel.fsrMode', '');
+  }
+
+  public getFsrStrength(): string {
+    return _.get(this.config, 'kernel.fsrStrength', '2');
   }
 }

@@ -1,3 +1,5 @@
+import {FsrModes, FsrSharpening} from '../../../server/modules/plugins/types';
+
 type ValueData = string | boolean | number;
 
 export type ValueParams = {
@@ -20,6 +22,8 @@ export enum ValueLabels {
   GAME = 'game',
   MANAGE = 'manage',
   FILE_MANAGER = 'fileManager',
+  FSR_MODE = 'fsrMode',
+  FSR_STRENGTH = 'fsrStrength',
 }
 
 export enum ValueTypes {
@@ -91,10 +95,6 @@ export default class Value {
     ],
     winver: [
       {
-        value: 'win11',
-        title: 'Windows 11',
-      },
-      {
         value: 'win10',
         title: 'Windows 10',
       },
@@ -115,6 +115,54 @@ export default class Value {
       {
         value: true,
         title: 'Yes',
+      },
+    ],
+    fsrMode: [
+      {
+        value: FsrModes.DISABLE,
+        title: 'Disable',
+      },
+      {
+        value: FsrModes.ULTRA,
+        title: 'Ultra',
+      },
+      {
+        value: FsrModes.QUALITY,
+        title: 'Quality',
+      },
+      {
+        value: FsrModes.BALANCED,
+        title: 'Balanced',
+      },
+      {
+        value: FsrModes.PERFORMANCE,
+        title: 'Performance',
+      },
+    ],
+    fsrStrength: [
+      {
+        value: FsrSharpening.SHARP,
+        title: 'Level 0 (Sharp)',
+      },
+      {
+        value: FsrSharpening.LEVEL1,
+        title: 'Level 1',
+      },
+      {
+        value: FsrSharpening.DEFAULT,
+        title: 'Level 2 (Default)',
+      },
+      {
+        value: FsrSharpening.LEVEL3,
+        title: 'Level 3',
+      },
+      {
+        value: FsrSharpening.LEVEL4,
+        title: 'Level 4',
+      },
+      {
+        value: FsrSharpening.BLUR,
+        title: 'Level 5 (Blur)',
       },
     ],
     fileManager: [

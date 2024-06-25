@@ -20,6 +20,7 @@ import Gallery from './modules/gallery';
 import WineTricks from './modules/winetricks';
 import Environment from './modules/kernels/environment';
 import Repositories from './modules/repositories';
+import Plugins from './modules/plugins';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -42,6 +43,7 @@ export class App {
   private readonly GALLERY: Gallery;
   private readonly WINETRICKS: WineTricks;
   private readonly REPOSITORIES: Repositories;
+  private readonly PLUGINS: Plugins;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -65,6 +67,7 @@ export class App {
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
     this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
     this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this);
+    this.PLUGINS = new Plugins(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this, this.SETTINGS);
 
     this.initOrder = [
       this.COMMAND,
@@ -85,6 +88,7 @@ export class App {
       this.GALLERY,
       this.WINETRICKS,
       this.REPOSITORIES,
+      this.PLUGINS,
     ];
   }
 
@@ -193,6 +197,10 @@ export class App {
 
   public getRepositories(): Repositories {
     return this.REPOSITORIES;
+  }
+
+  public getPlugins(): Plugins {
+    return this.PLUGINS;
   }
 
   public getMountWine(): Mount {

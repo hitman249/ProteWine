@@ -5,6 +5,7 @@ export enum TaskType {
   CALLBACK = 'callback',
   FILE_SYSTEM = 'fs',
   REPOSITORIES = 'repositories',
+  PLUGINS = 'plugins',
 }
 
 export type BodyBus = {

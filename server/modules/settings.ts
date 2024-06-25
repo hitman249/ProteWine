@@ -6,9 +6,35 @@ import type Command from './command';
 import type FileSystem from './file-system';
 import type System from './system';
 
+export type SettingsType = {
+  windowsVersion: 'winxp' | 'win7' | 'win10',
+  plugins: {
+    dxvk: boolean,
+    d8vk: boolean,
+    d3d8to9: boolean,
+    vkd3dProton: boolean,
+    mf: boolean,
+    cncDdraw: boolean,
+    dgVoodoo2: boolean,
+    isskin: boolean,
+    mono: boolean,
+    gecko: boolean,
+    gstreamer: boolean,
+  },
+  libs: {
+    mangohud: boolean,
+  },
+  fixes: {
+    pulse: boolean,
+    focus: boolean,
+    noCrashDialog: boolean,
+    mouseWarpOverride: 'enable' | 'disable' | 'force',
+  },
+};
+
 export default class Settings extends AbstractModule {
   private readonly path: string = '/data/configs/settings.json';
-  private config: {};
+  private config: SettingsType;
 
   private readonly appFolders: AppFolders;
   private readonly command: Command;
@@ -31,7 +57,7 @@ export default class Settings extends AbstractModule {
   private async load(): Promise<void> {
     const path: string = await this.getPath();
 
-    if (!this.config && await this.fs.exists(path)) {
+    if (await this.fs.exists(path)) {
       this.config = Utils.jsonDecode(await this.fs.fileGetContents(path));
     }
 
@@ -59,18 +85,62 @@ export default class Settings extends AbstractModule {
   }
 
   public getWindowsVersion(): string {
-    return _.get(this.config, 'windowsVersion');
+    return this.get('windowsVersion', 'win7') as string;
   }
 
   public isPulse(): boolean {
-    return _.get(this.config, 'fixes.pulse', true);
+    return this.get('fixes.pulse', true) as boolean;
   }
 
-  public getDefaultConfig(): {} {
+  public isFocus(): boolean {
+    return this.get('fixes.focus', false) as boolean;
+  }
+
+  public isNoCrashDialog(): boolean {
+    return this.get('fixes.noCrashDialog', false) as boolean;
+  }
+
+  public isDxvk(): boolean {
+    return this.get('plugins.dxvk', true) as boolean;
+  }
+
+  public isIsskin(): boolean {
+    return this.get('plugins.isskin', true) as boolean;
+  }
+
+  public isCncDdraw(): boolean {
+    return this.get('plugins.cncDdraw', true) as boolean;
+  }
+
+  public isVkd3dProton(): boolean {
+    return this.get('plugins.vkd3dProton', true) as boolean;
+  }
+
+  public isMediaFoundation(): boolean {
+    return this.get('plugins.mf', false) as boolean;
+  }
+
+  public isMono(): boolean {
+    return this.get('plugins.mono', true) as boolean;
+  }
+
+  public isGstreamer(): boolean {
+    return this.get('plugins.gstreamer', true) as boolean;
+  }
+
+  public isGecko(): boolean {
+    return this.get('plugins.gecko', true) as boolean;
+  }
+
+  public getMouseWarpOverride(): SettingsType['fixes']['mouseWarpOverride'] {
+    return this.get('fixes.mouseWarpOverride', 'enable') as any;
+  }
+
+  public getDefaultConfig(): SettingsType {
     return {
       windowsVersion: 'win7',  // Windows version (win11, win10, win7, winxp, win2k),
       plugins: {
-        dxvk: false,
+        dxvk: true,
         d8vk: false,
         d3d8to9: false,
         vkd3dProton: false,
@@ -89,8 +159,21 @@ export default class Settings extends AbstractModule {
         pulse: true,
         focus: false,          // Fix focus
         noCrashDialog: false,  // No crash dialog
-        wineMenuBuilder: true,
+        mouseWarpOverride: 'enable',
       },
     };
+  }
+
+  public toConfig(): SettingsType {
+    return this.config;
+  }
+
+  public async set(path: string, value: string | boolean): Promise<void> {
+    _.set(this.config, path, value);
+    await this.save();
+  }
+
+  public get(path: string, defaultValue: string | boolean | undefined): string | boolean {
+    return _.get(this.config, path, defaultValue);
   }
 }

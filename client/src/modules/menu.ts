@@ -3,7 +3,6 @@ import Helpers from './helpers';
 import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 import {PopupNames} from './popup';
 import type Config from '../models/config';
-import type {ConfigType} from '../../../server/modules/games/config';
 
 export type MenuItemType = {
   id: string,
@@ -400,6 +399,28 @@ export default class Menu extends EventListener {
               value: {
                 value: 'win7',
                 labels: ValueLabels.WINVER,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'fsrMode',
+              icon: 'settings',
+              title: 'FSR Mode',
+              description: 'FSR Upscaling Resolution Mode',
+              value: {
+                value: '',
+                labels: ValueLabels.FSR_MODE,
+                type: ValueTypes.SELECT,
+              },
+            },
+            {
+              id: 'fsrStrength',
+              icon: 'settings',
+              title: 'FSR Strength',
+              description: 'FSR Sharpening Strength',
+              value: {
+                value: '2',
+                labels: ValueLabels.FSR_STRENGTH,
                 type: ValueTypes.SELECT,
               },
             },

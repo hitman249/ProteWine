@@ -68,8 +68,9 @@ export default class Games extends AbstractModule {
 
     await this.monitor.save();
 
+    this.runningGame = {config, process: undefined};
     const process: WatchProcess = await this.tasks.kernel(config.getCmd(), operation);
-    this.runningGame = {config, process};
+    this.runningGame.process = process;
 
     process.wait().then(async () => {
       this.runningGame = undefined;

@@ -101,7 +101,7 @@
   }
 
   function onRun(event: RoutesTaskEvent.RUN, data: {type: TaskType, cmd: string}): void {
-    if (TaskType.KERNEL === data.type) {
+    if (TaskType.KERNEL === data.type || TaskType.PLUGINS === data.type) {
       running = true;
       pushLine('Kernel start.');
       pushLine(data.cmd);
@@ -122,7 +122,7 @@
   }
 
   function onLog(event: RoutesTaskEvent.LOG, data: {type: TaskType, line: string}): void {
-    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) {
+    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type || TaskType.PLUGINS === data.type) {
       pushLine(data.line);
     }
   }
@@ -155,12 +155,13 @@
   }
 
   function onExit(event: RoutesTaskEvent.EXIT, data: {type: TaskType}): void {
-    if (TaskType.KERNEL === data.type) {
+    if (TaskType.KERNEL === data.type || TaskType.PLUGINS === data.type) {
       pushLine('Kernel exit.');
 
       if (
         GameOperation.INSTALL_DISK_IMAGE !== operation
         && GameOperation.PREFIX !== operation
+        && TaskType.PLUGINS !== data.type
       ) {
         running = false;
         completed = true;

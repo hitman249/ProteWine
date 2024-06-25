@@ -31,7 +31,7 @@ export default class KernelTask extends AbstractTask {
     this.bindEvents();
 
     if (KernelOperation.RUN === operation) {
-      this.task = await this.kernel.run(this.cmd, session);
+      this.task = await this.kernel.run(this.cmd, session, await this.app.getPlugins().getEnv());
     } else if (KernelOperation.INSTALL === operation) {
       this.task = await this.kernel.run(this.cmd, SessionType.RUN,{WINEDEBUG: 'fixme-all'});
     } else if (KernelOperation.CREATE_PREFIX === operation) {

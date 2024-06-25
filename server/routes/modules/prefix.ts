@@ -22,6 +22,7 @@ export default class PrefixRoutes extends AbstractModule {
     this.bindCreate();
     this.bindRefresh();
     this.bindProgress();
+    this.bindInstallPlugins();
   }
 
   private bindExist(): void {
@@ -56,6 +57,13 @@ export default class PrefixRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesPrefix.REFRESH,
       async (): Promise<any> => this.app.getPrefix().refresh(),
+    );
+  }
+
+  private bindInstallPlugins(): void {
+    this.ipc.handle(
+      RoutesPrefix.INSTALL_PLUGINS,
+      async (): Promise<any> => this.app.getPlugins().install(),
     );
   }
 }
