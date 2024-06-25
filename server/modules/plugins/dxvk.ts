@@ -30,8 +30,7 @@ export default class Dxvk extends AbstractPlugin {
       name: this.name,
       type: this.type,
       description: this.description,
-      remoteVersion: await this.getRemoteVersion(),
-      version: await this.getVersion(),
+      value: this.settings.isDxvk(),
     };
   }
 

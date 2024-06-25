@@ -1,3 +1,5 @@
+import PluginsRoutes from './modules/plugins';
+
 export enum RoutesKernel {
   VERSION = 'kernel:version',
   RUN = 'kernel:run',
@@ -69,7 +71,11 @@ export enum RoutesPrefix {
   REFRESH = 'prefix:refresh',
   PROCESSED = 'prefix:processed',
   PROGRESS = 'prefix:progress',
-  INSTALL_PLUGINS = 'prefix:install-plugins',
+}
+
+export enum RoutesPlugins {
+  INSTALL = 'plugins:install',
+  LIST = 'plugins:list',
 }
 
 export enum RoutesTaskEvent {
@@ -125,7 +131,8 @@ export default {
     RoutesPrefix.REFRESH,
     RoutesPrefix.PROCESSED,
     RoutesPrefix.PROGRESS,
-    RoutesPrefix.INSTALL_PLUGINS,
+    RoutesPlugins.INSTALL,
+    RoutesPlugins.LIST,
     RoutesAppFolders.GAMES,
     RoutesGallery.PORTRAITS,
     RoutesGallery.ICONS,

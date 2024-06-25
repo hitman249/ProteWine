@@ -19,8 +19,7 @@ export default class Esync extends AbstractPlugin {
       name: this.name,
       type: this.type,
       description: this.description,
-      remoteVersion: '',
-      version: '',
+      value: Boolean(this.config) ? this.config.isEsync() : undefined,
     };
   }
 

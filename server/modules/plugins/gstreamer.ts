@@ -20,8 +20,7 @@ export default class Gstreamer extends AbstractPlugin {
       name: this.name,
       type: this.type,
       description: this.description,
-      remoteVersion: '',
-      version: '',
+      value: this.settings.isGstreamer(),
     };
   }
 

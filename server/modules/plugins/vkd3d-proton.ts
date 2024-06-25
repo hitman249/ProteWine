@@ -39,8 +39,7 @@ export default class Vkd3dProton extends AbstractPlugin {
       name: this.name,
       type: this.type,
       description: this.description,
-      remoteVersion: await this.getRemoteVersion(),
-      version: await this.getVersion(),
+      value: this.settings.isVkd3dProton(),
     };
   }
 

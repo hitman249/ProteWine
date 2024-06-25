@@ -18,8 +18,7 @@ export default class FsrStrength extends AbstractPlugin {
       name: this.name,
       type: this.type,
       description: this.description,
-      remoteVersion: '',
-      version: '',
+      value: Boolean(this.config) ? this.config.getFsrStrength() : undefined,
     };
   }
 

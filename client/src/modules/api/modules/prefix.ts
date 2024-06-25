@@ -13,10 +13,6 @@ export default class Prefix extends AbstractModule {
     return (await window.electronAPI.invoke(RoutesPrefix.REFRESH));
   }
 
-  public async installPlugins(): Promise<void> {
-    return (await window.electronAPI.invoke(RoutesPrefix.INSTALL_PLUGINS));
-  }
-
   public async isExist(): Promise<boolean> {
     return (await window.electronAPI.invoke(RoutesPrefix.EXIST));
   }

@@ -1,5 +1,5 @@
 import {AbstractModule} from '../abstract-module';
-import AbstractPlugin from './abstract-plugin';
+import AbstractPlugin, {PluginType} from './abstract-plugin';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Network from '../network';
@@ -40,6 +40,7 @@ import Gstreamer from './gstreamer';
 import Nvapi from './nvapi';
 import FsrMode from './fsr-mode';
 import FsrStrength from './fsr-strength';
+import type Config from '../games/config';
 
 export default class Plugins extends AbstractModule {
   private readonly DXVK: Dxvk;
@@ -77,6 +78,7 @@ export default class Plugins extends AbstractModule {
   public readonly app: App;
   public readonly settings: Settings;
   public wineDllOverrides: WineDllOverrides;
+  public config: Config;
 
   constructor(appFolders: AppFolders, fs: FileSystem, network: Network, system: System, tasks: Tasks, kernels: Kernels, app: App, settings: Settings) {
     super();
@@ -227,6 +229,26 @@ export default class Plugins extends AbstractModule {
 
     if (env) {
       result = Object.assign(result, env);
+    }
+
+    return result;
+  }
+
+  public setConfig(config: Config): void {
+    this.config = config;
+  }
+
+  public async getList(id?: string): Promise<PluginType[]> {
+    if (id) {
+      this.setConfig(await this.app.getGames().getById(id));
+    } else {
+      this.setConfig(undefined);
+    }
+
+    const result: PluginType[] = [];
+
+    for await (const module of this.modules) {
+      result.push(await module.toObject());
     }
 
     return result;

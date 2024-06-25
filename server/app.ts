@@ -63,7 +63,7 @@ export class App {
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM);
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS);
     this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM, this);
-    this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS, this.NETWORK, this.TASKS, this.MONITOR);
+    this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS, this.NETWORK, this.TASKS, this.MONITOR, this);
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
     this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
     this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this);

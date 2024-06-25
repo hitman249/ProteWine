@@ -21,8 +21,7 @@ export type PluginType = {
   name: string,
   type: 'plugin' | 'settings' | 'config',
   description: string,
-  version: string,
-  remoteVersion: string,
+  value: string | boolean,
 };
 
 export default abstract class AbstractPlugin extends AbstractModule {
@@ -105,7 +104,7 @@ export default abstract class AbstractPlugin extends AbstractModule {
   }
 
   public get config(): Config | undefined {
-    return this.app.getGames()?.getRunningGame();
+    return this.plugins.config;
   }
 
   protected unbindEvents(): void {

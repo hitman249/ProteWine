@@ -13,6 +13,7 @@ import Resizer from '../../helpers/resizer';
 import {KernelOperation} from '../kernels/abstract-kernel';
 import Utils from '../../helpers/utils';
 import Time from '../../helpers/time';
+import type {App} from '../../app';
 
 export default class Games extends AbstractModule {
   private readonly appFolders: AppFolders;
@@ -21,11 +22,12 @@ export default class Games extends AbstractModule {
   private readonly network: Network;
   private readonly tasks: Tasks;
   private readonly monitor: Monitor;
+  private readonly app: App;
 
   private configs: Config[];
   private runningGame: {config: Config, process: WatchProcess};
 
-  constructor(appFolders: AppFolders, fs: FileSystem, settings: Settings, network: Network, tasks: Tasks, monitor: Monitor) {
+  constructor(appFolders: AppFolders, fs: FileSystem, settings: Settings, network: Network, tasks: Tasks, monitor: Monitor, app: App) {
     super();
     this.appFolders = appFolders;
     this.fs = fs;
@@ -33,6 +35,7 @@ export default class Games extends AbstractModule {
     this.network = network;
     this.tasks = tasks;
     this.monitor = monitor;
+    this.app = app;
   }
 
   public async init(): Promise<any> {
@@ -67,6 +70,8 @@ export default class Games extends AbstractModule {
     }
 
     await this.monitor.save();
+
+    this.app.getPlugins().setConfig(config);
 
     this.runningGame = {config, process: undefined};
     const process: WatchProcess = await this.tasks.kernel(config.getCmd(), operation);

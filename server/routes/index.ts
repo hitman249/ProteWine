@@ -12,6 +12,7 @@ import GalleryRoutes from './modules/gallery';
 import WineTricksRoutes from './modules/winetricks';
 import RepositoriesRoutes from './modules/repositories';
 import SettingsRoutes from './modules/settings';
+import PluginsRoutes from './modules/plugins';
 
 export default class Index {
   private readonly app: App;
@@ -29,6 +30,7 @@ export default class Index {
   private readonly WINETRICKS: WineTricksRoutes;
   private readonly REPOSITORIES: RepositoriesRoutes;
   private readonly SETTINGS: SettingsRoutes;
+  private readonly PLUGINS: PluginsRoutes;
 
   private readonly modules: AbstractModule[] = [];
 
@@ -48,6 +50,7 @@ export default class Index {
     this.WINETRICKS = new WineTricksRoutes(ipcMain, window, app);
     this.REPOSITORIES = new RepositoriesRoutes(ipcMain, window, app);
     this.SETTINGS = new SettingsRoutes(ipcMain, window, app);
+    this.PLUGINS = new PluginsRoutes(ipcMain, window, app);
 
     this.modules.push(
       this.FILE_SYSTEM,
@@ -61,6 +64,7 @@ export default class Index {
       this.WINETRICKS,
       this.REPOSITORIES,
       this.SETTINGS,
+      this.PLUGINS,
     );
   }
 

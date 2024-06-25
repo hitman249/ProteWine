@@ -20,8 +20,7 @@ export default class D3d12 extends AbstractPlugin {
       name: this.name,
       type: this.type,
       description: this.description,
-      remoteVersion: '',
-      version: '',
+      value: Boolean(this.config) ? this.config.isD3d12() : undefined,
     };
   }
 
