@@ -67,7 +67,6 @@ export default class AppFolders extends AbstractModule {
         await this.getConfigsGamesDir(),
         await this.getShareDir(),
         await this.getGamesDir(),
-        await this.getSavesDir(),
         await this.getPatchesDir(),
       ];
     }

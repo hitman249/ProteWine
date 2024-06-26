@@ -457,8 +457,8 @@ export default class LinkInfo extends AbstractModule {
     const usersDir: string = `${await kernel.getDriveCDir()}/users`;
     const gamesDir: string = `${await kernel.getGamesDir()}`;
 
-    const usersPaths: string[] = (await fs.glob(`${usersDir}/**/*.{LNK,lnk}`));
-    const gamesPaths: string[] = (await fs.glob(`${gamesDir}/**/*.{LNK,lnk}`));
+    const usersPaths: string[] = (await fs.glob(`${usersDir}/**/*.{LNK,lnk}`, {follow: true}));
+    const gamesPaths: string[] = (await fs.glob(`${gamesDir}/**/*.{LNK,lnk}`, {follow: true}));
     const gamesListPaths: string[] = (await fs.glob(`${gamesDir}/*`));
 
     for await (const paths of [usersPaths, gamesPaths]) {

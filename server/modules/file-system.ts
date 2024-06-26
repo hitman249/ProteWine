@@ -213,8 +213,8 @@ export default class FileSystem extends AbstractModule {
     return await this.exec(`\\cp -a --link "${src}" "${dest}"`);
   }
 
-  public async glob(path: string): Promise<string[]> {
-    return await glob(path, {dot: true});
+  public async glob(path: string, options: {} = {}): Promise<string[]> {
+    return await glob(path, {dot: true, ...options});
   }
 
   public async fileGetContents(filepath: string, autoEncoding: boolean = false): Promise<string> {
