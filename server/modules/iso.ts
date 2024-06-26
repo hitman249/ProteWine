@@ -112,6 +112,7 @@ export default class Iso extends AbstractModule {
     this.mounted = true;
 
     await this.fuseIso();
+    await Utils.sleep(5000);
     await this.fs.lnOfRoot(this.folderMounted, this.folder);
 
     this.fireEvent(IsoEvents.MOUNT, {
