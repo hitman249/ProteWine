@@ -10,7 +10,7 @@ export default class Settings extends AbstractModule {
     return (await window.electronAPI.invoke(RoutesSettings.LIST));
   }
 
-  public async set(path: string, value: string | boolean): Promise<void> {
+  public async set(path: string, value: string | boolean | number): Promise<void> {
     return (await window.electronAPI.invoke(RoutesSettings.SAVE, path, value));
   }
 }

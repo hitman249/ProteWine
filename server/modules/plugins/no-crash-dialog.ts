@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class NoCrashDialog extends AbstractPlugin {
-  protected code: string = 'no-crash-dialog';
-  protected name: string = 'No crash dialog';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = '';
+  protected readonly code: string = 'fixes.noCrashDialog';
+  protected readonly name: string = 'No crash dialog';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = '';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private installed: boolean;
   private value: boolean;
@@ -23,6 +24,7 @@ export default class NoCrashDialog extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isNoCrashDialog(),
+      template: this.template,
     };
   }
 
@@ -44,13 +46,15 @@ export default class NoCrashDialog extends AbstractPlugin {
     const value: boolean = this.settings.isNoCrashDialog();
     await this.setMetadata(this.code, value);
 
+    const registry: string[] = [];
+
     if (value) {
-      this.registry.push(
+      registry.push(
         "\n[HKEY_CURRENT_USER\\Software\\Wine\\WineDbg]\n",
         '"ShowCrashDialog"="dword:00000000"',
       );
     } else {
-      this.registry.push(
+      registry.push(
         "\n[HKEY_CURRENT_USER\\Software\\Wine\\WineDbg]\n",
         '"ShowCrashDialog"=-',
       );
@@ -59,7 +63,7 @@ export default class NoCrashDialog extends AbstractPlugin {
     this.value = value;
     this.installed = true;
 
-    return this.registry;
+    return registry;
   }
 
   public async isInstalled(): Promise<boolean> {
@@ -83,6 +87,7 @@ export default class NoCrashDialog extends AbstractPlugin {
   }
 
   public async clear(): Promise<void> {
+    this.installed = undefined;
     this.value = undefined;
   }
 }

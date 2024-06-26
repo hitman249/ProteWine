@@ -5,6 +5,7 @@ export enum FsrModes {
   BALANCED = 'balanced',
   PERFORMANCE = 'performance',
 }
+
 export enum FsrSharpening {
   SHARP = '0',
   LEVEL1 = '1',
@@ -12,4 +13,10 @@ export enum FsrSharpening {
   LEVEL3 = '3',
   LEVEL4 = '4',
   BLUR = '5',
+}
+
+export enum MouseOverrideAcceleration {
+  ENABLE = 'enable',
+  DISABLE = 'disable',
+  FORCE = 'force',
 }

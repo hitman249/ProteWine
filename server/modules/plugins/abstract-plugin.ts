@@ -16,12 +16,21 @@ import WineDllOverrides from '../kernels/wine-dll-overrides';
 import {KernelEvent} from '../kernels/abstract-kernel';
 import type Config from '../games/config';
 
+export enum ValueTemplate {
+  BOOLEAN = 'boolean',
+  WINVER = 'winver',
+  FSR_MODE = 'fsrMode',
+  FSR_STRENGTH = 'fsrStrength',
+  MOUSE_OVERRIDE_ACCELERATION = 'mouseOverrideAcceleration',
+}
+
 export type PluginType = {
   code: string,
   name: string,
   type: 'plugin' | 'settings' | 'config',
   description: string,
   value: string | boolean,
+  template: ValueTemplate,
 };
 
 export default abstract class AbstractPlugin extends AbstractModule {
@@ -29,9 +38,9 @@ export default abstract class AbstractPlugin extends AbstractModule {
   protected abstract readonly name: string;
   protected abstract readonly type: PluginType['type'];
   protected abstract readonly description: string;
+  protected abstract readonly template: ValueTemplate;
 
   protected readonly plugins: Plugins;
-  protected readonly registry: string[] = [];
 
   protected events: EventListener;
 

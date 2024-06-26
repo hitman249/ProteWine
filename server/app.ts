@@ -1,4 +1,5 @@
 import type {AbstractModule} from './modules/abstract-module';
+import type WatchProcess from './helpers/watch-process';
 import AppFolders from './modules/app-folders';
 import Command from './modules/command';
 import Driver from './modules/driver';
@@ -19,7 +20,7 @@ import Prefix from './modules/prefix';
 import Gallery from './modules/gallery';
 import WineTricks from './modules/winetricks';
 import Environment from './modules/kernels/environment';
-import Repositories from './modules/repositories';
+import Repositories, {type ItemType} from './modules/repositories';
 import Plugins from './modules/plugins';
 
 export class App {
@@ -107,9 +108,36 @@ export class App {
     await this.MOUNT_WINE.mount();
     await this.MOUNT_DATA.mount();
 
-    if (!await this.PREFIX.isExist()) {
+    await this.UPDATE.downloadBar();
+    await this.UPDATE.downloadLinkInfo();
+
+    if (!await this.KERNELS.getKernel().existDir()) {
+      const fetchWine = async () => {
+        const dirs: ItemType[] = await this.REPOSITORIES.getKron4ek().getList();
+
+        for await (const dir of dirs) {
+          if (dir.items.length > 0 && dir.items[0].url) {
+            const process: WatchProcess = await this.TASKS.installRunner(dir.items[0].url);
+            await process.wait();
+            await this.KERNELS.init();
+            break;
+          }
+        }
+
+        if (!await this.PREFIX.isExist()) {
+          this.PREFIX.setProcessed(true);
+          this.PREFIX.create().then(() => undefined);
+        }
+      };
+
       this.PREFIX.setProcessed(true);
-      this.PREFIX.create().then(() => undefined);
+
+      fetchWine();
+    } else {
+      if (!await this.PREFIX.isExist()) {
+        this.PREFIX.setProcessed(true);
+        this.PREFIX.create().then(() => undefined);
+      }
     }
   }
 

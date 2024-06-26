@@ -1,13 +1,14 @@
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import type {Kernel} from '../kernels';
 import type WatchProcess from '../../helpers/watch-process';
 import type {EnvType} from '../kernels/environment';
 
 export default class Isskin extends AbstractPlugin {
-  protected code: string = 'mfc42';
-  protected name: string = 'Isskin';
-  protected type: PluginType['type'] = 'plugin';
-  protected description: string = 'Fix game installers error';
+  protected readonly code: string = 'plugins.isskin';
+  protected readonly name: string = 'Isskin';
+  protected readonly type: PluginType['type'] = 'plugin';
+  protected readonly description: string = 'Fix game installers error';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private installed: boolean;
 
@@ -36,6 +37,7 @@ export default class Isskin extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isIsskin(),
+      template: this.template,
     };
   }
 
@@ -47,7 +49,7 @@ export default class Isskin extends AbstractPlugin {
     this.events = this.kernels.getKernel();
     this.bindEvents();
     await this.app.getWineTricks().download();
-    await this.setMetadata('mfc42', true);
+    await this.setMetadata(this.code, true);
     this.installed = true;
     const process: WatchProcess = await (this.events as Kernel).winetricks('mfc42');
     await process.wait();
@@ -59,7 +61,7 @@ export default class Isskin extends AbstractPlugin {
       return this.installed;
     }
 
-    this.installed = await this.getMetadata('mfc42') as boolean;
+    this.installed = await this.getMetadata(this.code) as boolean;
 
     return this.installed;
   }

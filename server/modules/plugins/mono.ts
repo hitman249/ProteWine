@@ -1,12 +1,13 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import {DllOverrides} from '../kernels/wine-dll-overrides';
 
 export default class Mono extends AbstractPlugin {
-  protected code: string = 'mono';
-  protected name: string = 'Mono';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = '.NET Framework compatible counterpart';
+  protected readonly code: string = 'plugins.mono';
+  protected readonly name: string = 'Mono';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = '.NET Framework compatible counterpart';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -21,6 +22,7 @@ export default class Mono extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isMono(),
+      template: this.template,
     };
   }
 

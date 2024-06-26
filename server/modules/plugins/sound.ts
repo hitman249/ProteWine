@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class Sound extends AbstractPlugin {
-  protected code: string = 'pulse';
-  protected name: string = 'Sound';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = '';
+  protected readonly code: string = 'fixes.pulse';
+  protected readonly name: string = 'Sound';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = 'Pulse / PipeWire or Alsa';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private installed: boolean;
   private value: boolean;
@@ -23,6 +24,7 @@ export default class Sound extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isPulse(),
+      template: this.template,
     };
   }
 
@@ -44,18 +46,20 @@ export default class Sound extends AbstractPlugin {
     const value: boolean = (this.settings.isPulse() && await this.system.isPulse());
     await this.setMetadata(this.code, value);
 
-    this.registry.push("\n[HKEY_CURRENT_USER\\Software\\Wine\\Drivers]\n");
+    const registry: string[] = [];
+
+    registry.push("\n[HKEY_CURRENT_USER\\Software\\Wine\\Drivers]\n");
 
     if (value) {
-      this.registry.push('"Audio"="pulse"\n');
+      registry.push('"Audio"="pulse"\n');
     } else {
-      this.registry.push('"Audio"="alsa"\n');
+      registry.push('"Audio"="alsa"\n');
     }
 
     this.value = value;
     this.installed = true;
 
-    return this.registry;
+    return registry;
   }
 
   public async isInstalled(): Promise<boolean> {
@@ -79,6 +83,7 @@ export default class Sound extends AbstractPlugin {
   }
 
   public async clear(): Promise<void> {
+    this.installed = undefined;
     this.value = undefined;
   }
 }

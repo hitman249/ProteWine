@@ -15,6 +15,7 @@
   import PopupInfo from './widgets/popups/PopupInfo.svelte';
   import PopupWinetricks from './widgets/popups/PopupWinetricks.svelte';
   import PopupRunners from './widgets/popups/PopupRunners.svelte';
+  import PopupConfig from './widgets/popups/PopupConfig.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -47,6 +48,7 @@
     if (processed) {
       const data: FormData<void> = new FormData();
       data.setOperation(GameOperation.PREFIX);
+      data.setCallback(() => menu?.updateWineVersion());
       popup.open(PopupNames.EXECUTING, data)
     }
   });
@@ -82,6 +84,8 @@
       <PopupInfo bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.WINETRICKS}
       <PopupWinetricks bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.CONFIG}
+      <PopupConfig bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.RUNNER}
       <PopupRunners bind:this={popup.ref}/>
     {/if}

@@ -3,7 +3,6 @@ import type {App} from '../../app';
 import {AbstractModule} from '../../modules/abstract-module';
 import {RoutesPrefix} from '../routes';
 
-
 export default class PrefixRoutes extends AbstractModule {
   private readonly app: App;
   private readonly ipc: IpcMain;
@@ -22,7 +21,6 @@ export default class PrefixRoutes extends AbstractModule {
     this.bindCreate();
     this.bindRefresh();
     this.bindProgress();
-    this.bindInstallPlugins();
   }
 
   private bindExist(): void {
@@ -57,13 +55,6 @@ export default class PrefixRoutes extends AbstractModule {
     this.ipc.handle(
       RoutesPrefix.REFRESH,
       async (): Promise<any> => this.app.getPrefix().refresh(),
-    );
-  }
-
-  private bindInstallPlugins(): void {
-    this.ipc.handle(
-      RoutesPrefix.INSTALL_PLUGINS,
-      async (): Promise<any> => this.app.getPlugins().install(),
     );
   }
 }

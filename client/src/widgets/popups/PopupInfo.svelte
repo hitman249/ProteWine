@@ -30,7 +30,7 @@
       },
       {
         label: 'Path',
-        value: config.path,
+        value: `C:${config.path}`,
       },
     ];
 

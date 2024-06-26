@@ -1,10 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
+
 export default class FsrStrength extends AbstractPlugin {
-  protected code: string = 'fsr';
-  protected name: string = 'FSR Sharpening Strength';
-  protected type: PluginType['type'] = 'config';
-  protected description: string = 'FidelityFX Super Resolution Sharpening Strength';
+  protected readonly code: string = 'kernel.fsrStrength';
+  protected readonly name: string = 'FSR Sharpening Strength';
+  protected readonly type: PluginType['type'] = 'config';
+  protected readonly description: string = 'FidelityFX Super Resolution Sharpening Strength';
+  protected readonly template: ValueTemplate = ValueTemplate.FSR_STRENGTH;
 
   public async init(): Promise<void> {
   }
@@ -19,6 +21,7 @@ export default class FsrStrength extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: Boolean(this.config) ? this.config.getFsrStrength() : undefined,
+      template: this.template,
     };
   }
 

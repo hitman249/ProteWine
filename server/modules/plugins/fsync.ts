@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class Fsync extends AbstractPlugin {
-  protected code: string = 'fsync';
-  protected name: string = 'Fsync';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = '';
+  protected readonly code: string = 'kernel.fsync';
+  protected readonly name: string = 'Fsync';
+  protected readonly type: PluginType['type'] = 'config';
+  protected readonly description: string = '';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -20,6 +21,7 @@ export default class Fsync extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: Boolean(this.config) ? this.config.isFsync() : undefined,
+      template: this.template,
     };
   }
 

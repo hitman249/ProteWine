@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class Focus extends AbstractPlugin {
-  protected code: string = 'focus';
-  protected name: string = 'Fix focus';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = 'Required for games with focus loss';
+  protected readonly code: string = 'fixes.focus';
+  protected readonly name: string = 'Fix focus';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = 'Required for games with focus loss';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private installed: boolean;
   private value: boolean;
@@ -23,6 +24,7 @@ export default class Focus extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isFocus(),
+      template: this.template,
     };
   }
 
@@ -45,14 +47,16 @@ export default class Focus extends AbstractPlugin {
     const value: boolean = this.settings.isFocus();
     await this.setMetadata(this.code, value);
 
+    const registry: string[] = [];
+
     if (value) {
-      this.registry.push(
+      registry.push(
         "\n[HKEY_CURRENT_USER\\Software\\Wine\\X11 Driver]\n",
         '"GrabFullscreen"="Y"',
         '"UseTakeFocus"="N"',
       );
     } else {
-      this.registry.push(
+      registry.push(
         "\n[HKEY_CURRENT_USER\\Software\\Wine\\X11 Driver]\n",
         '"GrabFullscreen"=-',
         '"UseTakeFocus"=-',
@@ -62,7 +66,7 @@ export default class Focus extends AbstractPlugin {
     this.value = value;
     this.installed = true;
 
-    return this.registry;
+    return registry;
   }
 
   public async isInstalled(): Promise<boolean> {
@@ -86,6 +90,7 @@ export default class Focus extends AbstractPlugin {
   }
 
   public async clear(): Promise<void> {
+    this.installed = undefined;
     this.value = undefined;
   }
 }

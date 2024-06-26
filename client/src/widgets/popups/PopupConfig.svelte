@@ -2,30 +2,25 @@
   import {onDestroy, onMount, tick} from 'svelte';
   import {StickerType} from '../stickers';
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
-  import Menu, {type MenuItem} from '../../modules/menu';
+  import Menu, {MenuItem, type MenuItemType} from '../../modules/menu';
   import List from '../../components/list/List.svelte';
-  import Value, {ValueLabels, type ValueType, ValueTypes} from '../../modules/value';
+  import type {ValueType} from '../../modules/value';
   import Loader from '../Loader.svelte';
-  import FormData, {GameOperation} from '../../models/form-data';
-  import type {LinkInfoData} from '../../../../server/modules/link-info';
+  import FormData from '../../models/form-data';
 
   let list: List;
-  let data: LinkInfoData[] = undefined;
+  let data: MenuItem[] = undefined;
 
   const formData: FormData<MenuItem> = window.$app.getPopup().getData();
+  const game: MenuItem = formData.getData();
 
-  const value: Value = new Value({
-    value: 'select',
-    labels: ValueLabels.FILE_MANAGER,
-    type: ValueTypes.SELECT,
-  });
   let timeout: any;
   let selectList: List;
   let isSelectList: boolean = false;
   let selectListItems: ValueType[] = undefined;
   let loading: boolean = true;
 
-  const keyboardWatch = (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
+  const keyboardWatch = async (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key && list) {
       if (isSelectList) {
         selectList?.keyDown();
@@ -45,7 +40,7 @@
     }
 
     if (((KeyboardKey.ENTER === key) || (KeyboardKey.RIGHT === key)) && list) {
-      const item: LinkInfoData = list?.getItem();
+      const item: MenuItem = list?.getItem();
 
       if (!item) {
         return;
@@ -54,33 +49,27 @@
       if (isSelectList) {
         const select: ValueType = selectList.getItem();
 
-        switch (select.value) {
-          case 'import':
-            window.$app.getApi().getGames()
-              .create({
-                name: item.title,
-                arguments: item.arguments,
-                path: item.path,
-              })
-              .then(() => {
-                unbindEvents();
-                window.$app.getPopup().back();
-              });
-        }
+        await window.$app.getApi().getGames().updateConfig(game.id, item.id, select.value);
+        await reload();
+
+        isSelectList = false;
+
+        tick().then(() => {
+          timeout = setTimeout(() => {
+            selectListItems = undefined;
+            timeout = undefined;
+          }, 200);
+        });
 
         return;
       }
 
-      selectListItems = value.getList().filter((value: ValueType) => {
-        switch (value.value) {
-          case 'import':
-            return formData.getOperation() === GameOperation.IMPORT_LINK;
-        }
 
-        return false;
-      });
+      selectListItems = item.value.getList();
 
       tick().then(() => {
+        const index: number = item.value.getIndexValue();
+        selectList.changeIndex(index);
         isSelectList = true;
       });
     }
@@ -88,12 +77,14 @@
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
       if (isSelectList) {
         isSelectList = false;
+
         tick().then(() => {
           timeout = setTimeout(() => {
             selectListItems = undefined;
             timeout = undefined;
           }, 200);
         });
+
         return;
       }
 
@@ -110,13 +101,16 @@
     window.$app.getKeyboard().off(KeyboardPressEvent.KEY_DOWN, keyboardWatch);
   }
 
-  onMount(() => {
-    bindEvents();
-
-    window.$app.getApi().getGames().findLinks().then((links: LinkInfoData[]) => {
-      data = links;
+  function reload(): Promise<void> {
+    return window.$app.getApi().getPlugins().getConfigs(game.id).then((items: MenuItemType[]) => {
+      data = (items || []).map((item: MenuItemType, index: number) => new MenuItem(item, this, index));
       loading = false;
     });
+  }
+
+  onMount(() => {
+    bindEvents();
+    reload();
   });
 
   onDestroy(async () => {
@@ -128,7 +122,7 @@
   <div class="header">
     <div class="left"></div>
     <div class="right">
-      Find links
+      Settings
     </div>
   </div>
   <div class="content">
@@ -144,7 +138,7 @@
           itemCenter={true}
           horizontal={false}
           extendItemClass="vertical-item"
-          type={StickerType.LINK}
+          type={StickerType.ITEM}
           style="opacity: {data.length > 0 ? 1 : 0};"
         />
 
@@ -238,7 +232,7 @@
       justify-content: center;
 
       .center {
-        width: 800px;
+        width: 1000px;
         height: 100%;
         position: absolute;
         margin: auto;

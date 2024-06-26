@@ -81,6 +81,24 @@ export default class Update extends AbstractModule {
     }
   }
 
+  public async downloadBar(progress?: (value: Progress) => void): Promise<void> {
+    const url: string = this.network.getRepo('/bin/bar');
+    const path: string = await this.appFolders.getBarFile();
+
+    if (!await this.fs.exists(path)) {
+      return this.network.download(url, path, progress);
+    }
+  }
+
+  public async downloadLinkInfo(progress?: (value: Progress) => void): Promise<void> {
+    const url: string = this.network.getRepo('/bin/lnkinfo');
+    const path: string = await this.appFolders.getLinkInfoFile();
+
+    if (!await this.fs.exists(path)) {
+      return this.network.download(url, path, progress);
+    }
+  }
+
   public getVersion(): string {
     return this.version;
   }

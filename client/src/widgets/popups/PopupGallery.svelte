@@ -188,7 +188,7 @@
         bind:this={selectList}
         items={selectListItems}
         paddingIndent={-30}
-        headersDummy={9}
+        headersDummy={Math.trunc((window.innerHeight - 35) / 35 / 2)}
         itemSize={35}
         itemSpace={30}
         horizontal={false}
@@ -285,7 +285,7 @@
       height: 100%;
       overflow: hidden;
       opacity: 0;
-      background: rgba(0, 212, 255, 30%);
+      background: #259efc;
       transition: opacity 0.2s ease, right 0.2s ease;
       z-index: 2;
 

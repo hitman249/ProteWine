@@ -30,7 +30,7 @@ export default class SettingsRoutes extends AbstractModule {
   private bindSet(): void {
     this.ipc.handle(
       RoutesSettings.SAVE,
-      async (event: IpcMainInvokeEvent, path: string, value: string | boolean): Promise<any> => this.app.getSettings().set(path, value),
+      async (event: IpcMainInvokeEvent, path: string, value: string | boolean | number): Promise<any> => this.app.getSettings().set(path, value),
     );
   }
 }

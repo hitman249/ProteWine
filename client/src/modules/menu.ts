@@ -10,6 +10,7 @@ export type MenuItemType = {
   icon?: string,
   poster?: string,
   description?: string,
+  type?: string,
   template?: ValueLabels,
   click?: () => void,
   items?: () => Promise<MenuItemType[]>,
@@ -241,6 +242,14 @@ export default class Menu extends EventListener {
     return (await window.$app.getApi().getGames().getList()).map((config: Config) => config.toObject());
   }
 
+  private async fetchPlugins(): Promise<MenuItemType[]> {
+    return window.$app.getApi().getPlugins().getPlugins();
+  }
+
+  private async fetchSettings(): Promise<MenuItemType[]> {
+    return window.$app.getApi().getPlugins().getSettings();
+  }
+
   public readonly items: MenuItem[] = ([
     {
       id: 'games',
@@ -296,167 +305,13 @@ export default class Menu extends EventListener {
           id: 'plugins',
           icon: 'settings',
           title: 'Plugins',
-          items: () => Promise.resolve([
-            {
-              id: 'dxvk',
-              icon: 'settings',
-              title: 'DXVK',
-              description: 'Vulkan-based implementation of D3D9, D3D10 and D3D11',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'vkd3d-proton',
-              icon: 'settings',
-              title: 'VKD3D Proton',
-              description: 'Vulkan-based implementation of D3D12',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'mf',
-              icon: 'settings',
-              title: 'Media Foundation',
-              description: 'Multimedia framework from Microsoft to replace DirectShow, available starting with Windows Vista',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'isskin',
-              icon: 'settings',
-              title: 'Isskin',
-              description: 'Fixes game installer errors',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'mono',
-              icon: 'settings',
-              title: 'Mono',
-              description: '.NET Framework compatible counterpart',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'gecko',
-              icon: 'settings',
-              title: 'Gecko',
-              description: 'Gecko browser engine (needed to emulate IE WebView inside Wine)',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'gstreamer',
-              icon: 'settings',
-              title: 'GStreamer',
-              description: 'WineGStreamer (Disabling helps in cases where the prefix creation process hangs)',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-          ]),
+          items: this.fetchPlugins,
         },
         {
           id: 'settings',
           icon: 'settings',
           title: 'Settings',
-          items: () => Promise.resolve([
-            {
-              id: 'mango-hud',
-              icon: 'settings',
-              title: 'MangoHud',
-              description: 'Beautiful HUD to display FPS',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'win-ver',
-              icon: 'settings',
-              title: 'Windows version',
-              value: {
-                value: 'win7',
-                labels: ValueLabels.WINVER,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'fsrMode',
-              icon: 'settings',
-              title: 'FSR Mode',
-              description: 'FSR Upscaling Resolution Mode',
-              value: {
-                value: '',
-                labels: ValueLabels.FSR_MODE,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'fsrStrength',
-              icon: 'settings',
-              title: 'FSR Strength',
-              description: 'FSR Sharpening Strength',
-              value: {
-                value: '2',
-                labels: ValueLabels.FSR_STRENGTH,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'no-crash-dialog',
-              icon: 'settings',
-              title: 'No crash dialog',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'fix-focus',
-              icon: 'settings',
-              title: 'Fix focus',
-              description: 'Required for games with focus loss',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-            {
-              id: 'winemenubuilder',
-              icon: 'settings',
-              title: 'WineMenuBuilder',
-              description: 'Creation of labels and types (inside Wine)',
-              value: {
-                value: false,
-                labels: ValueLabels.BOOLEAN,
-                type: ValueTypes.SELECT,
-              },
-            },
-          ]),
+          items: this.fetchSettings,
         },
       ]),
     },
@@ -550,8 +405,26 @@ export default class Menu extends EventListener {
     this.items?.[0]?.items?.[1]?.clear?.();
   }
 
-  public clearPrefix(): void {
-    this.items?.[1]?.items?.[0]?.clear?.();
+  public clearPrefixPlugins(): void {
+    this.items?.[1]?.items?.[2]?.clear?.();
+    this.items?.[1]?.items?.[3]?.clear?.();
+  }
+
+  public getPluginsKeys(): string[] {
+    const result: string[] = [];
+
+    const plugins: MenuItem = this.items?.[1]?.items?.[2];
+    const settings: MenuItem = this.items?.[1]?.items?.[3];
+
+    for (const group of [plugins, settings]) {
+      if ((group?.getItems?.()?.length || 0) > 0) {
+        for (const item of group.getItems()) {
+          result.push(item.id);
+        }
+      }
+    }
+
+    return result;
   }
 
   public setWineVersion(version: string): void {

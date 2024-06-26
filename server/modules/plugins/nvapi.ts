@@ -1,12 +1,13 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import {DllOverrides} from '../kernels/wine-dll-overrides';
 
 export default class Nvapi extends AbstractPlugin {
-  protected code: string = 'nvapi';
-  protected name: string = 'Nvapi';
-  protected type: PluginType['type'] = 'config';
-  protected description: string = 'Nvidia Api';
+  protected readonly code: string = 'kernel.nvapi';
+  protected readonly name: string = 'Nvapi';
+  protected readonly type: PluginType['type'] = 'config';
+  protected readonly description: string = 'Nvidia Api';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -21,6 +22,7 @@ export default class Nvapi extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: Boolean(this.config) ? this.config.isNvapi() : undefined,
+      template: this.template,
     };
   }
 

@@ -315,7 +315,7 @@
       await iso.unmount();
     }
 
-    if (GameOperation.RUNNER_INSTALL === operation) {
+    if (GameOperation.RUNNER_INSTALL === operation || GameOperation.PREFIX === operation) {
       formData.runCallback();
     }
   });

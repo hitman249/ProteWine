@@ -1,12 +1,13 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import {DllOverrides} from '../kernels/wine-dll-overrides';
 
 export default class Gstreamer extends AbstractPlugin {
-  protected code: string = 'gstreamer';
-  protected name: string = 'Gstreamer';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = 'WineGStreamer (Disabling helps in cases where the prefix creation process hangs)';
+  protected readonly code: string = 'plugins.gstreamer';
+  protected readonly name: string = 'GStreamer';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = 'WineGStreamer (Disabling helps in cases where the prefix creation process hangs)';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -21,6 +22,7 @@ export default class Gstreamer extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isGstreamer(),
+      template: this.template,
     };
   }
 

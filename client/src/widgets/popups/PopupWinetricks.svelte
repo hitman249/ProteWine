@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {onDestroy, onMount} from 'svelte';
+  import {onDestroy, onMount, tick} from 'svelte';
   import {StickerType} from '../stickers';
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
   import Menu, {type MenuItem} from '../../modules/menu';
@@ -25,9 +25,10 @@
     labels: ValueLabels.FILE_MANAGER,
     type: ValueTypes.SELECT,
   });
+  let timeout: any;
   let selectList: List;
   let isSelectList: boolean = false;
-  let selectListItems: ValueType[] = [];
+  let selectListItems: ValueType[] = undefined;
   let loading: boolean = true;
 
 
@@ -101,12 +102,21 @@
 
         return false;
       });
-      isSelectList = true;
+
+      tick().then(() => {
+        isSelectList = true;
+      });
     }
 
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
       if (isSelectList) {
         isSelectList = false;
+        tick().then(() => {
+          timeout = setTimeout(() => {
+            selectListItems = undefined;
+            timeout = undefined;
+          }, 200);
+        });
         return;
       }
 
@@ -150,13 +160,13 @@
     </div>
   </div>
   <div class="content">
-    <div class="input">
+    <div class="input" style:opacity={isSelectList ? 0.4 : 1}>
       <div class="border">
         <input type="text" bind:this={input} bind:value={inputValue}>
       </div>
     </div>
 
-    <div class="center">
+    <div class="center" class:animate-items-opacity={selectListItems} class:hide-no-active-items={isSelectList}>
       {#if data}
         <List
           bind:this={list}
@@ -294,6 +304,7 @@
       background-color: rgba(255, 255, 255, 70%);
       padding: 2px;
       border-radius: 9px;
+      transition: opacity 0.3s;
     }
 
     .border {
@@ -324,7 +335,7 @@
       height: 100%;
       overflow: hidden;
       opacity: 0;
-      background: rgba(0, 212, 255, 30%);
+      background: #259efc;
       transition: opacity 0.2s ease, right 0.2s ease;
       z-index: 2;
 

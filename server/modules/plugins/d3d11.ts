@@ -1,12 +1,13 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import {DllOverrides} from '../kernels/wine-dll-overrides';
 
 export default class D3d11 extends AbstractPlugin {
-  protected code: string = 'd3d11';
-  protected name: string = 'd3d11';
-  protected type: PluginType['type'] = 'config';
-  protected description: string = 'DXVK or OpenGL';
+  protected readonly code: string = 'kernel.d3d11';
+  protected readonly name: string = 'd3d11';
+  protected readonly type: PluginType['type'] = 'config';
+  protected readonly description: string = 'DXVK or OpenGL';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -21,6 +22,7 @@ export default class D3d11 extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: Boolean(this.config) ? this.config.isD3d11() : undefined,
+      template: this.template,
     };
   }
 

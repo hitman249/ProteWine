@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, { PluginType } from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class WindowsVersion extends AbstractPlugin {
-  protected code: string = 'windows-version';
-  protected name: string = 'Windows version';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = '';
+  protected readonly code: string = 'windowsVersion';
+  protected readonly name: string = 'Windows version';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = '';
+  protected readonly template: ValueTemplate = ValueTemplate.WINVER;
 
   private installed: boolean;
   private value: string;
@@ -23,6 +24,7 @@ export default class WindowsVersion extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.getWindowsVersion(),
+      template: this.template,
     };
   }
 
@@ -42,11 +44,12 @@ export default class WindowsVersion extends AbstractPlugin {
       return [];
     }
 
+    const registry: string[] = [];
     const windowsVersion: string = this.settings.getWindowsVersion();
 
     switch (windowsVersion) {
       case 'win2k':
-        this.registry.push(
+        registry.push(
           "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"=-\n',
 
@@ -61,7 +64,7 @@ export default class WindowsVersion extends AbstractPlugin {
         break;
 
       case 'winxp':
-        this.registry.push(
+        registry.push(
           "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"=-\n',
 
@@ -76,7 +79,7 @@ export default class WindowsVersion extends AbstractPlugin {
         break;
 
       case 'win10':
-        this.registry.push(
+        registry.push(
           "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"="WinNT"\n',
 
@@ -92,7 +95,7 @@ export default class WindowsVersion extends AbstractPlugin {
 
       case 'win7':
       default:
-        this.registry.push(
+        registry.push(
           "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"="WinNT"\n',
 
@@ -111,7 +114,7 @@ export default class WindowsVersion extends AbstractPlugin {
     this.value = windowsVersion;
     this.installed = true;
 
-    return this.registry;
+    return registry;
   }
 
   public async isInstalled(): Promise<boolean> {
@@ -135,6 +138,7 @@ export default class WindowsVersion extends AbstractPlugin {
   }
 
   public async clear(): Promise<void> {
+    this.installed = undefined;
     this.value = undefined;
   }
 }

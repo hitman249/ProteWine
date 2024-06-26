@@ -34,6 +34,7 @@ export enum RoutesGames {
   UPDATE_TITLE = 'games:update-title',
   UPDATE_EXE = 'games:update-exe',
   UPDATE_IMAGE = 'games:update-image',
+  UPDATE_CONFIG = 'games:update-config',
 }
 
 export enum RoutesIso {
@@ -121,6 +122,7 @@ export default {
     RoutesGames.UPDATE_TITLE,
     RoutesGames.UPDATE_EXE,
     RoutesGames.UPDATE_IMAGE,
+    RoutesGames.UPDATE_CONFIG,
     RoutesTaskMethod.KILL,
     RoutesTaskMethod.TYPE,
     RoutesTaskMethod.FINISH,

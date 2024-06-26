@@ -1,13 +1,14 @@
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import type {Kernel} from '../kernels';
 import type WatchProcess from '../../helpers/watch-process';
 import type {EnvType} from '../kernels/environment';
 
 export default class MediaFoundation extends AbstractPlugin {
-  protected code: string = 'mf';
-  protected name: string = 'Media Foundation';
-  protected type: PluginType['type'] = 'plugin';
-  protected description: string = 'Multimedia framework from Microsoft to replace DirectShow, available starting with Windows Vista';
+  protected readonly code: string = 'plugins.mf';
+  protected readonly name: string = 'Media Foundation';
+  protected readonly type: PluginType['type'] = 'plugin';
+  protected readonly description: string = 'Multimedia framework from Microsoft to replace DirectShow, available starting with Windows Vista';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private installed: boolean;
 
@@ -36,6 +37,7 @@ export default class MediaFoundation extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isMediaFoundation(),
+      template: this.template,
     };
   }
 
@@ -47,7 +49,7 @@ export default class MediaFoundation extends AbstractPlugin {
     this.events = this.kernels.getKernel();
     this.bindEvents();
     await this.app.getWineTricks().download();
-    await this.setMetadata('mf', true);
+    await this.setMetadata(this.code, true);
     this.installed = true;
     const process: WatchProcess = await (this.events as Kernel).winetricks('mf');
     await process.wait();
@@ -59,7 +61,7 @@ export default class MediaFoundation extends AbstractPlugin {
       return this.installed;
     }
 
-    this.installed = await this.getMetadata('mf') as boolean;
+    this.installed = await this.getMetadata(this.code) as boolean;
 
     return this.installed;
   }

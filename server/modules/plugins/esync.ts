@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class Esync extends AbstractPlugin {
-  protected code: string = 'esync';
-  protected name: string = 'Esync';
-  protected type: PluginType['type'] = 'config';
-  protected description: string = '';
+  protected readonly code: string = 'kernel.esync';
+  protected readonly name: string = 'Esync';
+  protected readonly type: PluginType['type'] = 'config';
+  protected readonly description: string = '';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -20,6 +21,7 @@ export default class Esync extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: Boolean(this.config) ? this.config.isEsync() : undefined,
+      template: this.template,
     };
   }
 

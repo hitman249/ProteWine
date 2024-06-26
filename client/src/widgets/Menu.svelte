@@ -89,7 +89,7 @@
     }
   }
 
-  async function updateWineVersion(): Promise<void> {
+  export async function updateWineVersion(): Promise<void> {
     const version: string = await window.$app.getApi().getKernel().version();
     menu.setWineVersion(version);
 
@@ -198,6 +198,33 @@
 
           const formData: FormData<MenuItem> = new FormData(item);
 
+          if (-1 !== menu.getPluginsKeys().indexOf(item.id)) {
+            await window.$app.getApi().getSettings().set(item.id, value.value);
+            menu.clearPrefixPlugins();
+            await innerListItem.reload();
+            innerListItem = innerListItem;
+
+            isSelectList = false;
+
+            tick().then(() => {
+              timeout = setTimeout(() => {
+                selectListItems = undefined;
+                timeout = undefined;
+              }, 200);
+            });
+
+            formData.setOperation(GameOperation.DEBUG);
+            popup.open(PopupNames.EXECUTING, formData);
+
+            window.$app.getApi().getPlugins().install().then(() => {
+              if (popup.isOpen(PopupNames.EXECUTING)) {
+                popup.back();
+              }
+            });
+
+            return;
+          }
+
           if ('reset' === item.id) {
             switch (value.value) {
               case true:
@@ -245,6 +272,10 @@
 
           if (ValueLabels.MANAGE === item.template) {
             switch (value.value) {
+              case 'settings':
+                popup.open(PopupNames.CONFIG, formData);
+                break;
+
               case 'change-poster':
                 formData.setCallback(async (image: Image) => {
                   await window.$app.getApi().getGames().updateImage(image, item.id, 'poster');

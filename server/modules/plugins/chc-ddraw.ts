@@ -1,13 +1,14 @@
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import type {Kernel} from '../kernels';
 import type WatchProcess from '../../helpers/watch-process';
 import type {EnvType} from '../kernels/environment';
 
 export default class CncDdraw extends AbstractPlugin {
-  protected code: string = 'cnc_ddraw';
-  protected name: string = 'CnC ddraw';
-  protected type: PluginType['type'] = 'plugin';
-  protected description: string = 'Reimplentation of ddraw for CnC games';
+  protected readonly code: string = 'plugins.cncDdraw';
+  protected readonly name: string = 'CnC ddraw';
+  protected readonly type: PluginType['type'] = 'plugin';
+  protected readonly description: string = 'Reimplentation of ddraw for CnC games';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private installed: boolean;
 
@@ -36,6 +37,7 @@ export default class CncDdraw extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isCncDdraw(),
+      template: this.template,
     };
   }
 
@@ -47,7 +49,7 @@ export default class CncDdraw extends AbstractPlugin {
     this.events = this.kernels.getKernel();
     this.bindEvents();
     await this.app.getWineTricks().download();
-    await this.setMetadata('cnc_ddraw', true);
+    await this.setMetadata(this.code, true);
     this.installed = true;
     const process: WatchProcess = await (this.events as Kernel).winetricks('cnc_ddraw');
     await process.wait();
@@ -59,7 +61,7 @@ export default class CncDdraw extends AbstractPlugin {
       return this.installed;
     }
 
-    this.installed = await this.getMetadata('cnc_ddraw') as boolean;
+    this.installed = await this.getMetadata(this.code) as boolean;
 
     return this.installed;
   }

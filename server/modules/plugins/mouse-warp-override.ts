@@ -1,11 +1,12 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 export default class MouseWarpOverride extends AbstractPlugin {
-  protected code: string = 'mouse-warp-override';
-  protected name: string = 'MouseWarpOverride';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = '';
+  protected readonly code: string = 'fixes.mouseWarpOverride';
+  protected readonly name: string = 'Mouse warp acceleration';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = 'Mouse warp override on Wine / Proton';
+  protected readonly template: ValueTemplate = ValueTemplate.MOUSE_OVERRIDE_ACCELERATION;
 
   private installed: boolean;
   private value: string;
@@ -23,6 +24,7 @@ export default class MouseWarpOverride extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.getMouseWarpOverride(),
+      template: this.template,
     };
   }
 
@@ -43,22 +45,23 @@ export default class MouseWarpOverride extends AbstractPlugin {
     }
 
     const mode: string = this.settings.getMouseWarpOverride();
+    const registry: string[] = [];
 
     switch (mode) {
       case 'enable':
-        this.registry.push(
+        registry.push(
           "\n[HKEY_CURRENT_USER\\Software\\Wine\\DirectInput]\n",
           '"MouseWarpOverride"="enable"\n',
         );
         break;
       case 'force':
-        this.registry.push(
+        registry.push(
           "\n[HKEY_CURRENT_USER\\Software\\Wine\\DirectInput]\n",
           '"MouseWarpOverride"="force"\n',
         );
         break;
       case 'disable':
-        this.registry.push(
+        registry.push(
           "\n[HKEY_CURRENT_USER\\Software\\Wine\\DirectInput]\n",
           '"MouseWarpOverride"="disable"\n',
         );
@@ -70,7 +73,7 @@ export default class MouseWarpOverride extends AbstractPlugin {
     this.value = mode;
     this.installed = true;
 
-    return this.registry;
+    return registry;
   }
 
   public async isInstalled(): Promise<boolean> {
@@ -94,6 +97,7 @@ export default class MouseWarpOverride extends AbstractPlugin {
   }
 
   public async clear(): Promise<void> {
+    this.installed = undefined;
     this.value = undefined;
   }
 }

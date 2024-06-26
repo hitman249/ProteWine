@@ -10,13 +10,13 @@ export type SettingsType = {
   windowsVersion: 'winxp' | 'win7' | 'win10',
   plugins: {
     dxvk: boolean,
+    vkd3dProton: boolean,
+    isskin: boolean,
     d8vk: boolean,
     d3d8to9: boolean,
-    vkd3dProton: boolean,
     mf: boolean,
     cncDdraw: boolean,
     dgVoodoo2: boolean,
-    isskin: boolean,
     mono: boolean,
     gecko: boolean,
     gstreamer: boolean,
@@ -141,13 +141,13 @@ export default class Settings extends AbstractModule {
       windowsVersion: 'win7',  // Windows version (win11, win10, win7, winxp, win2k),
       plugins: {
         dxvk: true,
+        vkd3dProton: true,
+        isskin: true,
         d8vk: false,
         d3d8to9: false,
-        vkd3dProton: false,
         mf: false,
         cncDdraw: false,
         dgVoodoo2: false,
-        isskin: false,
         mono: true,
         gecko: true,
         gstreamer: true,
@@ -168,7 +168,7 @@ export default class Settings extends AbstractModule {
     return this.config;
   }
 
-  public async set(path: string, value: string | boolean): Promise<void> {
+  public async set(path: string, value: string | boolean | number): Promise<void> {
     _.set(this.config, path, value);
     await this.save();
   }

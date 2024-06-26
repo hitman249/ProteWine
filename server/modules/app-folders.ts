@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import path from 'path';
 import process from 'process';
-import Utils from '../helpers/utils';
 import FileSystem from './file-system';
 import {AbstractModule} from './abstract-module';
 import type Settings from './settings';
@@ -106,28 +105,15 @@ export default class AppFolders extends AbstractModule {
       return this.rootDir;
     }
 
-    let startFile: string = undefined;
+    let startFile: string = Boolean(process.env.APPIMAGE) ? path.resolve(process.env.APPIMAGE, '..') : undefined;
 
-    if (_.endsWith(path.resolve(__dirname), 'cache/server')) {
-      startFile = path.resolve(__dirname, '..');
-    }
-
-    if (undefined === startFile) {
-      startFile = process.env.APPIMAGE;
-    }
-
-    if (undefined === startFile) {
+    if (!startFile && _.endsWith(path.resolve(__dirname), 'cache/server')) {
+      startFile = path.resolve(__dirname, '../..');
+    } else if (!startFile) {
       startFile = path.resolve(__dirname);
     }
 
-    this.rootDir = path.resolve(startFile, '..');
-
-    const binDir: string = path.resolve(this.rootDir, '..') + this.binDir;
-    const dataDir: string = path.resolve(this.rootDir, '..') + this.dataDir;
-
-    if (await this.fs.exists(binDir) && await this.fs.exists(dataDir)) {
-      this.rootDir = path.resolve(this.rootDir, '..');
-    }
+    this.rootDir = startFile;
 
     return this.rootDir;
   }

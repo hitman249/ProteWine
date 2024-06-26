@@ -2,6 +2,7 @@ import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
 import type {App} from '../../app';
 import {AbstractModule} from '../../modules/abstract-module';
 import {RoutesPlugins} from '../routes';
+import type WatchProcess from '../../helpers/watch-process';
 
 export default class PluginsRoutes extends AbstractModule {
   private readonly app: App;
@@ -21,7 +22,10 @@ export default class PluginsRoutes extends AbstractModule {
   }
 
   private bindInstall(): void {
-    this.ipc.handle(RoutesPlugins.INSTALL, async (): Promise<any> => this.app.getPlugins().install());
+    this.ipc.handle(RoutesPlugins.INSTALL, async (): Promise<any> => {
+      const process: WatchProcess = await this.app.getTasks().installPlugins();
+      await process.wait();
+    });
   }
 
   private bindList(): void {

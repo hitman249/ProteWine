@@ -150,3 +150,33 @@
     }
   }
 }
+
+.animate-items-opacity {
+  .list-item {
+    .footer {
+      transition: opacity 0.2s;
+    }
+    .icon {
+      transition: opacity 0.2s;
+    }
+  }
+
+  .list-item.active .value {
+    transition: opacity 0.2s;
+  }
+}
+
+.hide-no-active-items {
+  .list-item:not(.active) {
+    .footer {
+      opacity: 0 !important;
+    }
+    .icon {
+      opacity: 0.4 !important;
+    }
+  }
+
+  .list-item.active .value {
+    opacity: 0 !important;
+  }
+}

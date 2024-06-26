@@ -1,13 +1,14 @@
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import type {Kernel} from '../kernels';
 import type WatchProcess from '../../helpers/watch-process';
 import type {EnvType} from '../kernels/environment';
 
 export default class Vkd3dProton extends AbstractPlugin {
-  protected code: string = 'vkd3d-proton';
-  protected name: string = 'VKD3D Proton';
-  protected type: PluginType['type'] = 'plugin';
-  protected description: string = 'Vulkan-based implementation of D3D12';
+  protected readonly code: string = 'plugins.vkd3dProton';
+  protected readonly name: string = 'VKD3D Proton';
+  protected readonly type: PluginType['type'] = 'plugin';
+  protected readonly description: string = 'Vulkan-based implementation of D3D12';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private version: string;
   private remoteVersion: string;
@@ -40,6 +41,7 @@ export default class Vkd3dProton extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isVkd3dProton(),
+      template: this.template,
     };
   }
 
@@ -51,7 +53,7 @@ export default class Vkd3dProton extends AbstractPlugin {
     this.events = this.kernels.getKernel();
     this.bindEvents();
     await this.app.getWineTricks().download();
-    await this.setMetadata('vkd3d-proton', await this.getRemoteVersion());
+    await this.setMetadata(this.code, await this.getRemoteVersion());
     this.version = this.remoteVersion;
     const process: WatchProcess = await (this.events as Kernel).winetricks('vkd3d');
     await process.wait();
@@ -73,7 +75,7 @@ export default class Vkd3dProton extends AbstractPlugin {
       return this.version;
     }
 
-    this.version = await this.getMetadata('vkd3d-proton') as string;
+    this.version = await this.getMetadata(this.code) as string;
 
     return this.version;
   }

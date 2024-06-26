@@ -130,21 +130,21 @@ export default class Plugins extends AbstractModule {
       this.NO_CRASH_DIALOG,
       this.FOCUS,
       this.MOUSE_WARP_OVERRIDE,
+      this.MONO,
+      this.GECKO,
+      this.GSTREAMER,
 
       // config
-      this.D3D8,
-      this.D3D9,
-      this.D3D10,
-      this.D3D11,
-      this.D3D12,
-      this.ESYNC,
-      this.FSYNC,
-      this.GECKO,
-      this.MONO,
-      this.GSTREAMER,
-      this.NVAPI,
       this.FSR_MODE,
       this.FSR_STRENGTH,
+      this.ESYNC,
+      this.FSYNC,
+      this.NVAPI,
+      this.D3D12,
+      this.D3D11,
+      this.D3D10,
+      this.D3D9,
+      this.D3D8,
     );
 
     this.onRun = this.onRun.bind(this);
@@ -160,8 +160,16 @@ export default class Plugins extends AbstractModule {
     }
   }
 
+  public async clear(): Promise<void> {
+    for await (const module of this.modules) {
+      await module.clear();
+    }
+  }
+
   public async install(): Promise<void> {
     for await (const module of this.modules) {
+      await module.clear();
+
       if (await module.isRequired()) {
         this.bindEvents(module);
 
@@ -169,7 +177,6 @@ export default class Plugins extends AbstractModule {
           module.logConfigure();
         }
 
-        await module.clear();
         await module.install();
 
         this.unbindEvents(module);
@@ -191,6 +198,8 @@ export default class Plugins extends AbstractModule {
     const registry: string[] = [];
 
     for await (const module of this.modules) {
+      await module.clear();
+
       const lines: string[] = await module.getRegistry();
 
       if (lines && lines.length > 0) {
@@ -205,6 +214,10 @@ export default class Plugins extends AbstractModule {
       return;
     }
 
+    if (await this.fs.exists(path)) {
+      await this.fs.rm(path);
+    }
+
     await this.fs.filePutContents(path, Utils.encode(['Windows Registry Editor Version 5.00\n', ...registry].join('\n'), 'utf-16'));
     await this.run(`regedit /S "${path}"`);
   }
@@ -215,6 +228,8 @@ export default class Plugins extends AbstractModule {
     let result: EnvType = {};
 
     for await (const module of this.modules) {
+      await module.clear();
+
       if (await module.isInstalled()) {
         await module.setDllOverrides();
         const env: EnvType = await module.getEnv();

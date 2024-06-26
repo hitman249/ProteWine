@@ -12,10 +12,12 @@
     "server-build": "yarn webpack --mode production --config webpack.config.js",
     "client": "cd client && yarn",
     "client-build": "cd client && yarn build",
-    "client-watch": "cd client && yarn dev"
+    "client-watch": "cd client && yarn dev",
+    "electron-builder": "electron-builder"
   },
   "build": {
     "appId": "protewine",
+    "asar": true,
     "files": [
       "cache/**/*",
       "node_modules/**/*",
@@ -26,9 +28,7 @@
       "executableArgs": [
         "--no-sandbox"
       ],
-      "target": [
-        "AppImage"
-      ],
+      "target": "AppImage",
       "icon": "build/icons/512.png",
       "category": "Game",
       "desktop": {

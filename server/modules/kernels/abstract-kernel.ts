@@ -241,4 +241,8 @@ export default abstract class AbstractKernel extends EventListener {
       return Utils.jsonDecode(await this.fs.fileGetContents(path));
     }
   }
+
+  public async existDir(): Promise<boolean> {
+    return await this.fs.exists(await this.appFolders.getWineDir());
+  }
 }

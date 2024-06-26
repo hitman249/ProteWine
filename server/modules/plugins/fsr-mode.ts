@@ -1,5 +1,5 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 
 /**
  * 4K:
@@ -28,10 +28,11 @@ import AbstractPlugin, {PluginType} from './abstract-plugin';
  */
 
 export default class FsrMode extends AbstractPlugin {
-  protected code: string = 'fsr';
-  protected name: string = 'FSR Mode';
-  protected type: PluginType['type'] = 'config';
-  protected description: string = 'FidelityFX Super Resolution Upscaling Resolution Mode';
+  protected readonly code: string = 'kernel.fsrMode';
+  protected readonly name: string = 'FSR Mode';
+  protected readonly type: PluginType['type'] = 'config';
+  protected readonly description: string = 'FidelityFX Super Resolution Upscaling Resolution Mode';
+  protected readonly template: ValueTemplate = ValueTemplate.FSR_MODE;
 
   public async init(): Promise<void> {
   }
@@ -46,6 +47,7 @@ export default class FsrMode extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: Boolean(this.config) ? this.config.getFrsMode() : undefined,
+      template: this.template,
     };
   }
 

@@ -1,12 +1,13 @@
 import type {EnvType} from '../kernels/environment';
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import {DllOverrides} from '../kernels/wine-dll-overrides';
 
 export default class Gecko extends AbstractPlugin {
-  protected code: string = 'gecko';
-  protected name: string = 'Gecko';
-  protected type: PluginType['type'] = 'settings';
-  protected description: string = 'Gecko browser engine (needed to emulate IE WebView inside Wine)';
+  protected readonly code: string = 'plugins.gecko';
+  protected readonly name: string = 'Gecko';
+  protected readonly type: PluginType['type'] = 'settings';
+  protected readonly description: string = 'Gecko browser engine (needed to emulate IE WebView inside Wine)';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
   }
@@ -21,6 +22,7 @@ export default class Gecko extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isGecko(),
+      template: this.template,
     };
   }
 

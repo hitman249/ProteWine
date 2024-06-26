@@ -1,4 +1,4 @@
-import {FsrModes, FsrSharpening} from '../../../server/modules/plugins/types';
+import {FsrModes, FsrSharpening, MouseOverrideAcceleration} from '../../../server/modules/plugins/types';
 
 type ValueData = string | boolean | number;
 
@@ -24,6 +24,7 @@ export enum ValueLabels {
   FILE_MANAGER = 'fileManager',
   FSR_MODE = 'fsrMode',
   FSR_STRENGTH = 'fsrStrength',
+  MOUSE_OVERRIDE_ACCELERATION = 'mouseOverrideAcceleration',
 }
 
 export enum ValueTypes {
@@ -32,7 +33,7 @@ export enum ValueTypes {
 }
 
 export default class Value {
-  private static COLLECTS: {[type in ValueLabels]: ValueType[]} = {
+  private static COLLECTS: { [type in ValueLabels]: ValueType[] } = {
     boolean: [
       {
         value: false,
@@ -58,6 +59,10 @@ export default class Value {
       },
     ],
     manage: [
+      {
+        value: 'settings',
+        title: 'Settings',
+      },
       {
         value: 'change-poster',
         title: 'Change poster',
@@ -124,19 +129,33 @@ export default class Value {
       },
       {
         value: FsrModes.ULTRA,
-        title: 'Ultra',
+        title: 'Ultra (1.3x scaling)',
       },
       {
         value: FsrModes.QUALITY,
-        title: 'Quality',
+        title: 'Quality (1.5x scaling)',
       },
       {
         value: FsrModes.BALANCED,
-        title: 'Balanced',
+        title: 'Balanced (1.7x scaling)',
       },
       {
         value: FsrModes.PERFORMANCE,
-        title: 'Performance',
+        title: 'Performance (2x scaling)',
+      },
+    ],
+    mouseOverrideAcceleration: [
+      {
+        value: MouseOverrideAcceleration.ENABLE,
+        title: 'Enable (Default)',
+      },
+      {
+        value: MouseOverrideAcceleration.DISABLE,
+        title: 'Disable',
+      },
+      {
+        value: MouseOverrideAcceleration.FORCE,
+        title: 'Force',
       },
     ],
     fsrStrength: [

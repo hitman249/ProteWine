@@ -1,14 +1,15 @@
-import AbstractPlugin, {PluginType} from './abstract-plugin';
+import AbstractPlugin, {PluginType, ValueTemplate} from './abstract-plugin';
 import type {Kernel} from '../kernels';
 import type WatchProcess from '../../helpers/watch-process';
 import type {EnvType} from '../kernels/environment';
 import type Plugins from './index';
 
 export default class Dxvk extends AbstractPlugin {
-  protected code: string = 'dxvk';
-  protected name: string = 'DXVK';
-  protected type: PluginType['type'] = 'plugin';
-  protected description: string = 'Vulkan-based implementation of D3D9, D3D10 and D3D11';
+  protected readonly code: string = 'plugins.dxvk';
+  protected readonly name: string = 'DXVK';
+  protected readonly type: PluginType['type'] = 'plugin';
+  protected readonly description: string = 'Vulkan-based implementation of D3D9, D3D10 and D3D11';
+  protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   private version: string;
   private remoteVersion: string;
@@ -31,6 +32,7 @@ export default class Dxvk extends AbstractPlugin {
       type: this.type,
       description: this.description,
       value: this.settings.isDxvk(),
+      template: this.template,
     };
   }
 
@@ -57,7 +59,7 @@ export default class Dxvk extends AbstractPlugin {
     this.events = this.kernels.getKernel();
     this.bindEvents();
     await this.app.getWineTricks().download();
-    await this.setMetadata('dxvk', await this.getRemoteVersion());
+    await this.setMetadata(this.code, await this.getRemoteVersion());
     this.version = this.remoteVersion;
     const process: WatchProcess = await (this.events as Kernel).winetricks('dxvk');
     await process.wait();
@@ -79,7 +81,7 @@ export default class Dxvk extends AbstractPlugin {
       return this.version;
     }
 
-    this.version = await this.getMetadata('dxvk') as string;
+    this.version = await this.getMetadata(this.code) as string;
 
     return this.version;
   }

@@ -12,6 +12,7 @@ export enum PopupNames {
   INFO = 'info',
   WINETRICKS = 'winetricks',
   RUNNER = 'runner',
+  CONFIG = 'config',
 }
 
 export enum PopupEvents {

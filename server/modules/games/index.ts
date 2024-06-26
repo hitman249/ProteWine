@@ -248,4 +248,16 @@ export default class Games extends AbstractModule {
 
     await Resizer.create(this.fs, cache, dest).resize(400);
   }
+
+  public async updateConfig(id: string, path: string, value: string | boolean | number): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    config.set(path, value);
+
+    await config.save();
+  }
 }
