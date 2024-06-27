@@ -12,6 +12,7 @@ export enum CopyDirEvent {
 
 export type Options = {
   overwrite?: boolean,
+  follow?: boolean,
 };
 
 type Source = {

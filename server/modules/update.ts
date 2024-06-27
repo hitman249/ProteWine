@@ -4,6 +4,7 @@ import FileSystem from './file-system';
 import Network from './network';
 import {AbstractModule} from './abstract-module';
 import type {Progress} from './archiver';
+import Command from './command';
 
 // import child_process from 'child_process';
 // import fs from 'fs';
@@ -15,18 +16,39 @@ export default class Update extends AbstractModule {
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly network: Network;
+  private readonly command: Command;
 
   private data: Object[];
 
-  constructor(appFolders: AppFolders, fs: FileSystem, network: Network) {
+  constructor(appFolders: AppFolders, fs: FileSystem, network: Network, command: Command) {
     super();
 
     this.appFolders = appFolders;
     this.fs = fs;
     this.network = network;
+    this.command = command;
   }
 
   public async init(): Promise<any> {
+    const bins: string[] = ['unzstd', 'zstd', 'unzip'];
+
+    for await (const bin of bins) {
+      const path: string = `${await this.appFolders.getBinDir()}/${bin}`;
+
+      if (!await this.fs.exists(path)) {
+        const binPath: string = await this.command.exec(`command -v ${bin}`);
+
+        if (binPath) {
+          await this.fs.cp(binPath, path, {follow: true});
+
+          if (await this.fs.exists(path)) {
+            await this.fs.chmod(path);
+          }
+        } else {
+          await this.downloadRepoFile(bin);
+        }
+      }
+    }
   }
 
   public async downloadWineTricks(progress?: (value: Progress) => void): Promise<void> {
@@ -38,10 +60,18 @@ export default class Update extends AbstractModule {
       const currentAt: Date = new Date();
 
       if (createAt && ((currentAt.getTime() - createAt.getTime()) / 1000) > 86400) {
-        return this.network.download(url, path, progress);
+        await this.network.download(url, path, progress);
+
+        if (await this.fs.exists(path)) {
+          await this.fs.chmod(path);
+        }
       }
     } else {
-      return this.network.download(url, path, progress);
+      await this.network.download(url, path, progress);
+
+      if (await this.fs.exists(path)) {
+        await this.fs.chmod(path);
+      }
     }
   }
 
@@ -50,7 +80,11 @@ export default class Update extends AbstractModule {
     const path: string = await this.appFolders.getSquashFuseFile();
 
     if (!(await this.fs.exists(path)) || (await this.fs.size(path)) !== 548328) {
-      return this.network.download(url, path, progress);
+      await this.network.download(url, path, progress);
+
+      if (await this.fs.exists(path)) {
+        await this.fs.chmod(path);
+      }
     }
   }
 
@@ -59,46 +93,42 @@ export default class Update extends AbstractModule {
     const path: string = await this.appFolders.getDosboxFile();
 
     if (!(await this.fs.exists(path)) || (await this.fs.size(path)) !== 2776552) {
-      return this.network.download(url, path, progress);
+      await this.network.download(url, path, progress);
+
+      if (await this.fs.exists(path)) {
+        await this.fs.chmod(path);
+      }
     }
   }
 
   public async downloadFuseIso(progress: (value: Progress) => void): Promise<void> {
-    const url: string = this.network.getRepo('/bin/fuseiso');
-    const path: string = await this.appFolders.getFuseIsoFile();
-
-    if (!await this.fs.exists(path)) {
-      return this.network.download(url, path, progress);
-    }
+    return this.downloadRepoFile('fuseiso', progress);
   }
 
   public async downloadCabExtract(progress?: (value: Progress) => void): Promise<void> {
-    const url: string = this.network.getRepo('/bin/cabextract');
-    const path: string = await this.appFolders.getCabExtractFile();
-
-    if (!await this.fs.exists(path)) {
-      return this.network.download(url, path, progress);
-    }
+    return this.downloadRepoFile('cabextract', progress);
   }
 
   public async downloadBar(progress?: (value: Progress) => void): Promise<void> {
-    const url: string = this.network.getRepo('/bin/bar');
-    const path: string = await this.appFolders.getBarFile();
-
-    if (!await this.fs.exists(path)) {
-      return this.network.download(url, path, progress);
-    }
+    return this.downloadRepoFile('bar', progress);
   }
 
   public async downloadLinkInfo(progress?: (value: Progress) => void): Promise<void> {
-    const url: string = this.network.getRepo('/bin/lnkinfo');
-    const path: string = await this.appFolders.getLinkInfoFile();
-
-    if (!await this.fs.exists(path)) {
-      return this.network.download(url, path, progress);
-    }
+    return this.downloadRepoFile('lnkinfo', progress);
   }
 
+  public async downloadRepoFile(file: string, progress?: (value: Progress) => void): Promise<void> {
+    const url: string = this.network.getRepo(`/bin/${file}`);
+    const path: string = `${await this.appFolders.getBinDir()}/${file}`;
+
+    if (!await this.fs.exists(path)) {
+      await this.network.download(url, path, progress);
+
+      if (await this.fs.exists(path)) {
+        await this.fs.chmod(path);
+      }
+    }
+  }
   public getVersion(): string {
     return this.version;
   }

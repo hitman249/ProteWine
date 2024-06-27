@@ -45,10 +45,10 @@ export default class CopyFile extends EventListener {
     });
   }
 
-  public async copy({overwrite = true}: Options = {}): Promise<void> {
+  public async copy({overwrite = true, follow = false}: Options = {}): Promise<void> {
     await this.overwrite(overwrite);
 
-    if (await this.fs.isSymbolicLink(this.src)) {
+    if (!follow && await this.fs.isSymbolicLink(this.src)) {
       await this.copySymlink();
 
       this.fireEvent(CopyFileEvent.PROGRESS, {
