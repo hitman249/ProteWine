@@ -1,21 +1,8 @@
-import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
-import type {App} from '../../app';
-import {AbstractModule} from '../../modules/abstract-module';
-import {RoutesKernel, RoutesRepositories} from '../routes';
-import {KernelOperation} from '../../modules/kernels/abstract-kernel';
+import {AbstractRouteModule} from './abstract-route-module';
+import type {IpcMainInvokeEvent} from 'electron';
+import {RoutesRepositories} from '../routes';
 
-export default class RepositoriesRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
-  constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
-  }
-
+export default class RepositoriesRoutes extends AbstractRouteModule {
   public async init(): Promise<any> {
     this.bindList();
     this.bindListByName();

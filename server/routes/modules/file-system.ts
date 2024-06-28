@@ -1,24 +1,12 @@
-import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
-import System from '../../modules/system';
-import type FileSystem from '../../modules/file-system';
-import {AbstractModule} from '../../modules/abstract-module';
 import _ from 'lodash';
-import type {App} from '../../app';
-import {RoutesFileSystem} from '../routes';
+import {AbstractRouteModule} from './abstract-route-module';
 import Utils from '../../helpers/utils';
+import type {IpcMainInvokeEvent} from 'electron';
+import type FileSystem from '../../modules/file-system';
+import type System from '../../modules/system';
+import {RoutesFileSystem} from '../routes';
 
-export default class FileSystemRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
-  constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
-  }
-
+export default class FileSystemRoutes extends AbstractRouteModule {
   public async init(): Promise<any> {
     this.bindLs();
     this.bindStorages();

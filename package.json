@@ -9,14 +9,14 @@
   "scripts": {
     "server": "yarn",
     "server-start": "electron .",
-    "server-build": "yarn webpack --mode production --config webpack.config.js",
+    "server-build": "rm -rf ./cache/server && yarn webpack --mode production --config webpack.config.js",
     "client": "cd client && yarn",
-    "client-build": "cd client && yarn build",
+    "client-build": "rm -rf ./cache/client && cd client && yarn build",
     "client-watch": "cd client && yarn dev",
     "electron-builder": "electron-builder"
   },
   "build": {
-    "appId": "protewine",
+    "appId": "ProteWine",
     "asar": true,
     "files": [
       "cache/**/*",
@@ -65,6 +65,7 @@
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^7.10.0",
+    "copy-webpack-plugin": "^12.0.2",
     "electron": "^30.0.6",
     "electron-builder": "24.13.3",
     "eslint": "^9.3.0",

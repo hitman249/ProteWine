@@ -10,6 +10,7 @@
   import {KeyboardKey, KeyboardPressEvent} from '../../modules/keyboard';
   import {RoutesTaskEvent} from '../../../../server/routes/routes';
   import {TaskType} from '../../../../server/modules/tasks/types';
+  import type Config from '../../models/config';
 
   type RectType = {width: number, height: number, left: number, top: number, scale: number};
 
@@ -18,13 +19,14 @@
 
   const parentImg: HTMLImageElement = window.document.querySelector('.inner-list .list-item.active img');
   const parentSvg: HTMLImageElement = window.document.querySelector('.inner-list .list-item.active svg');
-  const parentRect: DOMRect = (parentImg || parentSvg).getBoundingClientRect();
+  const parentRect: DOMRect = getRect();
+  const src: string = getSrc();
 
   let rect: RectType = {
     width: parentRect.width,
     height: parentRect.height,
-    top: parentRect.top + (parentImg ? 0 : 40),
-    left: parentRect.left + (parentImg ? 0 : 40),
+    top: parentRect.top + (src ? 0 : 40),
+    left: parentRect.left + (src ? 0 : 40),
     scale: 2,
   };
 
@@ -48,14 +50,31 @@
     }, 1000);
   }
 
+  function getRect(): any {
+    return (parentImg || parentSvg)?.getBoundingClientRect() || {
+      height: 238,
+      left: 241,
+      top: 217,
+      width: 159
+    };
+  }
+
+  function getSrc() {
+    if (!parentImg && !parentSvg) {
+      return item.poster;
+    }
+
+    return parentImg?.src;
+  }
+
   function updateImageRect(): void {
-    const parent: DOMRect = (parentImg || parentSvg).getBoundingClientRect();
+    const parent: DOMRect = getRect();
     const leftRect: DOMRect = leftDiv.getBoundingClientRect();
     const aspect: number = parent.height / parent.width;
     const width: number = 250;
     const height: number = width * aspect;
-    const left: number = leftRect.left + (leftRect.width / 2) - (width / 4) + (parentImg ? 0 : 80);
-    const top: number = leftRect.top + (leftRect.height / 2) - (height / 2) + (parentImg ? 0 : 80);
+    const left: number = leftRect.left + (leftRect.width / 2) - (width / 4) + (src ? 0 : 80);
+    const top: number = leftRect.top + (leftRect.height / 2) - (height / 2) + (src ? 0 : 80);
 
     rect = {width, height, left, top, scale: 4};
   }
@@ -108,7 +127,11 @@
     const tasks: Tasks = window.$app.getApi().getTasks();
     tasks.on(RoutesTaskEvent.EXIT, onExit);
 
-    await window.$app.getApi().getGames().runById(item.id);
+    const config: Config = await window.$app.getApi().getGames().getRunningGame();
+
+    if (!config) {
+      await window.$app.getApi().getGames().runById(item.id);
+    }
 
     setTimeout(() => {
       if (item) {
@@ -125,10 +148,10 @@
 </script>
 
 <div class="popup" class:animate={animate}>
-  {#if parentImg}
+  {#if src}
     <img
       class="poster"
-      src={parentImg.src}
+      src={src}
       style:width="{rect.width}px"
       style:height="{rect.height}px"
       style:transform="translate({rect.left}px, {rect.top}px)"

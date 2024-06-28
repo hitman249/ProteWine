@@ -85,9 +85,12 @@ export default class WatchProcess extends EventListener {
     }
   }
 
-  public kill(): void {
+  public async kill(): Promise<boolean> {
     this.finish = true;
-    killer(this.getPID(), 'SIGKILL');
+
+    return new Promise((resolve: (value: boolean) => void) => {
+      killer(this.getPID(), 'SIGKILL', (error: Error) => resolve(!Boolean(error)));
+    });
   }
 
   public async wait(): Promise<void> {

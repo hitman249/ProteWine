@@ -2,7 +2,6 @@ import {AbstractModule} from '../../../server/modules/abstract-module';
 
 export enum PopupNames {
   RUN_GAME = 'run-game',
-  GAME_OPERATION = 'game-operation',
   FILE_MANAGER = 'file-manager',
   EXECUTING = 'executing',
   FIND_LINKS = 'find-links',

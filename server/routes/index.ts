@@ -1,6 +1,6 @@
 import type {BrowserWindow, IpcMain} from 'electron';
 import type {App} from '../app';
-import {AbstractModule} from '../modules/abstract-module';
+import {AbstractRouteModule} from './modules/abstract-route-module';
 import FileSystemRoutes from './modules/file-system';
 import KernelRoutes from './modules/kernel';
 import TasksRoutes from './modules/tasks';
@@ -17,7 +17,7 @@ import PluginsRoutes from './modules/plugins';
 export default class Index {
   private readonly app: App;
   private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
+  private window: BrowserWindow;
 
   private readonly FILE_SYSTEM: FileSystemRoutes;
   private readonly KERNEL: KernelRoutes;
@@ -32,7 +32,7 @@ export default class Index {
   private readonly SETTINGS: SettingsRoutes;
   private readonly PLUGINS: PluginsRoutes;
 
-  private readonly modules: AbstractModule[] = [];
+  private readonly modules: AbstractRouteModule[] = [];
 
   constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
     this.ipc = ipcMain;
@@ -71,6 +71,14 @@ export default class Index {
   public async init(): Promise<void> {
     for await (const module of this.modules) {
       await module.init();
+    }
+  }
+
+  public setWindow(window: BrowserWindow): void {
+    this.window = window;
+
+    for (const module of this.modules) {
+      module.setWindow(window);
     }
   }
 }

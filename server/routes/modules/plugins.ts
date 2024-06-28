@@ -1,21 +1,9 @@
-import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
-import type {App} from '../../app';
-import {AbstractModule} from '../../modules/abstract-module';
-import {RoutesPlugins} from '../routes';
+import {AbstractRouteModule} from './abstract-route-module';
+import type {IpcMainInvokeEvent} from 'electron';
 import type WatchProcess from '../../helpers/watch-process';
+import {RoutesPlugins} from '../routes';
 
-export default class PluginsRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
-  constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
-  }
-
+export default class PluginsRoutes extends AbstractRouteModule {
   public async init(): Promise<any> {
     this.bindInstall();
     this.bindList();

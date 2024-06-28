@@ -118,7 +118,7 @@ export default class Monitor extends AbstractModule {
     await this.fs.filePutContents(
       await this.appFolders.getResolutionsFile(),
       Utils.jsonEncode({
-        resolutions: await this.getResolutions(),
+        monitors: await this.getResolutions(),
       }),
     );
   }

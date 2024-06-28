@@ -1,8 +1,8 @@
+import {AbstractRouteModule} from './abstract-route-module';
 import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
 import type {App} from '../../app';
-import {AbstractModule} from '../../modules/abstract-module';
-import {RoutesIso} from '../routes';
 import Iso, {IsoEvents} from '../../modules/iso';
+import {RoutesIso} from '../routes';
 
 export type IsoData = {
   src: string,
@@ -10,19 +10,11 @@ export type IsoData = {
   basename: string,
 };
 
-export default class IsoRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
+export default class IsoRoutes extends AbstractRouteModule {
   private iso: Iso;
 
   constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
-
+    super(ipcMain, window, app);
     this.onEvents = this.onEvents.bind(this);
   }
 

@@ -1,19 +1,7 @@
-import type {BrowserWindow, IpcMain} from 'electron';
-import type {App} from '../../app';
-import {AbstractModule} from '../../modules/abstract-module';
+import {AbstractRouteModule} from './abstract-route-module';
 import {RoutesPrefix} from '../routes';
 
-export default class PrefixRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
-  constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
-  }
+export default class PrefixRoutes extends AbstractRouteModule {
 
   public async init(): Promise<any> {
     this.bindExist();

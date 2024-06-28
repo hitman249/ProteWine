@@ -1,19 +1,8 @@
-import type {BrowserWindow, IpcMain, IpcMainInvokeEvent} from 'electron';
-import type {App} from '../../app';
-import {AbstractModule} from '../../modules/abstract-module';
+import type {IpcMainInvokeEvent} from 'electron';
+import {AbstractRouteModule} from './abstract-route-module';
 import {RoutesGallery} from '../routes';
 
-export default class GalleryRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
-  constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
-  }
+export default class GalleryRoutes extends AbstractRouteModule {
 
   public async init(): Promise<any> {
     this.bindPortraits();

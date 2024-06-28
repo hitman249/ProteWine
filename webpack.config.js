@@ -1,8 +1,18 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   target: 'electron-main',
+  plugins: [
+    new CopyPlugin({
+      patterns: [{
+        from: 'icons/512.png',
+        to: 'icons/512.png',
+      }]
+    }),
+  ],
+
   /**
    * This is the main entry point for your application, it's the first file
    * that runs in the main process.

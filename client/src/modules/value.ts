@@ -21,6 +21,7 @@ export enum ValueLabels {
   YESNO = 'yesno',
   GAME = 'game',
   MANAGE = 'manage',
+  OPERATION = 'operation',
   FILE_MANAGER = 'fileManager',
   FSR_MODE = 'fsrMode',
   FSR_STRENGTH = 'fsrStrength',
@@ -34,7 +35,7 @@ export enum ValueTypes {
 
 export default class Value {
   private static COLLECTS: { [type in ValueLabels]: ValueType[] } = {
-    boolean: [
+    [ValueLabels.BOOLEAN]: [
       {
         value: false,
         title: 'Disable',
@@ -44,7 +45,7 @@ export default class Value {
         title: 'Enable',
       },
     ],
-    game: [
+    [ValueLabels.GAME]: [
       {
         value: 'run',
         title: 'Play',
@@ -58,7 +59,7 @@ export default class Value {
         title: 'Info',
       },
     ],
-    manage: [
+    [ValueLabels.MANAGE]: [
       {
         value: 'settings',
         title: 'Settings',
@@ -88,7 +89,7 @@ export default class Value {
         title: 'Remove',
       },
     ],
-    install: [
+    [ValueLabels.INSTALL]: [
       {
         value: false,
         title: 'Install',
@@ -98,7 +99,7 @@ export default class Value {
         title: 'Uninstall',
       },
     ],
-    winver: [
+    [ValueLabels.WINVER]: [
       {
         value: 'win10',
         title: 'Windows 10',
@@ -112,7 +113,7 @@ export default class Value {
         title: 'Windows XP',
       },
     ],
-    yesno: [
+    [ValueLabels.YESNO]: [
       {
         value: false,
         title: 'No',
@@ -122,7 +123,7 @@ export default class Value {
         title: 'Yes',
       },
     ],
-    fsrMode: [
+    [ValueLabels.FSR_MODE]: [
       {
         value: FsrModes.DISABLE,
         title: 'Disable',
@@ -144,7 +145,7 @@ export default class Value {
         title: 'Performance (2x scaling)',
       },
     ],
-    mouseOverrideAcceleration: [
+    [ValueLabels.MOUSE_OVERRIDE_ACCELERATION]: [
       {
         value: MouseOverrideAcceleration.ENABLE,
         title: 'Enable (Default)',
@@ -158,7 +159,7 @@ export default class Value {
         title: 'Force',
       },
     ],
-    fsrStrength: [
+    [ValueLabels.FSR_STRENGTH]: [
       {
         value: FsrSharpening.SHARP,
         title: 'Level 0 (Sharp)',
@@ -184,7 +185,7 @@ export default class Value {
         title: 'Level 5 (Blur)',
       },
     ],
-    fileManager: [
+    [ValueLabels.FILE_MANAGER]: [
       {
         value: 'mount',
         title: 'Mount',
@@ -218,6 +219,7 @@ export default class Value {
         title: 'Install',
       },
     ],
+    [ValueLabels.OPERATION]: [],
   };
 
   private value: ValueData;

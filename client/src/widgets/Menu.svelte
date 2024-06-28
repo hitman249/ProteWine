@@ -175,9 +175,9 @@
 
     if (KeyboardKey.ENTER === key) {
       const item: MenuItem = menu.getFocusedItem();
+      const formData: FormData<MenuItem> = new FormData(item);
 
       if (item?.popup) {
-        const formData: FormData<MenuItem> = new FormData(item);
         formData.setCallback(() => updateWineVersion());
         popup.open(item?.popup, formData);
 
@@ -195,8 +195,6 @@
 
           const value: ValueType = selectList.getItem();
           item.value.setValue(value.value);
-
-          const formData: FormData<MenuItem> = new FormData(item);
 
           if (-1 !== menu.getPluginsKeys().indexOf(item.id)) {
             await window.$app.getApi().getSettings().set(item.id, value.value);
@@ -365,6 +363,23 @@
             isSelectList = true;
           });
         }
+      } else {
+        if (ValueLabels.OPERATION === item.template) {
+          const operation: GameOperation = item.id as any;
+
+          formData.setOperation(operation);
+
+          if (GameOperation.IMPORT_LINK === operation) {
+            popup.open(PopupNames.FIND_LINKS, formData);
+          } else if (GameOperation.WINETRICKS === operation) {
+            popup.open(PopupNames.WINETRICKS, formData);
+          } else {
+            formData.setFileManagerExecutable(true);
+            popup.open(PopupNames.FILE_MANAGER, formData);
+          }
+
+          return;
+        }
       }
     }
 
@@ -463,6 +478,7 @@
 
   {#if innerListItem}
     {@const isGames = (ValueLabels.GAME === innerListItem.template || ValueLabels.MANAGE === innerListItem.template)}
+    {@const isOperation = (ValueLabels.OPERATION === innerListItem.template)}
 
     <div class="inner-list" class:list-only-active={isSelectList}>
       <ListPreloader
@@ -477,7 +493,7 @@
         itemCenter={true}
         horizontal={false}
         extendItemClass="vertical-item"
-        type={isGames ? StickerType.GAME : StickerType.ITEM}
+        type={isGames ? StickerType.GAME : (isOperation ? StickerType.OPERATION : StickerType.ITEM)}
       />
     </div>
   {/if}

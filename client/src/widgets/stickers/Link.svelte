@@ -18,7 +18,7 @@
   <div class="icon" style:transform="scale({1 + (0.3 * percent / 100)})">
     {#if item}
       <Icon
-        icon={FileType.EXECUTABLE}
+        icon={'link'}
         status={active && percent > 90 ? 'focused' : 'normal'}
       />
     {/if}

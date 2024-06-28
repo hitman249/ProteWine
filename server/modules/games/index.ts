@@ -15,6 +15,11 @@ import Utils from '../../helpers/utils';
 import Time from '../../helpers/time';
 import type {App} from '../../app';
 
+export enum GamesEvent {
+  RUN = 'run',
+  EXIT = 'exit',
+}
+
 export default class Games extends AbstractModule {
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
@@ -62,12 +67,14 @@ export default class Games extends AbstractModule {
     );
   }
 
-  public async runById(id: string | number, operation: KernelOperation = KernelOperation.RUN): Promise<void> {
+  public async runById(id: string | number, operation: KernelOperation = KernelOperation.RUN): Promise<boolean> {
     const config: Config = await this.getById(id);
 
     if (!config) {
-      return;
+      return false;
     }
+
+    this.fireEvent(GamesEvent.RUN);
 
     await this.monitor.save();
 
@@ -80,10 +87,14 @@ export default class Games extends AbstractModule {
     process.wait().then(async () => {
       this.runningGame = undefined;
       await this.monitor.restore();
+
+      this.fireEvent(GamesEvent.EXIT);
     });
+
+    return true;
   }
 
-  public async debugById(id: string | number): Promise<void> {
+  public async debugById(id: string | number): Promise<boolean> {
     return await this.runById(id, KernelOperation.INSTALL);
   }
 

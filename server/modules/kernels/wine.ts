@@ -77,7 +77,7 @@ export default class Wine extends AbstractKernel {
   }
 
   public async kill(): Promise<void> {
-    this.process?.kill();
+    await this.process?.kill();
   }
 
   public async register(path: string): Promise<WatchProcess> {

@@ -82,7 +82,7 @@
           window.$app.getPopup().clearHistory().back();
         } else {
           unbindEvents();
-          window.$app.getPopup().open(PopupNames.GAME_OPERATION, formData).clearHistory();
+          window.$app.getPopup().clearHistory().back();
         }
       }
     }

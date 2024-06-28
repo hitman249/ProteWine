@@ -1,22 +1,15 @@
+import {AbstractRouteModule} from './abstract-route-module';
+import Utils from '../../helpers/utils';
 import type {BrowserWindow, IpcMain} from 'electron';
-import {AbstractModule} from '../../modules/abstract-module';
 import type {Progress} from '../../modules/archiver';
 import type {App} from '../../app';
 import type Tasks from '../../modules/tasks';
-import {RoutesTaskEvent, RoutesTaskMethod} from '../routes';
 import type {BodyBus} from '../../modules/tasks/types';
-import Utils from '../../helpers/utils';
+import {RoutesTaskEvent, RoutesTaskMethod} from '../routes';
 
-export default class TasksRoutes extends AbstractModule {
-  private readonly app: App;
-  private readonly ipc: IpcMain;
-  private readonly window: BrowserWindow;
-
+export default class TasksRoutes extends AbstractRouteModule {
   constructor(ipcMain: IpcMain, window: BrowserWindow, app: App) {
-    super();
-    this.ipc = ipcMain;
-    this.window = window;
-    this.app = app;
+    super(ipcMain, window, app);
 
     this.onRun = this.onRun.bind(this);
     this.onLog = this.onLog.bind(this);

@@ -3,6 +3,7 @@ import Helpers from './helpers';
 import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 import {PopupNames} from './popup';
 import type Config from '../models/config';
+import {GameOperation} from '../models/form-data';
 
 export type MenuItemType = {
   id: string,
@@ -274,7 +275,44 @@ export default class Menu extends EventListener {
           id: 'add-game',
           icon: 'plus',
           title: 'Add game',
-          popup: PopupNames.GAME_OPERATION,
+          template: ValueLabels.OPERATION,
+          items: () => Promise.resolve([
+            {
+              id: GameOperation.INSTALL_FILE,
+              title: 'Install file',
+              icon: 'executable',
+            },
+            {
+              id: GameOperation.IMPORT_LINK,
+              title: 'Import game link from *.lnk files',
+              icon: 'link',
+            },
+            {
+              id: GameOperation.WINETRICKS,
+              title: 'Winetricks',
+              icon: 'wine',
+            },
+            {
+              id: GameOperation.INSTALL_DISK_IMAGE,
+              title: 'Install file from disk image',
+              icon: 'disk-image',
+            },
+            {
+              id: GameOperation.COPY_GAME,
+              title: 'Copy existing game folder',
+              icon: 'copy',
+            },
+            {
+              id: GameOperation.MOVE_GAME,
+              title: 'Move existing game folder',
+              icon: 'move',
+            },
+            {
+              id: GameOperation.SYMLINK_GAME,
+              title: 'Symlink to existing game folder',
+              icon: 'symlink',
+            },
+          ]),
         },
       ]),
     },

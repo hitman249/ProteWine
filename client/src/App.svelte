@@ -4,7 +4,6 @@
   import PopupGame from './widgets/popups/PopupGame.svelte';
   import type Popup from './modules/popup';
   import {PopupEvents, PopupNames} from './modules/popup';
-  import PopupSelectOperation from './widgets/popups/PopupSelectOperation.svelte';
   import PopupFileManager from './widgets/popups/PopupFileManager.svelte';
   import PopupExecuting from './widgets/popups/PopupExecuting.svelte';
   import FormData, {GameOperation} from './models/form-data';
@@ -16,6 +15,8 @@
   import PopupWinetricks from './widgets/popups/PopupWinetricks.svelte';
   import PopupRunners from './widgets/popups/PopupRunners.svelte';
   import PopupConfig from './widgets/popups/PopupConfig.svelte';
+  import Config from './models/config';
+  import {MenuItem} from './modules/menu';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -52,6 +53,13 @@
       popup.open(PopupNames.EXECUTING, data)
     }
   });
+
+  window.$app.getApi().getGames().getRunningGame().then((config?: Config) => {
+    if (config) {
+      const data: FormData<MenuItem> = new FormData(new MenuItem(config.toObject(), undefined, 0));
+      popup.open(PopupNames.RUN_GAME, data);
+    }
+  });
 </script>
 
 <main style:background-color={color1}>
@@ -66,8 +74,6 @@
   {#if showPopup}
     {#if namePopup === PopupNames.RUN_GAME}
       <PopupGame bind:this={popup.ref}/>
-    {:else if namePopup === PopupNames.GAME_OPERATION}
-      <PopupSelectOperation bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.FILE_MANAGER}
       <PopupFileManager bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.EXECUTING}

@@ -1,56 +1,22 @@
 <script lang="ts">
   import Icon from '../icons/Icon.svelte';
-  import {GameOperation} from '../../models/form-data';
+  import type {MenuItem} from '../../modules/menu';
 
   export let style: string;
   export let itemClass: string;
   export let active: boolean = false;
   export let dummy: boolean = false;
   export let percent: number;
-  export let item: any = undefined;
+  export let item: MenuItem = undefined;
 
   let descriptionExist = false;
-
-  function getType(): string {
-    if (!item) {
-      return '';
-    }
-
-    if (GameOperation.INSTALL_FILE === item.value) {
-      return 'executable';
-    }
-
-    if (GameOperation.INSTALL_DISK_IMAGE === item.value) {
-      return 'disk-image';
-    }
-
-    if (GameOperation.SYMLINK_GAME === item.value) {
-      return 'symlink';
-    }
-
-    if (GameOperation.COPY_GAME === item.value) {
-      return 'copy';
-    }
-
-    if (GameOperation.MOVE_GAME === item.value) {
-      return 'move';
-    }
-
-    if (GameOperation.IMPORT_LINK === item.value) {
-      return 'link';
-    }
-
-    if (GameOperation.WINETRICKS === item.value) {
-      return 'wine';
-    }
-  }
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
   <div class="icon" style:transform="scale({1 + (0.3 * percent / 100)})">
     {#if item}
       <Icon
-        icon={getType()}
+        icon={item.icon}
         status={active && percent > 90 ? 'focused' : 'normal'}
       />
     {/if}
