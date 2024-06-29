@@ -14,6 +14,7 @@ import {KernelOperation} from '../kernels/abstract-kernel';
 import Utils from '../../helpers/utils';
 import Time from '../../helpers/time';
 import type {App} from '../../app';
+import Icon from '../icon';
 
 export enum GamesEvent {
   RUN = 'run',
@@ -135,7 +136,12 @@ export default class Games extends AbstractModule {
     const result: ConfigType[] = [];
 
     for await (const config of this.configs) {
-      result.push(await config.getConfig());
+      const clone: ConfigType = _.cloneDeep(await config.getConfig());
+      const icon: Icon = await this.app.createIcon(config);
+      clone.menuIcons = await icon.findIcons(true);
+      clone.desktopIcons = await icon.findIcons(false);
+
+      result.push(clone);
     }
 
     return result;
@@ -270,5 +276,27 @@ export default class Games extends AbstractModule {
     config.set(path, value);
 
     await config.save();
+  }
+
+  public async createIconById(id: string, menuOrDesktop: boolean = false): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    const icon: Icon = await this.app.createIcon(config);
+    await icon.create(menuOrDesktop);
+  }
+
+  public async removeIconsById(id: string, menuOrDesktop: boolean = false): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    const icon: Icon = await this.app.createIcon(config);
+    await icon.remove(menuOrDesktop);
   }
 }

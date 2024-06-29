@@ -22,6 +22,8 @@ import WineTricks from './modules/winetricks';
 import Environment from './modules/kernels/environment';
 import Repositories, {type ItemType} from './modules/repositories';
 import Plugins from './modules/plugins';
+import Icon from './modules/icon';
+import Config from './modules/games/config';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -153,6 +155,13 @@ export class App {
     await env.init();
 
     return env;
+  }
+
+  public async createIcon(config: Config): Promise<Icon> {
+    const icon: Icon = new Icon(config, this.APP_FOLDERS, this.FILE_SYSTEM, this.SYSTEM, this.COMMAND);
+    await icon.init();
+
+    return icon;
   }
 
   public getCommand(): Command {

@@ -20,6 +20,8 @@ export default class GamesRoutes extends AbstractRouteModule {
     this.bindUpdateTitle();
     this.bindUpdateConfig();
     this.bindInfo();
+    this.bindCreateIcon();
+    this.bindRemoveIcon();
   }
 
   private bindList(): void {
@@ -111,6 +113,20 @@ export default class GamesRoutes extends AbstractRouteModule {
     this.ipc.handle(
       RoutesGames.UPDATE_TITLE,
       async (event: IpcMainInvokeEvent, id: string, title: string): Promise<void> => this.app.getGames().updateTitleById(id, title),
+    );
+  }
+
+  private bindCreateIcon(): void {
+    this.ipc.handle(
+      RoutesGames.CREATE_ICON,
+      async (event: IpcMainInvokeEvent, id: string, menuOrDesktop: boolean = false): Promise<void> => this.app.getGames().createIconById(id, menuOrDesktop),
+    );
+  }
+
+  private bindRemoveIcon(): void {
+    this.ipc.handle(
+      RoutesGames.REMOVE_ICON,
+      async (event: IpcMainInvokeEvent, id: string, menuOrDesktop: boolean = false): Promise<void> => this.app.getGames().removeIconsById(id, menuOrDesktop),
     );
   }
 

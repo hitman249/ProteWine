@@ -100,6 +100,71 @@
     }
   }
 
+  function openSelect(item: MenuItem): void {
+    if (ValueLabels.MANAGE === item.template) {
+      const config: Config = item.item;
+
+      selectListItems = item.value.getList().filter((value: ValueType) => {
+        switch (value.value) {
+          case 'desktop-link':
+            if (0 < config.desktopIcons.length) {
+              return false;
+            }
+
+            break;
+
+          case 'remove-desktop-link':
+            if (0 === config.desktopIcons.length) {
+              return false;
+            }
+
+            break;
+
+          case 'menu-link':
+            if (0 < config.menuIcons.length) {
+              return false;
+            }
+
+            break;
+
+          case 'remove-menu-link':
+            if (0 === config.menuIcons.length) {
+              return false;
+            }
+
+            break;
+
+          case 'steam-link':
+            break;
+          case 'remove-steam-link':
+            return false;
+            break;
+        }
+
+        return true;
+      });
+    } else {
+      selectListItems = item.value.getList();
+    }
+
+    tick().then(() => {
+      const index: number = item.value.getIndexValue();
+      selectList.changeIndex(index);
+      isSelectList = true;
+    });
+  }
+
+  function closeSelect(): void {
+    isSelectList = false;
+
+    tick().then(() => {
+      timeout = setTimeout(() => {
+        selectListItems = undefined;
+        timeout = undefined;
+      }, 200);
+    });
+  }
+
   const keyboardWatch = async (event: KeyboardPressEvent.KEY_DOWN, key: KeyboardKey) => {
     if (KeyboardKey.DOWN === key) {
       if (isSelectList) {
@@ -158,13 +223,7 @@
             return;
           }
 
-          selectListItems = item.value.getList();
-
-          tick().then(() => {
-            const index: number = item.value.getIndexValue();
-            selectList.changeIndex(index);
-            isSelectList = true;
-          });
+          openSelect(item);
         }
 
         return;
@@ -202,14 +261,7 @@
             await innerListItem.reload();
             innerListItem = innerListItem;
 
-            isSelectList = false;
-
-            tick().then(() => {
-              timeout = setTimeout(() => {
-                selectListItems = undefined;
-                timeout = undefined;
-              }, 200);
-            });
+            closeSelect();
 
             formData.setOperation(GameOperation.DEBUG);
             popup.open(PopupNames.EXECUTING, formData);
@@ -227,8 +279,7 @@
             switch (value.value) {
               case true:
                 if (isSelectList) {
-                  isSelectList = false;
-                  selectListItems = undefined;
+                  closeSelect();
                 }
 
                 window.$app.getApi().getPrefix().refresh().then(() => undefined);
@@ -238,11 +289,7 @@
 
               case false:
                 if (isSelectList) {
-                  isSelectList = false;
-                  timeout = setTimeout(() => {
-                    selectListItems = undefined;
-                    timeout = undefined;
-                  }, 200);
+                  closeSelect();
                 }
 
                 break;
@@ -352,16 +399,66 @@
                   description: `To delete the game link "${item.title}" press the confirmation button.`,
                 });
                 break;
+
+              case 'desktop-link':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getGames().createIcon(item.id, false);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: 'Creating desktop link',
+                  description: `To create an "${item.title}" link on desktop, press the confirmation button`,
+                });
+                closeSelect();
+                break;
+
+              case 'remove-desktop-link':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getGames().removeIcon(item.id, false);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: 'Removing desktop link',
+                  description: `To remove an "${item.title}" link on desktop, press the confirmation button`,
+                });
+                closeSelect();
+                break;
+
+              case 'menu-link':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getGames().createIcon(item.id, true);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: 'Creating system menu link',
+                  description: `To create an "${item.title}" link on system menu, press the confirmation button`,
+                });
+                closeSelect();
+                break;
+
+              case 'remove-menu-link':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getGames().removeIcon(item.id, true);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: 'Removing system menu link',
+                  description: `To remove an "${item.title}" link on system menu, press the confirmation button`,
+                });
+                closeSelect();
+                break;
             }
           }
         } else {
-          selectListItems = item.value.getList();
-
-          tick().then(() => {
-            const index: number = item.value.getIndexValue();
-            selectList.changeIndex(index);
-            isSelectList = true;
-          });
+          openSelect(item);
         }
       } else {
         if (ValueLabels.OPERATION === item.template) {

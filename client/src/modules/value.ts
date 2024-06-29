@@ -85,6 +85,30 @@ export default class Value {
         title: 'Change title',
       },
       {
+        value: 'desktop-link',
+        title: 'Create desktop link',
+      },
+      {
+        value: 'remove-desktop-link',
+        title: 'Remove desktop link',
+      },
+      {
+        value: 'menu-link',
+        title: 'Create menu link',
+      },
+      {
+        value: 'remove-menu-link',
+        title: 'Remove menu link',
+      },
+      {
+        value: 'steam-link',
+        title: 'Create Steam link',
+      },
+      {
+        value: 'remove-steam-link',
+        title: 'Remove Steam link',
+      },
+      {
         value: 'remove-game',
         title: 'Remove',
       },

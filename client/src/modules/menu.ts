@@ -17,6 +17,7 @@ export type MenuItemType = {
   items?: () => Promise<MenuItemType[]>,
   value?: ValueParams,
   popup?: PopupNames,
+  item?: any,
 };
 
 export class MenuItem {
@@ -33,6 +34,7 @@ export class MenuItem {
   public readonly template: ValueLabels;
   public readonly value: Value;
   public readonly popup: PopupNames;
+  public readonly item: any;
 
   private readonly fetchItems: MenuItemType['items'];
   public items: MenuItem[];
@@ -53,6 +55,7 @@ export class MenuItem {
     this.click = params.click;
     this.fetchItems = params.items;
     this.popup = params.popup;
+    this.item = params.item;
 
     if (!this.value && ValueLabels.GAME === params.template && !this.hasItems()) {
       const value: ValueParams = {

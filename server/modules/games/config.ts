@@ -12,6 +12,8 @@ export type ConfigType = {
   icon?: string,
   size?: number,
   sizeFormatted?: string,
+  menuIcons?: string[],
+  desktopIcons?: string[],
   game: {
     path: string,
     arguments: string,
@@ -95,6 +97,14 @@ export default class Config extends AbstractModule {
 
   public get id(): string {
     return String(this.config?.createAt);
+  }
+
+  public get title(): string {
+    return this.config?.game.name;
+  }
+
+  public getGamePath(): string {
+    return this.config?.game.path;
   }
 
   public async getConfig(): Promise<ConfigType> {

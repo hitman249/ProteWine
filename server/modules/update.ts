@@ -30,7 +30,7 @@ export default class Update extends AbstractModule {
   }
 
   public async init(): Promise<any> {
-    const bins: string[] = ['unzstd', 'zstd', 'unzip'];
+    const bins: string[] = ['unzstd', 'zstd', 'unzip', 'wrestool', 'icotool'];
 
     for await (const bin of bins) {
       const path: string = `${await this.appFolders.getBinDir()}/${bin}`;

@@ -28,6 +28,14 @@ export default class Config {
     return this.config.sizeFormatted;
   }
 
+  public get menuIcons(): string[] {
+    return this.config.menuIcons || [];
+  }
+
+  public get desktopIcons(): string[] {
+    return this.config.desktopIcons || [];
+  }
+
   public get poster(): string {
     return this.config.poster;
   }
@@ -46,6 +54,7 @@ export default class Config {
       title: this.title,
       poster: this.poster || this.icon,
       icon: this.icon,
+      item: this,
     };
   }
 }
