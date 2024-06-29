@@ -60,6 +60,25 @@ export default class Dxvk extends AbstractPlugin {
     this.bindEvents();
     await this.app.getWineTricks().download();
     await this.setMetadata(this.code, await this.getRemoteVersion());
+
+    const configPath: string = await this.appFolders.getDxvkConfFile();
+
+    if (!await this.fs.exists(configPath)) {
+      const configText: string = await this.network.get('https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf');
+
+      if (configText) {
+        await this.fs.filePutContents(configPath, configText);
+      }
+    }
+
+    if (await this.fs.exists(configPath)) {
+      const configPathByPrefix: string = await this.kernels.getKernel().getDxvkFile();
+
+      if (!await this.fs.exists(configPathByPrefix)) {
+        await this.fs.lnOfRoot(configPath, configPathByPrefix);
+      }
+    }
+
     this.version = this.remoteVersion;
     const process: WatchProcess = await (this.events as Kernel).winetricks('dxvk');
     await process.wait();

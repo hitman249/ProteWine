@@ -24,10 +24,12 @@ import Repositories, {type ItemType} from './modules/repositories';
 import Plugins from './modules/plugins';
 import Icon from './modules/icon';
 import Config from './modules/games/config';
+import type Server from './index';
 
 export class App {
   private readonly initOrder: AbstractModule[];
 
+  private SERVER: Server;
   private readonly COMMAND: Command;
   private readonly APP_FOLDERS: AppFolders;
   private readonly FILE_SYSTEM: FileSystem;
@@ -238,6 +240,14 @@ export class App {
 
   public getPlugins(): Plugins {
     return this.PLUGINS;
+  }
+
+  public getServer(): Server {
+    return this.SERVER;
+  }
+
+  public setServer(server: Server): void {
+    this.SERVER = server;
   }
 
   public getMountWine(): Mount {

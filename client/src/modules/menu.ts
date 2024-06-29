@@ -317,6 +317,17 @@ export default class Menu extends EventListener {
             },
           ]),
         },
+        {
+          id: 'exit',
+          icon: 'exit',
+          title: 'Exit',
+          value: {
+            hidden: true,
+            value: false,
+            labels: ValueLabels.YESNO,
+            type: ValueTypes.SELECT,
+          },
+        },
       ]),
     },
     {

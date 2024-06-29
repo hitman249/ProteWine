@@ -36,6 +36,7 @@
   import Move from './Move.svelte';
   import Link from './Link.svelte';
   import Dice from './Dice.svelte';
+  import Exit from './Exit.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -119,4 +120,6 @@
   <Link {status} {style} />
 {:else if 'dice' === icon}
   <Dice {status} {style} />
+{:else if 'exit' === icon}
+  <Exit {status} {style} />
 {/if}

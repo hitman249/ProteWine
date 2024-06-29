@@ -1,4 +1,5 @@
 import PluginsRoutes from './modules/plugins';
+import SystemRoutes from './modules/system';
 
 export enum RoutesKernel {
   VERSION = 'kernel:version',
@@ -56,6 +57,10 @@ export enum RoutesGallery {
 export enum RoutesSettings {
   LIST = 'settings:list',
   SAVE = 'settings:save',
+}
+
+export enum RoutesSystem {
+  APP_EXIT = 'system:app-exit',
 }
 
 export enum RoutesWineTricks {
@@ -144,6 +149,7 @@ export default {
     RoutesGallery.ICONS,
     RoutesSettings.LIST,
     RoutesSettings.SAVE,
+    RoutesSystem.APP_EXIT,
     RoutesWineTricks.LIST,
     RoutesRepositories.LIST,
     RoutesRepositories.LIST_BY_NAME,

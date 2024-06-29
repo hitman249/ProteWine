@@ -11,6 +11,7 @@ import WineTricks from './modules/winetricks';
 import Repositories from './modules/repositories';
 import Settings from './modules/settings';
 import Plugins from './modules/plugins';
+import System from './modules/system';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -25,6 +26,7 @@ export default class Api extends AbstractModule {
   private readonly REPOSITORIES: Repositories = new Repositories();
   private readonly SETTINGS: Settings = new Settings();
   private readonly PLUGINS: Plugins = new Plugins();
+  private readonly SYSTEM: System = new System();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
@@ -39,6 +41,7 @@ export default class Api extends AbstractModule {
     this.REPOSITORIES,
     this.SETTINGS,
     this.PLUGINS,
+    this.SYSTEM,
   ];
 
   public async init(): Promise<any> {
@@ -89,6 +92,10 @@ export default class Api extends AbstractModule {
 
   public getPlugins(): Plugins {
     return this.PLUGINS;
+  }
+
+  public getSystem(): System {
+    return this.SYSTEM;
   }
 
   public getAppFolders(): AppFolders {

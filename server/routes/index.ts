@@ -13,6 +13,7 @@ import WineTricksRoutes from './modules/winetricks';
 import RepositoriesRoutes from './modules/repositories';
 import SettingsRoutes from './modules/settings';
 import PluginsRoutes from './modules/plugins';
+import SystemRoutes from './modules/system';
 
 export default class Index {
   private readonly app: App;
@@ -31,6 +32,7 @@ export default class Index {
   private readonly REPOSITORIES: RepositoriesRoutes;
   private readonly SETTINGS: SettingsRoutes;
   private readonly PLUGINS: PluginsRoutes;
+  private readonly SYSTEM: SystemRoutes;
 
   private readonly modules: AbstractRouteModule[] = [];
 
@@ -51,6 +53,7 @@ export default class Index {
     this.REPOSITORIES = new RepositoriesRoutes(ipcMain, window, app);
     this.SETTINGS = new SettingsRoutes(ipcMain, window, app);
     this.PLUGINS = new PluginsRoutes(ipcMain, window, app);
+    this.SYSTEM = new SystemRoutes(ipcMain, window, app);
 
     this.modules.push(
       this.FILE_SYSTEM,
@@ -65,6 +68,7 @@ export default class Index {
       this.REPOSITORIES,
       this.SETTINGS,
       this.PLUGINS,
+      this.SYSTEM,
     );
   }
 

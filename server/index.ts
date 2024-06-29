@@ -17,6 +17,7 @@ export default class Server {
   public async init(): Promise<void> {
     await this.registerHandlers();
     await $app.init();
+    $app.setServer(this);
     await this.createTray();
 
     const gameId: string = this.arguments.getGameId();

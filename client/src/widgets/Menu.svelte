@@ -216,17 +216,21 @@
 
     if (KeyboardKey.RIGHT === key) {
       if (isInnerList || isSelectList) {
-        if (isInnerList && !isSelectList) {
-          const item: MenuItem = menu.getFocusedItem();
+        const item: MenuItem = menu.getFocusedItem();
 
-          if (!item?.value) {
-            return;
+        if (ValueLabels.OPERATION === item.template) {
+          key = KeyboardKey.ENTER;
+        } else {
+          if (isInnerList && !isSelectList) {
+            if (!item?.value) {
+              return;
+            }
+
+            openSelect(item);
           }
 
-          openSelect(item);
+          return;
         }
-
-        return;
       } else {
         keyRight();
       }
@@ -285,6 +289,25 @@
                 window.$app.getApi().getPrefix().refresh().then(() => undefined);
                 formData.setOperation(GameOperation.PREFIX);
                 popup.open(PopupNames.EXECUTING, formData);
+                break;
+
+              case false:
+                if (isSelectList) {
+                  closeSelect();
+                }
+
+                break;
+            }
+          }
+
+          if ('exit' === item.id) {
+            switch (value.value) {
+              case true:
+                if (isSelectList) {
+                  closeSelect();
+                }
+
+                await window.$app.getApi().getSystem().appExit();
                 break;
 
               case false:
