@@ -14,6 +14,7 @@ import RepositoriesRoutes from './modules/repositories';
 import SettingsRoutes from './modules/settings';
 import PluginsRoutes from './modules/plugins';
 import SystemRoutes from './modules/system';
+import UpdateRoutes from './modules/update';
 
 export default class Index {
   private readonly app: App;
@@ -33,6 +34,7 @@ export default class Index {
   private readonly SETTINGS: SettingsRoutes;
   private readonly PLUGINS: PluginsRoutes;
   private readonly SYSTEM: SystemRoutes;
+  private readonly UPDATE: UpdateRoutes;
 
   private readonly modules: AbstractRouteModule[] = [];
 
@@ -54,6 +56,7 @@ export default class Index {
     this.SETTINGS = new SettingsRoutes(ipcMain, window, app);
     this.PLUGINS = new PluginsRoutes(ipcMain, window, app);
     this.SYSTEM = new SystemRoutes(ipcMain, window, app);
+    this.UPDATE = new UpdateRoutes(ipcMain, window, app);
 
     this.modules.push(
       this.FILE_SYSTEM,
@@ -69,6 +72,7 @@ export default class Index {
       this.SETTINGS,
       this.PLUGINS,
       this.SYSTEM,
+      this.UPDATE,
     );
   }
 

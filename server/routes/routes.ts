@@ -56,6 +56,10 @@ export enum RoutesGallery {
   ICONS = 'gallery:find-icons',
 }
 
+export enum RoutesUpdate {
+  APP_VERSION = 'update:app-version',
+}
+
 export enum RoutesSettings {
   LIST = 'settings:list',
   SAVE = 'settings:save',
@@ -158,6 +162,7 @@ export default {
     RoutesRepositories.LIST,
     RoutesRepositories.LIST_BY_NAME,
     RoutesRepositories.INSTALL,
+    RoutesUpdate.APP_VERSION,
   ] as string[],
   send: [] as string[],
   receive: [

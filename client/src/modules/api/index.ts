@@ -12,6 +12,7 @@ import Repositories from './modules/repositories';
 import Settings from './modules/settings';
 import Plugins from './modules/plugins';
 import System from './modules/system';
+import Update from './modules/update';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -27,6 +28,7 @@ export default class Api extends AbstractModule {
   private readonly SETTINGS: Settings = new Settings();
   private readonly PLUGINS: Plugins = new Plugins();
   private readonly SYSTEM: System = new System();
+  private readonly UPDATE: Update = new Update();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
@@ -42,6 +44,7 @@ export default class Api extends AbstractModule {
     this.SETTINGS,
     this.PLUGINS,
     this.SYSTEM,
+    this.UPDATE,
   ];
 
   public async init(): Promise<any> {
@@ -96,6 +99,10 @@ export default class Api extends AbstractModule {
 
   public getSystem(): System {
     return this.SYSTEM;
+  }
+
+  public getUpdate(): Update {
+    return this.UPDATE;
   }
 
   public getAppFolders(): AppFolders {

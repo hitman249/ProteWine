@@ -259,7 +259,7 @@ export default class Menu extends EventListener {
       id: 'games',
       icon: 'storage',
       title: 'Storage',
-      items: () => Promise.resolve([
+      items: async () => Promise.resolve([
         {
           id: 'games',
           icon: 'gamepad',
@@ -321,6 +321,7 @@ export default class Menu extends EventListener {
           id: 'exit',
           icon: 'exit',
           title: 'Exit',
+          description: `Version ${await window.$app.getApi().getUpdate().appVersion()}`,
           value: {
             hidden: true,
             value: false,
