@@ -16,6 +16,7 @@ import Time from '../../helpers/time';
 import type {App} from '../../app';
 import type Icon from '../icon';
 import type Steam from '../steam';
+import Timer from '../../helpers/timer';
 
 export enum GamesEvent {
   RUN = 'run',
@@ -78,19 +79,46 @@ export default class Games extends AbstractModule {
 
     this.fireEvent(GamesEvent.RUN);
 
+    const headless: boolean = this.app.getServer().getArguments().isHeadless();
+    let hideWindowTimer: number;
+    let visibleWindow: boolean = !headless;
+
+    if (!headless && KernelOperation.INSTALL !== operation) {
+      hideWindowTimer = setTimeout(() => {
+        visibleWindow = false;
+        this.app.getServer().removeWindow();
+      }, 30000) as any;
+    }
+
     await this.monitor.save();
 
     this.app.getPlugins().setConfig(config);
+
+    const timer: Timer = new Timer();
+    timer.setCallback(config.appendTime);
+    timer.start();
 
     this.runningGame = {config, process: undefined};
     const process: WatchProcess = await this.tasks.kernel(config.getCmd(), operation);
     this.runningGame.process = process;
 
     process.wait().then(async () => {
+      timer.stop();
       this.runningGame = undefined;
       await this.monitor.restore();
 
       this.fireEvent(GamesEvent.EXIT);
+
+      if (!headless) {
+        if (undefined !== hideWindowTimer) {
+          clearTimeout(hideWindowTimer);
+        }
+
+        if (!visibleWindow) {
+          await this.app.getServer().createWindow();
+          visibleWindow = true;
+        }
+      }
     });
 
     return true;

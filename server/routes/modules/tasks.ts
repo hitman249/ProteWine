@@ -56,46 +56,70 @@ export default class TasksRoutes extends AbstractRouteModule {
   }
 
   private onRun(event: RoutesTaskEvent.RUN, cmd: string): void {
-    this.window.webContents.send(RoutesTaskEvent.RUN, {
-      cmd,
-      type: this.app.getTasks().getType(),
-      date: Utils.getFormattedDate(),
-    });
+    const window: BrowserWindow = this.app.getServer().getWindow();
+
+    if (window) {
+      window.webContents.send(RoutesTaskEvent.RUN, {
+        cmd,
+        type: this.app.getTasks().getType(),
+        date: Utils.getFormattedDate(),
+      });
+    }
   }
 
   private onLog(event: RoutesTaskEvent.LOG, line: string): void {
-    this.window.webContents.send(RoutesTaskEvent.LOG, {
-      line,
-      type: this.app.getTasks().getType(),
-      date: Utils.getFormattedDate(),
-    });
+    const window: BrowserWindow = this.app.getServer().getWindow();
+
+    if (window) {
+      window.webContents.send(RoutesTaskEvent.LOG, {
+        line,
+        type: this.app.getTasks().getType(),
+        date: Utils.getFormattedDate(),
+      });
+    }
   }
 
   private onBus(event: RoutesTaskEvent.BUS, body: BodyBus): void {
-    body.date = Utils.getFormattedDate();
-    this.window.webContents.send(RoutesTaskEvent.BUS, body);
+    const window: BrowserWindow = this.app.getServer().getWindow();
+
+    if (window) {
+      body.date = Utils.getFormattedDate();
+      window.webContents.send(RoutesTaskEvent.BUS, body);
+    }
   }
 
   private onError(event: RoutesTaskEvent.ERROR, error: string): void {
-    this.window.webContents.send(RoutesTaskEvent.ERROR, {
-      error,
-      type: this.app.getTasks().getType(),
-      date: Utils.getFormattedDate(),
-    });
+    const window: BrowserWindow = this.app.getServer().getWindow();
+
+    if (window) {
+      window.webContents.send(RoutesTaskEvent.ERROR, {
+        error,
+        type: this.app.getTasks().getType(),
+        date: Utils.getFormattedDate(),
+      });
+    }
   }
 
   private onProgress(event: RoutesTaskEvent.PROGRESS, progress: Progress): void {
-    this.window.webContents.send(RoutesTaskEvent.PROGRESS, {
-      progress,
-      type: this.app.getTasks().getType(),
-      date: Utils.getFormattedDate(),
-    });
+    const window: BrowserWindow = this.app.getServer().getWindow();
+
+    if (window) {
+      window.webContents.send(RoutesTaskEvent.PROGRESS, {
+        progress,
+        type: this.app.getTasks().getType(),
+        date: Utils.getFormattedDate(),
+      });
+    }
   }
 
   private onExit(): void {
-    this.window.webContents.send(RoutesTaskEvent.EXIT, {
-      type: this.app.getTasks().getType(),
-      date: Utils.getFormattedDate(),
-    });
+    const window: BrowserWindow = this.app.getServer().getWindow();
+
+    if (window) {
+      window.webContents.send(RoutesTaskEvent.EXIT, {
+        type: this.app.getTasks().getType(),
+        date: Utils.getFormattedDate(),
+      });
+    }
   }
 }

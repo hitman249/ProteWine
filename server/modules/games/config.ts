@@ -5,6 +5,7 @@ import type FileSystem from '../file-system';
 import type Settings from '../settings';
 import Utils from '../../helpers/utils';
 import {FsrModes, FsrSharpening} from '../plugins/types';
+import {EnvType} from '../kernels/environment';
 
 export type ConfigType = {
   createAt: number,
@@ -54,6 +55,8 @@ export default class Config extends AbstractModule {
     this.appFolders = appFolders;
     this.fs = fs;
     this.settings = settings;
+
+    this.appendTime = this.appendTime.bind(this);
   }
 
   public async init(): Promise<void> {
@@ -106,6 +109,10 @@ export default class Config extends AbstractModule {
 
   public getGamePath(): string {
     return this.config?.game.path;
+  }
+
+  public getEnv(): EnvType {
+    return this.config.env || {};
   }
 
   public async getConfig(): Promise<ConfigType> {
@@ -224,6 +231,11 @@ export default class Config extends AbstractModule {
         fsrStrength: '2',
       },
     };
+  }
+
+  public async appendTime(seconds: number): Promise<void> {
+    this.config.game.time += seconds;
+    await this.save();
   }
 
   public isEsync(): boolean {

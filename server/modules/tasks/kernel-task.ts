@@ -7,6 +7,7 @@ import type FileSystem from '../file-system';
 import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType} from './types';
 import type {App} from '../../app';
+import type {EnvType} from '../kernels/environment';
 
 export default class KernelTask extends AbstractTask {
   protected type: TaskType = TaskType.KERNEL;
@@ -31,7 +32,8 @@ export default class KernelTask extends AbstractTask {
     this.bindEvents();
 
     if (KernelOperation.RUN === operation) {
-      this.task = await this.kernel.run(this.cmd, session, await this.app.getPlugins().getEnv());
+      const configEnv: EnvType = this.app.getGames().getRunningGame().getEnv();
+      this.task = await this.kernel.run(this.cmd, session, Object.assign({}, await this.app.getPlugins().getEnv(), configEnv));
     } else if (KernelOperation.INSTALL === operation) {
       this.task = await this.kernel.run(this.cmd, SessionType.RUN,{WINEDEBUG: 'fixme-all'});
     } else if (KernelOperation.CREATE_PREFIX === operation) {

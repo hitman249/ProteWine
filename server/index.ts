@@ -41,6 +41,10 @@ export default class Server {
     }
   }
 
+  public getArguments(): Arguments {
+    return this.arguments;
+  }
+
   private async registerHandlers(): Promise<void> {
     protocol.handle(
       'local',
@@ -66,7 +70,7 @@ export default class Server {
     $app.getSystem().closeApp().then(quit, quit);
   }
 
-  private async createWindow(): Promise<void> {
+  public async createWindow(): Promise<void> {
     this.window = new BrowserWindow({
       title: 'ProteWine',
       minWidth: 800,
@@ -108,7 +112,11 @@ export default class Server {
     await this.createRoutes();
   }
 
-  private removeWindow(): void {
+  public getWindow(): BrowserWindow {
+    return this.window;
+  }
+
+  public removeWindow(): void {
     this.noQuit = true;
     this.window.destroy();
     this.window = undefined;
