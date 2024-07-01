@@ -14,7 +14,8 @@ import {KernelOperation} from '../kernels/abstract-kernel';
 import Utils from '../../helpers/utils';
 import Time from '../../helpers/time';
 import type {App} from '../../app';
-import Icon from '../icon';
+import type Icon from '../icon';
+import type Steam from '../steam';
 
 export enum GamesEvent {
   RUN = 'run',
@@ -137,9 +138,13 @@ export default class Games extends AbstractModule {
 
     for await (const config of this.configs) {
       const clone: ConfigType = _.cloneDeep(await config.getConfig());
+
       const icon: Icon = await this.app.createIcon(config);
       clone.menuIcons = await icon.findIcons(true);
       clone.desktopIcons = await icon.findIcons(false);
+
+      const steam: Steam = await this.app.createSteamIcon(config);
+      clone.steamIcons = await steam.exist();
 
       result.push(clone);
     }
@@ -298,5 +303,27 @@ export default class Games extends AbstractModule {
 
     const icon: Icon = await this.app.createIcon(config);
     await icon.remove(menuOrDesktop);
+  }
+
+  public async createSteamIconById(id: string): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    const steam: Steam = await this.app.createSteamIcon(config);
+    await steam.create();
+  }
+
+  public async removeSteamIconById(id: string): Promise<void> {
+    const config: Config = await this.getById(id);
+
+    if (!config) {
+      return;
+    }
+
+    const steam: Steam = await this.app.createSteamIcon(config);
+    await steam.remove();
   }
 }

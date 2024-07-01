@@ -22,6 +22,8 @@ export default class GamesRoutes extends AbstractRouteModule {
     this.bindInfo();
     this.bindCreateIcon();
     this.bindRemoveIcon();
+    this.bindCreateSteamIcon();
+    this.bindRemoveSteamIcon();
   }
 
   private bindList(): void {
@@ -127,6 +129,20 @@ export default class GamesRoutes extends AbstractRouteModule {
     this.ipc.handle(
       RoutesGames.REMOVE_ICON,
       async (event: IpcMainInvokeEvent, id: string, menuOrDesktop: boolean = false): Promise<void> => this.app.getGames().removeIconsById(id, menuOrDesktop),
+    );
+  }
+
+  private bindCreateSteamIcon(): void {
+    this.ipc.handle(
+      RoutesGames.CREATE_STEAM_ICON,
+      async (event: IpcMainInvokeEvent, id: string): Promise<void> => this.app.getGames().createSteamIconById(id),
+    );
+  }
+
+  private bindRemoveSteamIcon(): void {
+    this.ipc.handle(
+      RoutesGames.REMOVE_STEAM_ICON,
+      async (event: IpcMainInvokeEvent, id: string): Promise<void> => this.app.getGames().removeSteamIconById(id),
     );
   }
 

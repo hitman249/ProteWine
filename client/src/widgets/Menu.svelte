@@ -135,9 +135,16 @@
             break;
 
           case 'steam-link':
+            if (config.steamIcons) {
+              return false;
+            }
+
             break;
           case 'remove-steam-link':
-            return false;
+            if (!config.steamIcons) {
+              return false;
+            }
+
             break;
         }
 
@@ -475,6 +482,34 @@
                 popup.open(PopupNames.YES_NO, formData, {
                   title: 'Removing system menu link',
                   description: `To remove an "${item.title}" link on system menu, press the confirmation button`,
+                });
+                closeSelect();
+                break;
+
+              case 'steam-link':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getGames().createSteamIcon(item.id);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: 'Creating Steam link',
+                  description: `To create an "${item.title}" link on Steam, press the confirmation button`,
+                });
+                closeSelect();
+                break;
+
+              case 'remove-steam-link':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getGames().removeSteamIcon(item.id);
+                  menu.clearGames();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: 'Removing Steam link',
+                  description: `To remove an "${item.title}" link on Steam, press the confirmation button`,
                 });
                 closeSelect();
                 break;

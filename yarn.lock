@@ -418,6 +418,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/buffer-reader@npm:^0.1.0":
+  version: 0.1.3
+  resolution: "@types/buffer-reader@npm:0.1.3"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/3707db1d0cf83f445f546d4a87f552676581124ad28845f5a36466de168fe1d06a98d48789db5624ddaa32cf2626893fcb2838a40ae032b6e69b35ffe3413916
+  languageName: node
+  linkType: hard
+
 "@types/cacheable-request@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/cacheable-request@npm:6.0.3"
@@ -532,6 +541,15 @@ __metadata:
   version: 0.7.34
   resolution: "@types/ms@npm:0.7.34"
   checksum: 10c0/ac80bd90012116ceb2d188fde62d96830ca847823e8ca71255616bc73991aa7d9f057b8bfab79e8ee44ffefb031ddd1bcce63ea82f9e66f7c31ec02d2d823ccc
+  languageName: node
+  linkType: hard
+
+"@types/node-int64@npm:^0.4.29":
+  version: 0.4.32
+  resolution: "@types/node-int64@npm:0.4.32"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/eec30798c202dcf879d78d440fb48a6e26510701801653c0a7543a0843bfe4faa9c185a035fc35be13986bb45cf9b93ce8171215e37b32af3e828bbcc5eab2ed
   languageName: node
   linkType: hard
 
@@ -1333,6 +1351,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"buffer-reader@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "buffer-reader@npm:0.1.0"
+  checksum: 10c0/0a7ac1d1302a4da9eba8c683766880aa5efe057c26e4379f621072bbd682fc1bf3362c6de38074fcb4405eb932af0567fc51ee2d2c115ed19f2aff43f3f8bbdd
+  languageName: node
+  linkType: hard
+
 "buffer@npm:^5.1.0, buffer@npm:^5.5.0":
   version: 5.7.1
   resolution: "buffer@npm:5.7.1"
@@ -1697,6 +1722,18 @@ __metadata:
   dependencies:
     buffer: "npm:^5.1.0"
   checksum: 10c0/1a0da36e5f95b19cd2a7b2eab5306a08f1c47bdd22da6f761ab764e2222e8e90a877398907cea94108bd5e41a6d311ea84d7914eaca67da2baa4050bd6384b3d
+  languageName: node
+  linkType: hard
+
+"crc@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "crc@npm:4.3.2"
+  peerDependencies:
+    buffer: ">=6.0.3"
+  peerDependenciesMeta:
+    buffer:
+      optional: true
+  checksum: 10c0/61b36f9be3ade1bea49bd45a7e59ecbe1c2d75f043425680dcb37ebf753be65517c41bc3d485d63b2016d7c7fa5669854d366775e18fe698c95de27e27c41528
   languageName: node
   linkType: hard
 
@@ -2780,6 +2817,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hex2dec@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "hex2dec@npm:1.1.2"
+  checksum: 10c0/ff2de92d4c6b87c16abc78ca9f5f2d1401c6dbe6cf7af7401a75d61f61fa7d9e40ff51a72d00e316a94856e21ac6e009f0cb20b1281ab46f63104b5d6e554609
+  languageName: node
+  linkType: hard
+
 "hosted-git-info@npm:^4.1.0":
   version: 4.1.0
   resolution: "hosted-git-info@npm:4.1.0"
@@ -3806,6 +3850,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-int64@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "node-int64@npm:0.4.0"
+  checksum: 10c0/a6a4d8369e2f2720e9c645255ffde909c0fbd41c92ea92a5607fc17055955daac99c1ff589d421eee12a0d24e99f7bfc2aabfeb1a4c14742f6c099a51863f31a
+  languageName: node
+  linkType: hard
+
 "node-releases@npm:^2.0.14":
   version: 2.0.14
   resolution: "node-releases@npm:2.0.14"
@@ -4088,6 +4139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"polycrc@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "polycrc@npm:0.1.0"
+  checksum: 10c0/c70903e9ffb45980345deb596f07ce8a6a2bb5119904bcdcab4572a6b426ed66e5e8518298921c6bf6dda34c533c94c237b635b53ac18bbdc5e235593349273a
+  languageName: node
+  linkType: hard
+
 "prelude-ls@npm:^1.2.1":
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
@@ -4140,6 +4198,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^7.10.0"
     cookie: "npm:^0.6.0"
     copy-webpack-plugin: "npm:^12.0.2"
+    crc: "npm:^4.3.2"
     electron: "npm:^30.0.6"
     electron-builder: "npm:24.13.3"
     eslint: "npm:^9.3.0"
@@ -4154,6 +4213,7 @@ __metadata:
     md5-file: "npm:^5.0.0"
     node-fetch: "npm:^3.3.2"
     simple-vdf: "npm:^1.1.1"
+    steam-binary-vdf: "npm:^0.1.0"
     steamgriddb: "npm:^2.2.0"
     tree-kill: "npm:^1.2.2"
     ts-loader: "npm:^9.5.1"
@@ -4691,6 +4751,20 @@ __metadata:
   version: 1.0.0
   resolution: "stat-mode@npm:1.0.0"
   checksum: 10c0/89b66a538dbfd45038fefdaf5b2104dc6e911605af1c201793e9629592ed9fdc7bdd1bca42806d0d4167c6d9cacac1f3fda41ddfe334a5c1f898113da38fae74
+  languageName: node
+  linkType: hard
+
+"steam-binary-vdf@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "steam-binary-vdf@npm:0.1.0"
+  dependencies:
+    "@types/buffer-reader": "npm:^0.1.0"
+    "@types/node-int64": "npm:^0.4.29"
+    buffer-reader: "npm:^0.1.0"
+    hex2dec: "npm:^1.1.2"
+    node-int64: "npm:^0.4.0"
+    polycrc: "npm:^0.1.0"
+  checksum: 10c0/3b16ee0e27713bfe93e0c425bfb5ed2ea6c1c861a99b8de4c0fb77aebd2088184f626b3966f8ce19ebbeac990d4cfd2ca3370831cddd288a34e8d394e7f7c491
   languageName: node
   linkType: hard
 

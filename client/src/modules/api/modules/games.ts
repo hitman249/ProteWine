@@ -80,6 +80,14 @@ export default class Games extends AbstractModule {
     return (await window.electronAPI.invoke(RoutesGames.REMOVE_ICON, id, menuOrDesktop));
   }
 
+  public async createSteamIcon(id: string): Promise<void> {
+    return (await window.electronAPI.invoke(RoutesGames.CREATE_STEAM_ICON, id));
+  }
+
+  public async removeSteamIcon(id: string): Promise<void> {
+    return (await window.electronAPI.invoke(RoutesGames.REMOVE_STEAM_ICON, id));
+  }
+
   public async updateConfig(id: string, path: string, value: string | boolean | number): Promise<void> {
     return (await window.electronAPI.invoke(RoutesGames.UPDATE_CONFIG, id, path, value));
   }

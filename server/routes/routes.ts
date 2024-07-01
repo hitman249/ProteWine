@@ -38,6 +38,8 @@ export enum RoutesGames {
   UPDATE_CONFIG = 'games:update-config',
   CREATE_ICON = 'games:create-icon',
   REMOVE_ICON = 'games:remove-icon',
+  CREATE_STEAM_ICON = 'games:create-steam-icon',
+  REMOVE_STEAM_ICON = 'games:remove-steam-icon',
 }
 
 export enum RoutesIso {
@@ -132,6 +134,8 @@ export default {
     RoutesGames.UPDATE_CONFIG,
     RoutesGames.CREATE_ICON,
     RoutesGames.REMOVE_ICON,
+    RoutesGames.CREATE_STEAM_ICON,
+    RoutesGames.REMOVE_STEAM_ICON,
     RoutesTaskMethod.KILL,
     RoutesTaskMethod.TYPE,
     RoutesTaskMethod.FINISH,

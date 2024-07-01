@@ -25,6 +25,7 @@ import Plugins from './modules/plugins';
 import Icon from './modules/icon';
 import Config from './modules/games/config';
 import type Server from './index';
+import Steam from './modules/steam';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -164,6 +165,13 @@ export class App {
     await icon.init();
 
     return icon;
+  }
+
+  public async createSteamIcon(config: Config): Promise<Steam> {
+    const steam: Steam = new Steam(config, this.APP_FOLDERS, this.FILE_SYSTEM, this.SYSTEM);
+    await steam.init();
+
+    return steam;
   }
 
   public getCommand(): Command {

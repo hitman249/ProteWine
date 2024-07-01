@@ -14,6 +14,7 @@ export type ConfigType = {
   sizeFormatted?: string,
   menuIcons?: string[],
   desktopIcons?: string[],
+  steamIcons?: boolean,
   game: {
     path: string,
     arguments: string,

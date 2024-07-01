@@ -123,13 +123,7 @@ export default class AppFolders extends AbstractModule {
 
   public async getStartFile(): Promise<string> {
     const rootDir: string = await this.getRootDir();
-    const path: string = `${rootDir}/${await this.getStartFilename()}`;
-
-    if (await this.fs.exists(path)) {
-      return path;
-    }
-
-    return `${await this.getBinDir()}/${await this.getStartFilename()}`;
+    return `${rootDir}/${await this.getStartFilename()}`;
   }
 
   public async getBinDir(): Promise<string> {

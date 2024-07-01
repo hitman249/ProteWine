@@ -36,6 +36,10 @@ export default class Config {
     return this.config.desktopIcons || [];
   }
 
+  public get steamIcons(): boolean {
+    return this.config.steamIcons || false;
+  }
+
   public get poster(): string {
     return this.config.poster;
   }

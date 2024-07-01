@@ -45,4 +45,9 @@ export default class Resizer {
 
     await this.fs.filePutContents(this.dest, image.resize(options).toPNG());
   }
+
+  public async toJPEG(): Promise<void> {
+    const image: NativeImage = nativeImage.createFromPath(this.src);
+    return await this.fs.filePutContents(this.dest, image.toJPEG(80));
+  }
 }
