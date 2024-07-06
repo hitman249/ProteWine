@@ -87,6 +87,10 @@
   export function keyRight(): void {
     list?.keyRight();
   }
+
+  export function getPositionByIndex(index: number, position: number): {index: number, position: number, percent: number, active: boolean} {
+    return list?.getPositionByIndex(index);
+  }
 </script>
 
 <NavigateList

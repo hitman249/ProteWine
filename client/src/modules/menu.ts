@@ -298,6 +298,7 @@ export default class Menu extends EventListener {
             {
               id: GameOperation.INSTALL_DISK_IMAGE,
               title: 'Install file from disk image',
+              description: '.iso, .nrg, .mdf, .img',
               icon: 'disk-image',
             },
             {
@@ -369,23 +370,6 @@ export default class Menu extends EventListener {
       ]),
     },
     {
-      id: 'layers',
-      icon: 'layers',
-      title: 'Layers',
-      items: () => Promise.resolve([
-        {
-          id: 'layers-list',
-          icon: 'layers-list',
-          title: 'Layers',
-        },
-        {
-          id: 'layers-add',
-          icon: 'layers-add',
-          title: 'New layer',
-        },
-      ]),
-    },
-    {
       id: 'updates',
       icon: 'updates',
       title: 'Updates',
@@ -407,6 +391,23 @@ export default class Menu extends EventListener {
         },
       ]),
     },
+/*    {
+      id: 'layers',
+      icon: 'layers',
+      title: 'Layers',
+      items: () => Promise.resolve([
+        {
+          id: 'layers-list',
+          icon: 'layers-list',
+          title: 'Layers',
+        },
+        {
+          id: 'layers-add',
+          icon: 'layers-add',
+          title: 'New layer',
+        },
+      ]),
+    },*/
     /*{
       id: 'build',
       icon: 'build',
@@ -506,36 +507,6 @@ export default class Menu extends EventListener {
 
   public getItems(): MenuItem[] {
     return this.items;
-  }
-
-  public getCategories(currentIndex: number = this.currentIndex, direction?: boolean | undefined): MenuItem[] {
-    const count: number = 3;
-    let startIndex: number = currentIndex;
-
-    if (true === direction) {
-      if (startIndex > 0) {
-        startIndex = startIndex - 1;
-      }
-    } else if (false === direction) {
-      startIndex = startIndex + 1;
-    }
-
-    const endIndex: number = startIndex + count;
-
-    return Helpers.shiftArray(
-      Helpers.sliceArray(
-        this.items,
-        startIndex,
-        endIndex,
-        undefined,
-        1,
-      ),
-      currentIndex % count,
-    );
-  }
-
-  public getCategoryInstanceIndex(offset: number = 1): number {
-    return (this.currentIndex + offset) % 3;
   }
 
   public getFocusedItem(): MenuItem {

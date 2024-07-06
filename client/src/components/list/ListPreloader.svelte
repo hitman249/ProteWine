@@ -124,7 +124,8 @@
 <div
   class="list"
   class:active={current}
-  style="transform: translate({left - delta}px, 0px); opacity: {current && visible ? 1 : 0}; {style}"
+  class:list-transition={!Boolean(style)}
+  style="transform: translate({left - delta}px, 0px); {style ? style : `opacity: ${current && visible ? 1 : 0};`}"
 >
   <List
     bind:this={list}
@@ -148,6 +149,9 @@
     left: 0;
     width: 100%;
     height: 100%;
+  }
+
+  .list-transition {
     transition: opacity 0.15s ease;
   }
 </style>

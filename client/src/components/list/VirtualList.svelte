@@ -156,6 +156,21 @@
     numOverlap,
   );
 
+  export function getPositionByIndex(index: number): {index: number, position: number, percent: number, active: boolean} {
+    const naturalIndex: number = getNaturalIndex(index);
+    const position: number = (naturalIndex * itemSize) + getAppendSpace(index, naturalIndex, scrollIndent) + paddingIndent - scrollIndent;
+    const active: boolean = itemCenter ? (position > startLeftPosition && position < startRightPosition) : (position > startLeftPosition && position < (first + itemSize));
+    const percent: number = getPercent(active, position, startLeftPosition, endLeftPosition, startRightPosition, first);
+    const fixPosition: number = getFixPosition(active, position, percent);
+
+    return {
+      index: naturalIndex,
+      position: fixPosition,
+      percent,
+      active,
+    };
+  }
+
   $: margin = Math.trunc(itemSpace);
   $: first = (headersDummy * itemSize) + paddingIndent + margin;
   $: startLeftPosition = first - itemSize - margin;

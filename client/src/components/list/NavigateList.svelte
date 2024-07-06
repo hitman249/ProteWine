@@ -162,6 +162,10 @@
     };
   }
 
+  export function getPositionByIndex(index: number): {index: number, position: number, percent: number, active: boolean} {
+    return list?.getPositionByIndex(index);
+  }
+
   onMount(() => {
     updateSizeContainer();
   });

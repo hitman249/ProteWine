@@ -19,32 +19,27 @@
   export let style: string = '';
 
   let horizontalList: List;
+  let horizontalListPosition: number = 0;
   let verticalList: ListPreloader[] = [];
-  let verticalListActiveIndex: number = 0;
 
   let innerList: ListPreloader;
   let innerListItem: MenuItem;
   let isInnerList: boolean = false;
 
   let selectList: List;
-  let selectListHeight: number = 0;
   let isSelectList: boolean = false;
   let selectListItems: ValueType[];
 
-  let categoriesDelta: number = 0;
-  let paddingLeftCategories: number = -Menu.ROOT_ITEM_HEIGHT;
   let timeout: any;
 
   let animate: Animate = new Animate();
   animate.setOffset(0);
   animate.subscribe((value: number) => {
     horizontalList?.scrollTo(value);
-    categoriesDelta = value - ((verticalListActiveIndex || 0) * Menu.ROOT_ITEM_WIDTH);
   });
 
   const menu: Menu = new Menu();
   const items: MenuItem[] = menu.getItems();
-  let categories: MenuItem[] = menu.getCategories(verticalListActiveIndex);
 
   export function getMenu(): Menu {
     return menu;
@@ -57,11 +52,10 @@
       menu.setCurrentIndex(horizontalList.getIndex());
       animate.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
-      const nextList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(2)];
-      const nextItem: MenuItem = menu.getFocusedLevel(1).next();
+      const list: ListPreloader = verticalList[horizontalList.getIndex()];
 
-      if (nextItem && nextList && nextList.getModel() !== nextItem) {
-        nextList.changeList(nextItem);
+      if (list) {
+        list.getItem()?.updateFocusedItem();
       }
     }
   }
@@ -73,27 +67,23 @@
       menu.setCurrentIndex(horizontalList.getIndex());
       animate.set(horizontalList.getIndex() * Menu.ROOT_ITEM_WIDTH);
 
-      const prevList: ListPreloader = verticalList[menu.getCategoryInstanceIndex(0)];
-      const prevItem: MenuItem = menu.getFocusedLevel(1).prev();
+      const list: ListPreloader = verticalList[horizontalList.getIndex()];
 
-      if (prevItem && prevList && prevList.getModel() !== prevItem) {
-        prevList.changeList(prevItem);
+      if (list) {
+        list.getItem()?.updateFocusedItem();
       }
     }
   }
 
   function onScroll(position: number, activeIndex: number): void {
-    if (verticalListActiveIndex !== activeIndex) {
-      verticalListActiveIndex = activeIndex;
-      categories = menu.getCategories(activeIndex);
-    }
+    horizontalListPosition = position;
   }
 
   export async function updateWineVersion(): Promise<void> {
     const version: string = await window.$app.getApi().getKernel().version();
     menu.setWineVersion(version);
 
-    const list: ListPreloader = verticalList[menu.getCategoryInstanceIndex()];
+    const list: ListPreloader = verticalList[1];
 
     if (list) {
       list.update();
@@ -185,7 +175,7 @@
         return;
       }
 
-      const list: ListPreloader = verticalList[menu.getCategoryInstanceIndex()];
+      const list: ListPreloader = verticalList[horizontalList.getIndex()];
 
       if (list) {
         list.keyDown();
@@ -205,7 +195,7 @@
         return;
       }
 
-      const list: ListPreloader = verticalList[menu.getCategoryInstanceIndex()];
+      const list: ListPreloader = verticalList[horizontalList.getIndex()];
 
       if (list) {
         list.keyUp();
@@ -587,6 +577,7 @@
   onMount(() => {
     bindEvents();
     updateWineVersion();
+    horizontalListPosition = -1;
   });
 
   onDestroy(() => {
@@ -609,26 +600,28 @@
   </div>
 
   <div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
-    {#each categories as item, index}
-      {@const current = item?.isActive(verticalListActiveIndex)}
-      {@const left = (((item?.getStackIndex(verticalListActiveIndex) || 0) * Menu.ROOT_ITEM_WIDTH) + Menu.ROOT_ITEM_HEIGHT + (current ? 10 : 0)) + paddingLeftCategories}
+    {#if horizontalList}
+      {#each items as item, index}
+        {@const state = horizontalList?.getPositionByIndex(index + 1, horizontalListPosition)}
 
-      <ListPreloader
-        bind:this={verticalList[index]}
-        model={item}
-        {left}
-        {current}
-        delta={categoriesDelta}
-        headersDummy={1}
-        paddingIndent={0}
-        itemCenter={false}
-        horizontal={false}
-        itemSize={Menu.ITEM_HEIGHT}
-        itemSpace={Menu.ROOT_ITEM_HEIGHT}
-        extendItemClass="vertical-item"
-        type={StickerType.ITEM}
-      />
-    {/each}
+        <ListPreloader
+          bind:this={verticalList[index]}
+          model={item}
+          left={state ? state.position - 40 : 0}
+          style="opacity: {state ? state.percent / 100 : 0};"
+          current={state ? state.active : false}
+          delta={-50}
+          headersDummy={1}
+          paddingIndent={0}
+          itemCenter={false}
+          horizontal={false}
+          itemSize={Menu.ITEM_HEIGHT}
+          itemSpace={Menu.ROOT_ITEM_HEIGHT}
+          extendItemClass="vertical-item"
+          type={StickerType.ITEM}
+        />
+      {/each}
+    {/if}
   </div>
 
   {#if innerListItem}
@@ -640,7 +633,7 @@
         bind:this={innerList}
         current={isInnerList}
         model={innerListItem}
-        delta={categoriesDelta}
+        delta={0}
         headersDummy={isGames ? 2 : 3}
         paddingIndent={isGames ? -38 : -100}
         itemSize={Menu.ITEM_HEIGHT}

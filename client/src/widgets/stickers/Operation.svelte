@@ -9,7 +9,7 @@
   export let percent: number;
   export let item: MenuItem = undefined;
 
-  let descriptionExist = false;
+  $: descriptionExist = Boolean(item?.description);
 </script>
 
 <div aria-hidden="true" class="item {itemClass}" {style} style:opacity={dummy ? 0 : 1}>
@@ -31,6 +31,7 @@
       style:transform="translate(0px, {40 - (20 * percent / 100)}px)"
       style:opacity={percent / 100}
     >
+      {item?.description || ''}
     </div>
   </div>
 </div>
