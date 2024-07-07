@@ -33,6 +33,16 @@
   &.vertical-lists .list.active .vertical-item.active .focused {
     animation-name: none;
   }
+
+  .vertical-item {
+    .icon {
+      transition: opacity 0.2s;
+    }
+
+    .footer {
+      transition: opacity 0.2s;
+    }
+  }
 }
 
 .vertical-lists > .list.active {
@@ -42,16 +52,6 @@
   & > .list {
     position: absolute;
     width: 100%;
-
-    .vertical-item {
-      .icon {
-        transition: opacity 0.2s;
-      }
-
-      .footer {
-        transition: opacity 0.2s;
-      }
-    }
   }
 }
 

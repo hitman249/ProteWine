@@ -599,7 +599,7 @@
     />
   </div>
 
-  <div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList}>
+  <div class="vertical-lists" class:list-move-to-left={isInnerList} class:list-only-active={isSelectList} class:animate-items-opacity={selectListItems}>
     {#if horizontalList}
       {#each items as item, index}
         {@const state = horizontalList?.getPositionByIndex(index + 1, horizontalListPosition)}

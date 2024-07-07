@@ -25,7 +25,11 @@
     <div class="title" style:transform="translate(0px, {descriptionExist ? (20 - (20 * percent / 100)) + 10 : 32}px)">
       {item?.title || ''}
 
-      <div class="value" style:display={active && item?.value && item?.value?.isVisible() ? 'flex' : 'none'}>
+      <div
+        class="value"
+        style:display={active && item?.value && item?.value?.isVisible() ? 'flex' : 'none'}
+        style:opacity={percent / 100}
+      >
         {item?.value?.getValueFormatted() || ''}
       </div>
     </div>
