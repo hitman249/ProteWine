@@ -2,6 +2,9 @@
 
 Easy porting of Windows applications using Wine and Proton technologies to Linux systems and Steam Deck.
 
+https://github.com/hitman249/ProteWine/assets/1325326/066bb40c-5192-4c03-b5c6-2c87eb366c22
+
+
 ## Requirments
 
 1) Installed **Steam** client.
