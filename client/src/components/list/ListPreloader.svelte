@@ -42,7 +42,13 @@
   $: {
     if (items !== prevItems && items.length > 0 && current) {
       prevItems = items;
-      model?.getCurrentItem().updateFocusedItem();
+
+      if (!model?.getCurrentItem()) {
+        model?.setCurrentIndex(0);
+        list?.changeIndex(0);
+      }
+
+      model?.getCurrentItem()?.updateFocusedItem();
     }
   }
 

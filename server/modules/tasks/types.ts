@@ -6,6 +6,7 @@ export enum TaskType {
   FILE_SYSTEM = 'fs',
   REPOSITORIES = 'repositories',
   PLUGINS = 'plugins',
+  UPDATES = 'updates',
 }
 
 export type BodyBus = {

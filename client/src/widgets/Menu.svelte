@@ -39,7 +39,7 @@
   });
 
   const menu: Menu = new Menu();
-  const items: MenuItem[] = menu.getItems();
+  let items: MenuItem[] = menu.getItems();
 
   export function getMenu(): Menu {
     return menu;
@@ -140,6 +140,8 @@
 
         return true;
       });
+    } else if ('update' === item.item?.type) {
+      selectListItems = item.value.getList().filter((value: ValueType) => 'install' === value.value);
     } else {
       selectListItems = item.value.getList();
     }
@@ -314,6 +316,27 @@
 
                 break;
             }
+          }
+
+          if ('update' === item.item?.type) {
+            popup.open(PopupNames.EXECUTING, formData);
+            window.$app.getApi().getUpdate().update(item.id).then(async () => {
+              menu.clearUpdates();
+
+              const model: MenuItem = items[horizontalList.getIndex()];
+
+              if (model) {
+                await model.reload();
+              }
+
+              items = items;
+
+              closeSelect();
+
+              if (popup.isOpen(PopupNames.EXECUTING)) {
+                popup.back();
+              }
+            });
           }
 
           if (ValueLabels.GAME === item.template) {

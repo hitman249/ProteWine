@@ -25,6 +25,9 @@ module.exports = {
     path: path.join(__dirname, 'cache/server'),
     filename: '[name].js'
   },
+  optimization: {
+    minimize: true,
+  },
   module: {
     rules: [
       {

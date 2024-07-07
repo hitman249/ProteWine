@@ -12,6 +12,7 @@
     "outDir": "cache/server",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "*": ["node_modules/*"],
     }

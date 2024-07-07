@@ -167,6 +167,12 @@ export default class Plugins extends AbstractModule {
   }
 
   public async install(): Promise<void> {
+    const winetricksLog: string = `${await this.kernels.getKernel().getPrefixDir()}/winetricks.log`;
+
+    if (await this.fs.exists(winetricksLog)) {
+      await this.fs.rm(winetricksLog);
+    }
+
     for await (const module of this.modules) {
       await module.clear();
 
@@ -313,5 +319,13 @@ export default class Plugins extends AbstractModule {
 
   private onExit(): void {
     this.fireEvent(RoutesTaskEvent.EXIT);
+  }
+
+  public getDxvk(): Dxvk {
+    return this.DXVK;
+  }
+
+  public getVkd3dProton(): Vkd3dProton {
+    return this.VKD3D_PROTON;
   }
 }

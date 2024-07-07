@@ -177,4 +177,9 @@ export default abstract class AbstractPlugin extends AbstractModule {
   protected async setMetadata(field: string, value: string | boolean | number): Promise<void> {
     return await this.kernels.getKernel().setMetadata(field, value);
   }
+
+  public async removeMetadata(): Promise<this> {
+    await this.setMetadata(this.code, '');
+    return this;
+  }
 }

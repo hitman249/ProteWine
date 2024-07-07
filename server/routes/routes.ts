@@ -58,6 +58,8 @@ export enum RoutesGallery {
 
 export enum RoutesUpdate {
   APP_VERSION = 'update:app-version',
+  LIST = 'update:list',
+  UPDATE = 'update:update',
 }
 
 export enum RoutesSettings {
@@ -163,6 +165,8 @@ export default {
     RoutesRepositories.LIST_BY_NAME,
     RoutesRepositories.INSTALL,
     RoutesUpdate.APP_VERSION,
+    RoutesUpdate.LIST,
+    RoutesUpdate.UPDATE,
   ] as string[],
   send: [] as string[],
   receive: [

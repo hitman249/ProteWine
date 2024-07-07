@@ -254,6 +254,10 @@ export default class Menu extends EventListener {
     return window.$app.getApi().getPlugins().getSettings();
   }
 
+  private async fetchUpdates(): Promise<MenuItemType[]> {
+    return window.$app.getApi().getUpdate().getList();
+  }
+
   public readonly items: MenuItem[] = ([
     {
       id: 'games',
@@ -373,23 +377,7 @@ export default class Menu extends EventListener {
       id: 'updates',
       icon: 'updates',
       title: 'Updates',
-      items: () => Promise.resolve([
-        {
-          id: 'update-self',
-          icon: 'update-self',
-          title: 'Update ProteWine',
-        },
-        {
-          id: 'updates',
-          icon: 'update-layer',
-          title: 'DXVK',
-        },
-        {
-          id: 'updates',
-          icon: 'update-layer',
-          title: 'VKD3D',
-        },
-      ]),
+      items: this.fetchUpdates,
     },
 /*    {
       id: 'layers',
@@ -462,6 +450,10 @@ export default class Menu extends EventListener {
   public clearPrefixPlugins(): void {
     this.items?.[1]?.items?.[2]?.clear?.();
     this.items?.[1]?.items?.[3]?.clear?.();
+  }
+
+  public clearUpdates(): void {
+    this.items?.[2]?.clear?.();
   }
 
   public getPluginsKeys(): string[] {

@@ -553,12 +553,4 @@ export default class System extends AbstractModule {
     await this.app.getKernels().getKernel()?.kill();
     await Promise.all(System.shutdownFunctions.map(fn => fn()));
   }
-
-  /**
-   * @return {boolean}
-   */
-  // isSilent() {
-  //   const args = this.command.getArguments();
-  //   return (undefined !== args['autostart'] && undefined !== args['hide']);
-  // }
 }

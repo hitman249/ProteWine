@@ -1,32 +1,37 @@
+import process from 'process';
+import child_process, {type ChildProcessWithoutNullStreams} from 'child_process';
 import _ from 'lodash';
-import AppFolders from './app-folders';
-import FileSystem from './file-system';
-import Network from './network';
+import Utils from '../helpers/utils';
 import {AbstractModule} from './abstract-module';
+import type AppFolders from './app-folders';
+import type FileSystem from './file-system';
+import type Network from './network';
 import type {Progress} from './archiver';
-import Command from './command';
-
-// import child_process from 'child_process';
-// import fs from 'fs';
+import type Command from './command';
+import type {App} from '../app';
+import packageInfo from '../../package.json';
+import {RoutesTaskEvent} from '../routes/routes';
 
 export default class Update extends AbstractModule {
 
-  private readonly version: string = '1.0.0';
-  private readonly api: string = 'https://api.github.com/repos/hitman249/wine-launcher/releases';
+  private readonly version: string = packageInfo.version;
+  private readonly api: string = 'https://api.github.com/repos/hitman249/ProteWine/releases';
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly network: Network;
   private readonly command: Command;
+  private readonly app: App;
 
-  private data: Object[];
+  private data: any[];
 
-  constructor(appFolders: AppFolders, fs: FileSystem, network: Network, command: Command) {
+  constructor(appFolders: AppFolders, fs: FileSystem, network: Network, command: Command, app: App) {
     super();
 
     this.appFolders = appFolders;
     this.fs = fs;
     this.network = network;
     this.command = command;
+    this.app = app;
   }
 
   public async init(): Promise<any> {
@@ -129,6 +134,7 @@ export default class Update extends AbstractModule {
       }
     }
   }
+
   public getVersion(): string {
     return this.version;
   }
@@ -144,185 +150,116 @@ export default class Update extends AbstractModule {
 
     const last: any = _.head(data);
 
+    if (!last) {
+      return '';
+    }
+
     return _.trimStart(last.tag_name, 'v');
   }
 
-  /*
-    /!**
-     * @return {Promise<void>}
-     *!/
-    updateSelf() {
-      let startFile        = this.appFolder.getBinDir() + '/start';
-      const updateFile       = this.appFolder.getCacheDir() + '/start';
-      const updateScriptFile = this.appFolder.getCacheDir() + '/update.sh';
-      const log              = this.appFolder.getCacheDir() + '/update.log';
+  private getAsset(): any {
+    return _.head(_.head(this.data)?.assets);
+  }
 
-      if (!this.fs.exists(startFile)) {
-        startFile = this.appFolder.getRootDir() + '/start';
-      }
+  public async updateSelf(): Promise<void> {
+    this.fireEvent(RoutesTaskEvent.RUN, 'Start self updating..');
 
-      if (!this.fs.exists(startFile)) {
-        return Promise.resolve();
-      }
+    const startFile: string = await this.appFolders.getStartFile();
+    const updateFile: string = `${await this.appFolders.getCacheDir()}/${await this.appFolders.getStartFilename()}`;
+    const scriptFile: string = `${await this.appFolders.getCacheDir()}/update.sh`;
+    const logFile: string = `${await this.appFolders.getCacheDir()}/update.log`;
 
-      if (this.fs.exists(updateFile)) {
-        this.fs.rm(updateFile);
-      }
-
-      if (this.fs.exists(updateScriptFile)) {
-        this.fs.rm(updateScriptFile);
-      }
-
-      if (this.fs.exists(log)) {
-        this.fs.rm(log);
-      }
-
-      const updateScript = `#!/usr/bin/env sh
-
-  processPid=${window.process.pid}
-  startFile="${startFile}"
-  updateFile="${updateFile}"
-  iterator=0
-
-  echo "Start to update"
-
-  while [ "$(ps -p $processPid -o comm=)" != "" ]; do
-    sleep 1
-    iterator=$((iterator + 1))
-
-    if [ $iterator -gt 120 ]; then
-      echo "Error update, exit."
-      exit
-    fi
-
-    echo "Waiting for process to complete"
-  done
-
-  rm -rf "$startFile"
-  mv "$updateFile" "$startFile"
-  chmod +x "$startFile"
-
-  "$startFile" &
-  rm -rf "${updateScriptFile}"`;
-
-      const promise = this.getRemoteVersion().then(() => this.data);
-
-      return promise.then((data) => {
-        let last = _.head(data);
-        last     = _.head(last.assets);
-
-        return this.network.download(last.browser_download_url, updateFile)
-          .then(() => {
-            this.fs.filePutContents(updateScriptFile, updateScript);
-            this.fs.chmod(updateScriptFile);
-
-            return new Promise((resolve) => {
-              try {
-                let isNext = false;
-                const next = () => {
-                  if (!isNext) {
-                    isNext = true;
-                    resolve();
-                  }
-                };
-
-                const out = fs.openSync(log, 'a');
-                const err = fs.openSync(log, 'a');
-
-                const child = child_process.spawn(updateScriptFile, [], {
-                  detached: true,
-                  stdio:    [ 'ignore', out, err ],
-                });
-
-                child.unref();
-                child.stdout.on('data', (log) => next(log));
-                child.stderr.on('data', (log) => next(log));
-              } catch (e) {
-                resolve();
-              }
-            });
-          })
-          .then(() => window.app.getSystem().closeApp());
-      });
+    if (!await this.fs.exists(startFile)) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'File "start" not found.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
+      return;
     }
 
-    moveSelf() {
-      const startFile        = this.appFolder.getBinDir() + '/' + this.appFolder.getStartFilename();
-      const updateFile       = this.appFolder.getStartFile();
-      const updateScriptFile = this.appFolder.getCacheDir() + '/update.sh';
-      const log              = this.appFolder.getCacheDir() + '/update.log';
+    if (await this.fs.exists(updateFile)) {
+      await this.fs.rm(updateFile);
+    }
 
-      if (startFile === updateFile || !this.fs.exists(updateFile) || this.fs.exists(startFile)) {
-        return Promise.resolve();
-      }
+    if (await this.fs.exists(scriptFile)) {
+      await this.fs.rm(scriptFile);
+    }
 
-      if (this.fs.exists(updateScriptFile)) {
-        this.fs.rm(updateScriptFile);
-      }
+    const remoteVersion: string = await this.getRemoteVersion();
 
-      if (this.fs.exists(log)) {
-        this.fs.rm(log);
-      }
+    if ((this.getVersion() === remoteVersion) || !remoteVersion) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'The latest version is installed, no update required.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
+      return;
+    }
 
-      const updateScript = `#!/usr/bin/env sh
+    const asset: any = this.getAsset();
 
-  processPid=${window.process.pid}
-  startFile="${startFile}"
-  updateFile="${updateFile}"
-  iterator=0
+    if (!asset) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'No updates found.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
+      return;
+    }
 
-  echo "Start to update"
+    const progress: (value: Progress) => void = (value: Progress) => this.fireEvent(RoutesTaskEvent.PROGRESS, value);
+    await this.network.download(asset.browser_download_url, updateFile, progress);
 
-  while [ "$(ps -p $processPid -o comm=)" != "" ]; do
-    sleep 1
-    iterator=$((iterator + 1))
+    if (!await this.fs.exists(updateFile)) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'Failed to download update.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
+      return;
+    }
 
-    if [ $iterator -gt 120 ]; then
-      echo "Error update, exit."
-      exit
-    fi
+    const scriptText: string = `#!/usr/bin/env sh
 
-    echo "Waiting for process to complete"
-  done
+processPid=${process.pid}
+startFile="${startFile}"
+updateFile="${updateFile}"
+iterator=0
 
-  rm -rf "$startFile"
-  mv "$updateFile" "$startFile"
-  chmod +x "$startFile"
+echo "Start to update"
 
-  "$startFile" &
-  rm -rf "${updateScriptFile}"`;
+while [ "$(ps -p $processPid -o comm=)" != "" ]; do
+  sleep 1
+  iterator=$((iterator + 1))
 
-      return Promise.resolve()
-        .then(() => {
-          this.fs.filePutContents(updateScriptFile, updateScript);
-          this.fs.chmod(updateScriptFile);
+  if [ $iterator -gt 120 ]; then
+    echo "Error update, exit."
+    exit
+  fi
 
-          return new Promise((resolve) => {
-            try {
-              let isNext = false;
-              const next = () => {
-                if (!isNext) {
-                  isNext = true;
-                  resolve();
-                }
-              };
+  echo "Waiting for process (PID: $processPid) to complete"
+done
 
-              const out = fs.openSync(log, 'a');
-              const err = fs.openSync(log, 'a');
+echo "Remove $startFile"
+rm -rf "$startFile"
 
-              const child = child_process.spawn(updateScriptFile, [], {
-                detached: true,
-                stdio:    [ 'ignore', out, err ],
-              });
+echo "Move $updateFile -> $startFile"
+mv "$updateFile" "$startFile"
 
-              child.unref();
-              child.stdout.on('data', (log) => next(log));
-              child.stderr.on('data', (log) => next(log));
-            } catch (e) {
-              resolve();
-            }
-          });
-        })
-        .then(() => window.app.getSystem().closeApp());
-    }*/
+chmod +x "$startFile"
+
+echo "Start $startFile"
+"$startFile" &
+
+echo "Clean ${scriptFile}"
+rm -rf "${scriptFile}"`;
+
+    await this.fs.filePutContents(scriptFile, scriptText);
+    await this.fs.chmod(scriptFile);
+
+    if (!await this.fs.exists(scriptFile)) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'Failed create update script.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
+      return;
+    }
+
+    this.fireEvent(RoutesTaskEvent.LOG, 'Success.');
+    this.fireEvent(RoutesTaskEvent.LOG, 'Restart ProteWine.');
+
+    const child: ChildProcessWithoutNullStreams = child_process.spawn(scriptFile, [], {detached: true, stdio: 'ignore'});
+    child.unref();
+
+    this.fireEvent(RoutesTaskEvent.EXIT);
+
+    this.app.getServer().quit();
+  }
 }

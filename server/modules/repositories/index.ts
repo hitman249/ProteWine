@@ -15,7 +15,6 @@ import BottlesDevs from './bottles-devs';
 import Steam from './steam';
 import Archiver, {ArchiverEvent, Progress} from '../archiver';
 import {RepositoriesEvent} from './types';
-import Utils from '../../helpers/utils';
 
 export type ItemType = {
   name: string,

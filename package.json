@@ -9,7 +9,7 @@
   "scripts": {
     "server": "yarn",
     "server-start": "electron .",
-    "server-build": "rm -rf ./cache/server && yarn webpack --mode production --config webpack.config.js",
+    "server-build": "rm -rf ./cache/server ./dist/start && yarn webpack --mode production --config webpack.config.js && yarn run electron-builder && mv ./dist/protewine-*.AppImage ./dist/start",
     "client": "cd client && yarn",
     "client-build": "rm -rf ./cache/client && cd client && yarn build",
     "client-watch": "cd client && yarn dev",
