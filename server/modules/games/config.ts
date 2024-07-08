@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import dotenv from 'dotenv';
 import {AbstractModule} from '../abstract-module';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
@@ -24,9 +25,6 @@ export type ConfigType = {
     time?: number,
     timeFormatted?: string,
   },
-  env: {
-    [field: string]: string,
-  },
   kernel: {
     d3d12: boolean,
     d3d11: boolean,
@@ -43,6 +41,8 @@ export type ConfigType = {
 
 export default class Config extends AbstractModule {
   private readonly path: string;
+  private readonly envPath: string;
+  private env: EnvType;
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly settings: Settings;
@@ -52,6 +52,7 @@ export default class Config extends AbstractModule {
   constructor(path: string, appFolders: AppFolders, fs: FileSystem, settings: Settings) {
     super();
     this.path = path;
+    this.envPath = `${fs.dirname(path)}/.env`;
     this.appFolders = appFolders;
     this.fs = fs;
     this.settings = settings;
@@ -72,6 +73,13 @@ export default class Config extends AbstractModule {
 
     if (!this.config) {
       this.config = this.getDefaultConfig();
+    }
+
+    if (await this.fs.exists(this.envPath)) {
+      this.env = dotenv.parse(await this.fs.fileGetContents(this.envPath));
+    } else {
+      this.env = {};
+      await this.fs.filePutContents(this.envPath, '');
     }
   }
 
@@ -112,7 +120,7 @@ export default class Config extends AbstractModule {
   }
 
   public getEnv(): EnvType {
-    return this.config.env || {};
+    return this.env || {};
   }
 
   public async getConfig(): Promise<ConfigType> {
@@ -217,7 +225,6 @@ export default class Config extends AbstractModule {
         sort: 500,
         time: 0,
       },
-      env: {},
       kernel: {
         d3d12: true,
         d3d11: true,

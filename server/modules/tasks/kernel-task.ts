@@ -31,11 +31,15 @@ export default class KernelTask extends AbstractTask {
     this.kernel = this.kernels.getKernel();
     this.bindEvents();
 
+    const getEnv = async (env: EnvType = {}): Promise<EnvType> => {
+      const configEnv: EnvType = this.app.getGames().getRunningGame()?.getEnv() || {};
+      return Object.assign({}, await this.app.getPlugins().getEnv(), configEnv, env);
+    };
+
     if (KernelOperation.RUN === operation) {
-      const configEnv: EnvType = this.app.getGames().getRunningGame().getEnv();
-      this.task = await this.kernel.run(this.cmd, session, Object.assign({}, await this.app.getPlugins().getEnv(), configEnv));
+      this.task = await this.kernel.run(this.cmd, session, await getEnv());
     } else if (KernelOperation.INSTALL === operation) {
-      this.task = await this.kernel.run(this.cmd, SessionType.RUN,{WINEDEBUG: 'fixme-all'});
+      this.task = await this.kernel.run(this.cmd, SessionType.RUN, await getEnv({WINEDEBUG: 'fixme-all'}));
     } else if (KernelOperation.CREATE_PREFIX === operation) {
       this.task = await this.kernel.createPrefix();
     } else if (KernelOperation.REGISTER === operation) {
