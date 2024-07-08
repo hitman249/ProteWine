@@ -1,5 +1,9 @@
 # ProteWine
 
+<img src="icons/512.png" width="128">
+
+[Join Discord](https://discord.gg/X3S5xR46zm)  
+
 Easy porting of Windows applications using Wine and Proton technologies to Linux systems and Steam Deck.
 
 https://github.com/hitman249/ProteWine/assets/1325326/066bb40c-5192-4c03-b5c6-2c87eb366c22
@@ -25,7 +29,7 @@ curl -L https://github.com/hitman249/ProteWine/releases/latest/download/start --
 
 ### Environment
 
-Env config paths: `data/configs/games/*/.env`  
+Env paths: `data/configs/games/*/.env`  
 
 Example:  
 ```dotenv

@@ -82,7 +82,7 @@ export default class Server {
       minWidth: 800,
       minHeight: 600,
       width: fullscreen ? monitor?.width || 1280 : 1280,
-      height: fullscreen ? monitor?.height || 800 : 800,
+      height: fullscreen ? monitor?.height || 720 : 720,
       icon: path.join(__dirname, 'icons/512.png'),
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
