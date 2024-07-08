@@ -23,6 +23,16 @@ https://github.com/hitman249/ProteWine/assets/1325326/066bb40c-5192-4c03-b5c6-2c
 curl -L https://github.com/hitman249/ProteWine/releases/latest/download/start --output start; chmod +x ./start; ./start
 ```
 
+### Environment
+
+Env config paths: `data/configs/games/*/.env`  
+
+Example:  
+```dotenv
+WINE_FULLSCREEN_INTEGER_SCALING=1
+PROTON_USE_WINED3D=0
+```
+
 # For developers
 
 ### Debugging
