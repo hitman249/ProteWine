@@ -1,6 +1,6 @@
 {
   "name": "protewine",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "cache/server/server.js",
   "repository": "https://github.com/hitman249/protewine",
   "author": "hitman249",
@@ -69,7 +69,7 @@
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^7.10.0",
     "copy-webpack-plugin": "^12.0.2",
-    "electron": "^30.0.6",
+    "electron": "^31.1.0",
     "electron-builder": "24.13.3",
     "eslint": "^9.3.0",
     "ts-loader": "^9.5.1",
