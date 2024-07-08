@@ -81,7 +81,7 @@
     height: 40px;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
     filter: drop-shadow(rgba(0, 0, 0, 0.7) 4px 4px 2px);
   }

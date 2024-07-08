@@ -1,6 +1,3 @@
-import PluginsRoutes from './modules/plugins';
-import SystemRoutes from './modules/system';
-
 export enum RoutesKernel {
   VERSION = 'kernel:version',
   RUN = 'kernel:run',
@@ -54,6 +51,11 @@ export enum RoutesAppFolders {
 export enum RoutesGallery {
   PORTRAITS = 'gallery:find-portraits',
   ICONS = 'gallery:find-icons',
+}
+
+export enum RoutesNativeKeyboard {
+  OPEN = 'native-keyboard:open',
+  CLOSE = 'native-keyboard:close',
 }
 
 export enum RoutesUpdate {
@@ -167,6 +169,8 @@ export default {
     RoutesUpdate.APP_VERSION,
     RoutesUpdate.LIST,
     RoutesUpdate.UPDATE,
+    RoutesNativeKeyboard.OPEN,
+    RoutesNativeKeyboard.CLOSE,
   ] as string[],
   send: [] as string[],
   receive: [

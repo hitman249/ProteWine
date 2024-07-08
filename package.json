@@ -1,6 +1,6 @@
 {
   "name": "protewine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "cache/server/server.js",
   "repository": "https://github.com/hitman249/protewine",
   "author": "hitman249",

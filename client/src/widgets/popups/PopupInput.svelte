@@ -43,10 +43,12 @@
   onMount(() => {
     bindEvents();
     input?.focus();
+    window.$app.getApi().getNativeKeyboard().open();
   });
 
   onDestroy(() => {
     unbindEvents();
+    window.$app.getApi().getNativeKeyboard().close();
   });
 </script>
 
@@ -91,8 +93,8 @@
       margin: 0 auto;
       border-bottom: rgb(255 255 255 / 80%) solid 1px;
       padding-bottom: 3px;
-      font-weight: 100;
-      font-size: 16px;
+      font-weight: 400;
+      font-size: 18px;
       filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
     }
 

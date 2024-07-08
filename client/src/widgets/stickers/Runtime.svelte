@@ -102,7 +102,7 @@
     height: 35px;
     right: 0;
     top: 0;
-    font-size: 16px;
+    font-size: 18px;
     justify-content: right;
     align-items: end;
   }
@@ -115,7 +115,7 @@
     height: auto;
     margin-top: 4px;
     padding-top: 4px;
-    font-size: 16px;
+    font-size: 18px;
     border-top: rgb(255 255 255 / 40%) solid 1px;
     //filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 1px);
   }

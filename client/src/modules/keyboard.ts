@@ -28,13 +28,13 @@ export default class Keyboard extends AbstractModule {
   }
 
   public bind(): void {
-    document.addEventListener('keydown', this.onKeyDown, false);
-    document.addEventListener('keyup', this.onKeyUp, false);
+    window.document.addEventListener('keydown', this.onKeyDown, false);
+    window.document.addEventListener('keyup', this.onKeyUp, false);
   }
 
   public unbind(): void {
-    document.removeEventListener('keydown', this.onKeyDown, false);
-    document.removeEventListener('keyup', this.onKeyUp, false);
+    window.document.removeEventListener('keydown', this.onKeyDown, false);
+    window.document.removeEventListener('keyup', this.onKeyUp, false);
   }
 
   private onKeyDown(event: KeyboardEvent): void {

@@ -27,6 +27,7 @@ export class Application extends AbstractModule {
   public getKeyboard(): Keyboard {
     return this.KEYBOARD;
   }
+
   public getPopup(): Popup {
     return this.POPUP;
   }

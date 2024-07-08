@@ -17,7 +17,7 @@ type MonitorType = {
 
 type StoreMonitors = {monitors: MonitorType[]};
 
-type Resolution = {width: string, height: string};
+export type Resolution = {width: number, height: number};
 
 export default class Monitor extends AbstractModule {
   private readonly appFolders: AppFolders;
@@ -178,14 +178,14 @@ export default class Monitor extends AbstractModule {
     const monitor: MonitorType = await this.getDefault();
     const [width, height]: string[] = monitor.resolution.split('x');
 
-    return {width, height};
+    return {width: Utils.toInt(width), height: Utils.toInt(height)};
   }
 
-  public async getWidth(): Promise<string> {
+  public async getWidth(): Promise<number> {
     return (await this.getResolution()).width;
   }
 
-  public async getHeight(): Promise<string> {
+  public async getHeight(): Promise<number> {
     return (await this.getResolution()).height;
   }
 }

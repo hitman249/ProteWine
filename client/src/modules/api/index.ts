@@ -13,6 +13,7 @@ import Settings from './modules/settings';
 import Plugins from './modules/plugins';
 import System from './modules/system';
 import Update from './modules/update';
+import NativeKeyboard from './modules/native-keyboard';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -29,6 +30,7 @@ export default class Api extends AbstractModule {
   private readonly PLUGINS: Plugins = new Plugins();
   private readonly SYSTEM: System = new System();
   private readonly UPDATE: Update = new Update();
+  private readonly NATIVE_KEYBOARD: NativeKeyboard = new NativeKeyboard();
 
   private readonly modules: AbstractModule[] = [
     this.FILE_SYSTEM,
@@ -45,6 +47,7 @@ export default class Api extends AbstractModule {
     this.PLUGINS,
     this.SYSTEM,
     this.UPDATE,
+    this.NATIVE_KEYBOARD,
   ];
 
   public async init(): Promise<any> {
@@ -103,6 +106,10 @@ export default class Api extends AbstractModule {
 
   public getUpdate(): Update {
     return this.UPDATE;
+  }
+
+  public getNativeKeyboard(): NativeKeyboard {
+    return this.NATIVE_KEYBOARD;
   }
 
   public getAppFolders(): AppFolders {

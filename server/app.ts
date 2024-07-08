@@ -26,6 +26,7 @@ import Icon from './modules/icon';
 import Config from './modules/games/config';
 import type Server from './index';
 import Steam from './modules/steam';
+import NativeKeyboard from './modules/native-keyboard';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -50,6 +51,7 @@ export class App {
   private readonly WINETRICKS: WineTricks;
   private readonly REPOSITORIES: Repositories;
   private readonly PLUGINS: Plugins;
+  private readonly NATIVE_KEYBOARD: NativeKeyboard;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -65,6 +67,7 @@ export class App {
     this.DRIVER = new Driver(this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
     this.UPDATE = new Update(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.COMMAND, this);
     this.MONITOR = new Monitor(this.APP_FOLDERS, this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);
+    this.NATIVE_KEYBOARD = new NativeKeyboard(this.COMMAND, this.MONITOR);
     this.KERNELS = new Kernels(this.SYSTEM, this);
     this.SETTINGS = new Settings(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.SYSTEM);
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS);
@@ -80,7 +83,6 @@ export class App {
       this.NETWORK,
       this.APP_FOLDERS,
       this.FILE_SYSTEM,
-      this.UPDATE,
       this.CACHE,
       this.SYSTEM,
       this.DRIVER,
@@ -95,6 +97,7 @@ export class App {
       this.WINETRICKS,
       this.REPOSITORIES,
       this.PLUGINS,
+      this.NATIVE_KEYBOARD,
     ];
   }
 
@@ -113,6 +116,7 @@ export class App {
     await this.MOUNT_WINE.mount();
     await this.MOUNT_DATA.mount();
 
+    await this.UPDATE.init();
     await this.UPDATE.downloadBar();
     await this.UPDATE.downloadLinkInfo();
 
@@ -248,6 +252,10 @@ export class App {
 
   public getPlugins(): Plugins {
     return this.PLUGINS;
+  }
+
+  public getNativeKeyboard(): NativeKeyboard {
+    return this.NATIVE_KEYBOARD;
   }
 
   public getServer(): Server {

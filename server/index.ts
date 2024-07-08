@@ -4,6 +4,7 @@ import $app from './app';
 import Routes from './routes';
 import Arguments from './arguments';
 import {GamesEvent} from './modules/games';
+import type {Resolution} from './modules/monitor';
 
 export default class Server {
   private readonly arguments: Arguments = new Arguments();
@@ -71,12 +72,17 @@ export default class Server {
   }
 
   public async createWindow(): Promise<void> {
+    const monitor: Resolution = await $app.getMonitor().getResolution();
+    const fullscreen: boolean = $app.getNativeKeyboard().isFullscreen();
+
     this.window = new BrowserWindow({
+      frame: !fullscreen,
+      movable: true,
       title: 'ProteWine',
       minWidth: 800,
       minHeight: 600,
-      width: 1280,
-      height: 720,
+      width: fullscreen ? monitor?.width || 1280 : 1280,
+      height: fullscreen ? monitor?.height || 800 : 800,
       icon: path.join(__dirname, 'icons/512.png'),
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
