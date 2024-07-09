@@ -5,7 +5,7 @@ import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Settings from '../settings';
 import Utils from '../../helpers/utils';
-import {FsrModes, FsrSharpening} from '../plugins/types';
+import type {BiasModes, FsrModes, FsrSharpening} from '../plugins/types';
 import {EnvType} from '../kernels/environment';
 
 export type ConfigType = {
@@ -36,6 +36,7 @@ export type ConfigType = {
     fsync: boolean,
     fsrMode: FsrModes,
     fsrStrength: FsrSharpening,
+    bias: BiasModes,
   },
 }
 
@@ -236,6 +237,7 @@ export default class Config extends AbstractModule {
         fsync: false,
         fsrMode: '',
         fsrStrength: '2',
+        bias: '',
       },
     };
   }
@@ -283,5 +285,9 @@ export default class Config extends AbstractModule {
 
   public getFsrStrength(): string {
     return _.get(this.config, 'kernel.fsrStrength', '2');
+  }
+
+  public getBiasMode(): string {
+    return _.get(this.config, 'kernel.bias', '');
   }
 }

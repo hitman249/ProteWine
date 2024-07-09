@@ -21,6 +21,7 @@ export enum ValueTemplate {
   WINVER = 'winver',
   FSR_MODE = 'fsrMode',
   FSR_STRENGTH = 'fsrStrength',
+  BIAS_MODE = 'biasMode',
   MOUSE_OVERRIDE_ACCELERATION = 'mouseOverrideAcceleration',
 }
 

@@ -1,4 +1,4 @@
-import {FsrModes, FsrSharpening, MouseOverrideAcceleration} from '../../../server/modules/plugins/types';
+import {BiasModes, FsrModes, FsrSharpening, MouseOverrideAcceleration} from '../../../server/modules/plugins/types';
 
 type ValueData = string | boolean | number;
 
@@ -25,6 +25,7 @@ export enum ValueLabels {
   FILE_MANAGER = 'fileManager',
   FSR_MODE = 'fsrMode',
   FSR_STRENGTH = 'fsrStrength',
+  BIAS_MODE = 'biasMode',
   MOUSE_OVERRIDE_ACCELERATION = 'mouseOverrideAcceleration',
 }
 
@@ -167,6 +168,28 @@ export default class Value {
       {
         value: FsrModes.PERFORMANCE,
         title: 'Performance (2x scaling)',
+      },
+    ],
+    [ValueLabels.BIAS_MODE]: [
+      {
+        value: BiasModes.DISABLE,
+        title: 'Disable',
+      },
+      {
+        value: BiasModes.ULTRA,
+        title: 'Ultra',
+      },
+      {
+        value: BiasModes.QUALITY,
+        title: 'Quality',
+      },
+      {
+        value: BiasModes.BALANCED,
+        title: 'Balanced',
+      },
+      {
+        value: BiasModes.PERFORMANCE,
+        title: 'Performance',
       },
     ],
     [ValueLabels.MOUSE_OVERRIDE_ACCELERATION]: [

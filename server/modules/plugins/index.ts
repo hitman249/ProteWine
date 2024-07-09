@@ -41,6 +41,7 @@ import Nvapi from './nvapi';
 import FsrMode from './fsr-mode';
 import FsrStrength from './fsr-strength';
 import type Config from '../games/config';
+import BiasMode from './bias-mode';
 
 export default class Plugins extends AbstractModule {
   private readonly DXVK: Dxvk;
@@ -66,6 +67,7 @@ export default class Plugins extends AbstractModule {
   private readonly NVAPI: Nvapi;
   private readonly FSR_MODE: FsrMode;
   private readonly FSR_STRENGTH: FsrStrength;
+  private readonly BIAS_MODE: BiasMode;
 
   private readonly modules: AbstractPlugin[] = [];
 
@@ -115,6 +117,7 @@ export default class Plugins extends AbstractModule {
     this.NVAPI = new Nvapi(this);
     this.FSR_MODE = new FsrMode(this);
     this.FSR_STRENGTH = new FsrStrength(this);
+    this.BIAS_MODE = new BiasMode(this);
 
     this.modules.push(
       // plugin
@@ -137,6 +140,7 @@ export default class Plugins extends AbstractModule {
       // config
       this.FSR_MODE,
       this.FSR_STRENGTH,
+      this.BIAS_MODE,
       this.ESYNC,
       this.FSYNC,
       this.NVAPI,

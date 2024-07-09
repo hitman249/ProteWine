@@ -6,6 +6,14 @@ export enum FsrModes {
   PERFORMANCE = 'performance',
 }
 
+export enum BiasModes {
+  DISABLE = '',
+  ULTRA = '38',
+  QUALITY = '58',
+  BALANCED = '79',
+  PERFORMANCE = '100',
+}
+
 export enum FsrSharpening {
   SHARP = '0',
   LEVEL1 = '1',
