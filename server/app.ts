@@ -27,6 +27,8 @@ import Config from './modules/games/config';
 import type Server from './index';
 import Steam from './modules/steam';
 import NativeKeyboard from './modules/native-keyboard';
+import Replaces from './modules/replaces';
+import Snapshot from './modules/snapshot';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -52,6 +54,8 @@ export class App {
   private readonly REPOSITORIES: Repositories;
   private readonly PLUGINS: Plugins;
   private readonly NATIVE_KEYBOARD: NativeKeyboard;
+  private readonly REPLACES: Replaces;
+  private readonly SNAPSHOT: Snapshot;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -77,6 +81,8 @@ export class App {
     this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
     this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this);
     this.PLUGINS = new Plugins(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this, this.SETTINGS);
+    this.REPLACES = new Replaces(this.APP_FOLDERS, this.SYSTEM, this.FILE_SYSTEM, this.MONITOR, this.KERNELS);
+    this.SNAPSHOT = new Snapshot(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.REPLACES, this.COMMAND);
 
     this.initOrder = [
       this.COMMAND,
@@ -98,6 +104,8 @@ export class App {
       this.REPOSITORIES,
       this.PLUGINS,
       this.NATIVE_KEYBOARD,
+      this.REPLACES,
+      this.SNAPSHOT,
     ];
   }
 
@@ -256,6 +264,14 @@ export class App {
 
   public getNativeKeyboard(): NativeKeyboard {
     return this.NATIVE_KEYBOARD;
+  }
+
+  public getReplaces(): Replaces {
+    return this.REPLACES;
+  }
+
+  public getSnapshot(): Snapshot {
+    return this.SNAPSHOT;
   }
 
   public getServer(): Server {

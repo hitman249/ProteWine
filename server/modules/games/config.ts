@@ -80,7 +80,10 @@ export default class Config extends AbstractModule {
       this.env = dotenv.parse(await this.fs.fileGetContents(this.envPath));
     } else {
       this.env = {};
-      await this.fs.filePutContents(this.envPath, '');
+
+      if (await this.fs.exists(path)) {
+        await this.fs.filePutContents(this.envPath, '');
+      }
     }
   }
 

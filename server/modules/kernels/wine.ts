@@ -84,6 +84,10 @@ export default class Wine extends AbstractKernel {
     return await this.run(`regedit "${path}"`, SessionType.RUN_IN_PREFIX);
   }
 
+  public async exportRegistry(path: string): Promise<WatchProcess> {
+    return await this.run(`regedit /E "${path}"`, SessionType.RUN_IN_PREFIX);
+  }
+
   public async regsvr32(filename: string): Promise<WatchProcess> {
     return await this.run(`regsvr32 "${filename}"`, SessionType.RUN_IN_PREFIX);
   }

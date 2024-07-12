@@ -6,7 +6,7 @@ export default class D3d8 extends AbstractPlugin {
   protected readonly code: string = 'kernel.d3d8';
   protected readonly name: string = 'd3d8';
   protected readonly type: PluginType['type'] = 'config';
-  protected readonly description: string = 'D8VK or OpenGL';
+  protected readonly description: string = 'DXVK or OpenGL';
   protected readonly template: ValueTemplate = ValueTemplate.BOOLEAN;
 
   public async init(): Promise<void> {
