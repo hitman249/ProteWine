@@ -2,7 +2,7 @@
 
 <img src="icons/512.png" width="128">
 
-[Join Discord](https://discord.gg/X3S5xR46zm)  
+[Donate](https://boosty.to/protewine/donate) | [Boosty](https://boosty.to/protewine) |  [Discord](https://discord.gg/X3S5xR46zm) |  [Telegram](https://t.me/protewine)  
 
 Easy porting of Windows applications using Wine and Proton technologies to Linux systems and Steam Deck.
 
