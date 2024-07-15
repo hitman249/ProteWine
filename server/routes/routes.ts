@@ -5,6 +5,7 @@ export enum RoutesKernel {
   WINETRICKS = 'kernel:winetricks',
   CREATE_PREFIX = 'kernel:create-prefix',
   LAUNCHER = 'kernel:launcher',
+  CONFIG = 'kernel:config',
 }
 
 export enum RoutesFileSystem {
@@ -119,6 +120,7 @@ export default {
     RoutesKernel.CREATE_PREFIX,
     RoutesKernel.VERSION,
     RoutesKernel.WINETRICKS,
+    RoutesKernel.CONFIG,
     RoutesFileSystem.LS,
     RoutesFileSystem.STORAGES,
     RoutesFileSystem.COPY,

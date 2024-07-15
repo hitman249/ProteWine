@@ -49,7 +49,14 @@
     if (processed) {
       const data: FormData<void> = new FormData();
       data.setOperation(GameOperation.PREFIX);
-      data.setCallback(() => menu?.updateWineVersion());
+      data.setCallback(() => {
+        menu?.updateWineVersion();
+
+        if (popup.isOpen(PopupNames.EXECUTING)) {
+          popup.clearHistory().back();
+        }
+      });
+
       popup.open(PopupNames.EXECUTING, data)
     }
   });

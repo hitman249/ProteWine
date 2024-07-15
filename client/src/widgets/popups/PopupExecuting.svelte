@@ -33,8 +33,9 @@
   const formData: FormData<MenuItem | any> = window.$app.getPopup().getData();
   const item: MenuItem = formData.getData();
   const operation: GameOperation = formData.getOperation();
+  const args: {blockExit?: boolean} = window.$app.getPopup().getArguments() || {};
 
-  let blockExit: boolean = GameOperation.PREFIX === operation;
+  let blockExit: boolean = GameOperation.PREFIX === operation || Boolean(args?.blockExit);
   let running: boolean = false;
   let completed: boolean = false;
   let progress: boolean = false;
@@ -135,7 +136,10 @@
 
     if ('prefix' === body.module && 'created' === body.event) {
       if (GameOperation.PREFIX === operation) {
-        window.$app.getPopup().clearHistory().back();
+        formData.runCallback();
+        running = false;
+        completed = true;
+        blockExit = false;
       }
     }
   }
@@ -171,6 +175,12 @@
     if (TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) {
       pushLine('Complete.');
 
+      running = false;
+      completed = true;
+      blockExit = false;
+    }
+
+    if (args?.blockExit) {
       running = false;
       completed = true;
       blockExit = false;
@@ -305,8 +315,6 @@
         }
       } else if (GameOperation.DEBUG === operation) {
         await window.$app.getApi().getGames().kill();
-      } else if (GameOperation.PREFIX === operation) {
-        window.$app.getPopup().clearHistory().back();
       }
     }
 
@@ -315,7 +323,7 @@
       await iso.unmount();
     }
 
-    if (GameOperation.RUNNER_INSTALL === operation || GameOperation.PREFIX === operation) {
+    if (GameOperation.RUNNER_INSTALL === operation) {
       formData.runCallback();
     }
   });
@@ -373,7 +381,7 @@
         {/if}
 
         {#if progressData.totalBytesFormatted}
-          Completed: {progressData.transferredBytesFormatted} \ {progressData.totalBytesFormatted}
+          Completed: {progressData.transferredBytesFormatted} / {progressData.totalBytesFormatted}
 
           {#if progressData.itemsCount > 1}
             <div class="hr"/>

@@ -52,6 +52,8 @@ export default class Update extends AbstractModule {
         } else {
           await this.downloadRepoFile(bin);
         }
+      } else {
+        await this.fs.chmod(path);
       }
     }
   }

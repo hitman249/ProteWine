@@ -236,12 +236,24 @@
     }
 
     if (KeyboardKey.ENTER === key) {
+      const list: ListPreloader = verticalList[horizontalList.getIndex()];
+
+      if (!list || !list.getItem()) {
+        return;
+      }
+
       const item: MenuItem = menu.getFocusedItem();
       const formData: FormData<MenuItem> = new FormData(item);
 
       if (item?.popup) {
+        const blockExit: boolean = 'config' === item.id;
+
         formData.setCallback(() => updateWineVersion());
-        popup.open(item?.popup, formData);
+        popup.open(item?.popup, formData, {blockExit});
+
+        if ('config' === item.id) {
+          await window.$app.getApi().getKernel().config();
+        }
 
         return;
       } else if (item?.hasItems()) {

@@ -1,7 +1,8 @@
 import {AbstractRouteModule} from './abstract-route-module';
 import type {IpcMainInvokeEvent} from 'electron';
-import {type FileType, KernelOperation} from '../../modules/kernels/abstract-kernel';
+import {type FileType, KernelOperation, SessionType} from '../../modules/kernels/abstract-kernel';
 import {RoutesKernel} from '../routes';
+import type WatchProcess from '../../helpers/watch-process';
 
 
 export default class KernelRoutes extends AbstractRouteModule {
@@ -12,6 +13,7 @@ export default class KernelRoutes extends AbstractRouteModule {
     this.bindInstall();
     this.bindWinetricks();
     this.bindCreatePrefix();
+    this.bindConfig();
   }
 
   private bindVersion(): void {
@@ -65,6 +67,15 @@ export default class KernelRoutes extends AbstractRouteModule {
     this.ipc.handle(
       RoutesKernel.LAUNCHER,
       async (event: IpcMainInvokeEvent, type: FileType): Promise<string> => this.app.getKernels().getKernel().getLauncherByFileType(type),
+    );
+  }
+
+  private bindConfig(): void {
+    this.ipc.handle(
+      RoutesKernel.CONFIG,
+      async (event: IpcMainInvokeEvent): Promise<void> => this.app.getTasks()
+        .kernel('winecfg', KernelOperation.RUN, SessionType.RUN_IN_PREFIX)
+        .then(() => undefined),
     );
   }
 }

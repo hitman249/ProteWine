@@ -1,5 +1,4 @@
 import EventListener from '../../../server/helpers/event-listener';
-import Helpers from './helpers';
 import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 import {PopupNames} from './popup';
 import type Config from '../models/config';
@@ -349,17 +348,6 @@ export default class Menu extends EventListener {
           popup: PopupNames.RUNNER,
         },
         {
-          id: 'reset',
-          icon: 'reset',
-          title: 'Prefix reset',
-          value: {
-            hidden: true,
-            value: false,
-            labels: ValueLabels.YESNO,
-            type: ValueTypes.SELECT,
-          },
-        },
-        {
           id: 'plugins',
           icon: 'settings',
           title: 'Plugins',
@@ -370,6 +358,23 @@ export default class Menu extends EventListener {
           icon: 'settings',
           title: 'Settings',
           items: this.fetchSettings,
+        },
+        {
+          id: 'config',
+          icon: 'config',
+          title: 'Config',
+          popup: PopupNames.EXECUTING,
+        },
+        {
+          id: 'reset',
+          icon: 'reset',
+          title: 'Prefix reset',
+          value: {
+            hidden: true,
+            value: false,
+            labels: ValueLabels.YESNO,
+            type: ValueTypes.SELECT,
+          },
         },
       ]),
     },

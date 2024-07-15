@@ -25,4 +25,8 @@ export default class Kernel extends AbstractModule {
   public async winetricks(cmd: string): Promise<any> {
     return (await window.electronAPI.invoke(RoutesKernel.WINETRICKS, cmd));
   }
+
+  public async config(): Promise<any> {
+    return (await window.electronAPI.invoke(RoutesKernel.CONFIG));
+  }
 }
