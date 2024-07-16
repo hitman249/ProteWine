@@ -36,6 +36,7 @@ export default class Update extends AbstractModule {
 
   public async init(): Promise<any> {
     const bins: string[] = ['unzstd', 'zstd', 'unzip', 'wrestool', 'icotool', 'diff'];
+    const libs64: string[] = ['libunwind.so', 'libunwind.so.1', 'libunwind.so.1.0', 'libunwind.so.8', 'libunwind.so.8.0.1'];
 
     for await (const bin of bins) {
       const path: string = `${await this.appFolders.getBinDir()}/${bin}`;
@@ -50,10 +51,18 @@ export default class Update extends AbstractModule {
             await this.fs.chmod(path);
           }
         } else {
-          await this.downloadRepoFile(bin);
+          await this.downloadRepoBinFile(bin);
         }
       } else {
         await this.fs.chmod(path);
+      }
+    }
+
+    for await (const lib of libs64) {
+      const path: string = `${await this.appFolders.getLib64Dir()}/${lib}`;
+
+      if (!await this.fs.exists(path)) {
+        await this.downloadRepoLib64File(lib);
       }
     }
   }
@@ -109,22 +118,22 @@ export default class Update extends AbstractModule {
   }
 
   public async downloadFuseIso(progress: (value: Progress) => void): Promise<void> {
-    return this.downloadRepoFile('fuseiso', progress);
+    return this.downloadRepoBinFile('fuseiso', progress);
   }
 
   public async downloadCabExtract(progress?: (value: Progress) => void): Promise<void> {
-    return this.downloadRepoFile('cabextract', progress);
+    return this.downloadRepoBinFile('cabextract', progress);
   }
 
   public async downloadBar(progress?: (value: Progress) => void): Promise<void> {
-    return this.downloadRepoFile('bar', progress);
+    return this.downloadRepoBinFile('bar', progress);
   }
 
   public async downloadLinkInfo(progress?: (value: Progress) => void): Promise<void> {
-    return this.downloadRepoFile('lnkinfo', progress);
+    return this.downloadRepoBinFile('lnkinfo', progress);
   }
 
-  public async downloadRepoFile(file: string, progress?: (value: Progress) => void): Promise<void> {
+  public async downloadRepoBinFile(file: string, progress?: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo(`/bin/${file}`);
     const path: string = `${await this.appFolders.getBinDir()}/${file}`;
 
@@ -134,6 +143,20 @@ export default class Update extends AbstractModule {
       if (await this.fs.exists(path)) {
         await this.fs.chmod(path);
       }
+    }
+  }
+
+  public async downloadRepoLib64File(file: string, progress?: (value: Progress) => void): Promise<void> {
+    const url: string = this.network.getRepo(`/bin/lib64/${file}`);
+    const lib64: string = await this.appFolders.getLib64Dir();
+    const path: string = `${lib64}/${file}`;
+
+    if (!await this.fs.exists(lib64)) {
+      await this.fs.mkdir(lib64);
+    }
+
+    if (!await this.fs.exists(path)) {
+      await this.network.download(url, path, progress);
     }
   }
 

@@ -11,6 +11,7 @@ export default class AppFolders extends AbstractModule {
 
   private rootDir: string;
   private binDir: string = '/bin';
+  private lib64Dir: string = '/bin/lib64';
   private linkInfoFile: string = '/bin/lnkinfo';
   private winetricksFile: string = '/bin/winetricks';
   private squashfuseFile: string = '/bin/squashfuse';
@@ -60,6 +61,7 @@ export default class AppFolders extends AbstractModule {
       this.folders = [
         await this.getRootDir(),
         await this.getBinDir(),
+        await this.getLib64Dir(),
         await this.getDataDir(),
         await this.getLogsDir(),
         await this.getCacheDir(),
@@ -128,6 +130,10 @@ export default class AppFolders extends AbstractModule {
 
   public async getBinDir(): Promise<string> {
     return await this.getRootDir() + this.binDir;
+  }
+
+  public async getLib64Dir(): Promise<string> {
+    return await this.getRootDir() + this.lib64Dir;
   }
 
   public async getShareDir(): Promise<string> {
