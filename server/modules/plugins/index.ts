@@ -170,7 +170,7 @@ export default class Plugins extends AbstractModule {
     }
   }
 
-  public async install(): Promise<void> {
+  public async install(registry: string[] = []): Promise<void> {
     const winetricksLog: string = `${await this.kernels.getKernel().getPrefixDir()}/winetricks.log`;
 
     if (await this.fs.exists(winetricksLog)) {
@@ -193,7 +193,7 @@ export default class Plugins extends AbstractModule {
       }
     }
 
-    await this.applyRegistry();
+    await this.applyRegistry(registry);
   }
 
   private async run(cmd: string): Promise<void> {
@@ -201,11 +201,9 @@ export default class Plugins extends AbstractModule {
     await process.wait();
   }
 
-  public async applyRegistry(): Promise<void> {
+  public async applyRegistry(registry: string[] = []): Promise<void> {
     const kernel: Kernel = this.kernels.getKernel();
     let path: string = `${await kernel.getDriveCDir()}/registry.reg`;
-
-    const registry: string[] = [];
 
     for await (const module of this.modules) {
       await module.clear();

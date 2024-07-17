@@ -1,17 +1,15 @@
-import Utils from '../helpers/utils';
+import _ from 'lodash';
 import {AbstractModule} from './abstract-module';
-import {KernelOperation, SessionType} from './kernels/abstract-kernel';
+import {KernelOperation} from './kernels/abstract-kernel';
 import type Command from './command';
 import type AppFolders from './app-folders';
 import type FileSystem from './file-system';
 import type Tasks from './tasks';
-import type Settings from './settings';
 import type Kernels from './kernels';
 import type {Kernel} from './kernels';
-import type System from './system';
 import type WatchProcess from '../helpers/watch-process';
 import type {Progress} from './archiver';
-import _ from 'lodash';
+import type Layers from './layers';
 
 export default class Prefix extends AbstractModule {
   private readonly command: Command;
@@ -19,8 +17,7 @@ export default class Prefix extends AbstractModule {
   private readonly fs: FileSystem;
   private readonly kernels: Kernels;
   private readonly tasks: Tasks;
-  private readonly settings: Settings;
-  private readonly system: System;
+  private readonly layers: Layers;
 
   private processed: boolean = false;
   private itemsComplete: number = 0;
@@ -28,7 +25,7 @@ export default class Prefix extends AbstractModule {
   private lastProgress: Progress;
   private registry: string[] = [];
 
-  constructor(appFolders: AppFolders, command: Command, fs: FileSystem, kernels: Kernels, tasks: Tasks, settings: Settings, system: System) {
+  constructor(appFolders: AppFolders, command: Command, fs: FileSystem, kernels: Kernels, tasks: Tasks, layers: Layers) {
     super();
 
     this.command = command;
@@ -36,8 +33,7 @@ export default class Prefix extends AbstractModule {
     this.fs = fs;
     this.kernels = kernels;
     this.tasks = tasks;
-    this.settings = settings;
-    this.system = system;
+    this.layers = layers;
   }
 
   public async init(): Promise<any> {
@@ -133,9 +129,20 @@ export default class Prefix extends AbstractModule {
      */
     await this.updateFolders();
 
-    this.sendProgress('Install plugins', 70);
+    /**
+     * Install layers
+     */
+    this.sendProgress('Install layers', 70);
 
-    const process: WatchProcess = await this.tasks.installPlugins();
+    await this.layers.install();
+
+    this.sendProgress('Registry', 80);
+
+    this.registry.push(...await this.layers.getRegistry());
+
+    this.sendProgress('Install plugins', 85);
+
+    const process: WatchProcess = await this.tasks.installPlugins(this.registry);
     await process.wait();
 
     this.processed = false;

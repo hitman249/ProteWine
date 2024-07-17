@@ -1,11 +1,14 @@
 import {AbstractModule} from '../abstract-module';
 import _ from 'lodash';
 import Layer from './layer';
+import {RoutesTaskEvent} from '../../routes/routes';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Kernels from '../kernels';
+import type {Kernel} from '../kernels';
 import type Snapshot from '../snapshot';
-import {RoutesTaskEvent} from '../../routes/routes';
+import type Command from '../command';
+import type {Options} from '../../helpers/copy-dir';
 
 export default class Layers extends AbstractModule {
   private index: number = 0;
@@ -15,14 +18,16 @@ export default class Layers extends AbstractModule {
   public readonly fs: FileSystem;
   public readonly kernels: Kernels;
   public readonly snapshot: Snapshot;
+  public readonly command: Command;
 
-  constructor(appFolders: AppFolders, fs: FileSystem, kernels: Kernels, snapshot: Snapshot) {
+  constructor(appFolders: AppFolders, fs: FileSystem, kernels: Kernels, snapshot: Snapshot, command: Command) {
     super();
 
     this.appFolders = appFolders;
     this.fs = fs;
     this.kernels = kernels;
     this.snapshot = snapshot;
+    this.command = command;
   }
 
   public async init(): Promise<void> {
@@ -155,5 +160,72 @@ export default class Layers extends AbstractModule {
         return layer;
       }
     }
+  }
+
+  private async unpack(path: string, driveC: string): Promise<boolean> {
+    if (!await this.fs.exists(path)) {
+      return false;
+    }
+
+    await this.command.exec(`tar -h -xzf "${path}" -C "${driveC}"`);
+
+    return true;
+  }
+
+  public async install(): Promise<void> {
+    const layers: Layer[] = ((await this.getList()) || []).filter((layer: Layer) => layer.active);
+
+    if (!layers || 0 === layers.length) {
+      return;
+    }
+
+    const kernel: Kernel = this.kernels.getKernel();
+
+    if (!await this.fs.exists(await kernel.getPrefixDir())) {
+      return;
+    }
+
+    const driveC: string = await kernel.getDriveCDir();
+    const username: string = await kernel.getUserName();
+    const userDefault: string = `${driveC}/users/default`;
+    const userCurrent: string = `${driveC}/users/${username}`;
+    const overwrite: Options = {overwrite: true};
+
+    for await (const layer of layers) {
+      const file: string = await layer.getFilesArchive();
+
+      if (await this.fs.exists(file)) {
+        await this.unpack(file, driveC);
+
+        if ('default' !== username && await this.fs.exists(userDefault)) {
+          await this.fs.mv(userDefault, userCurrent, overwrite);
+        }
+      }
+    }
+  }
+
+  public async getRegistry(): Promise<string[]> {
+    const layers: Layer[] = ((await this.getList()) || []).filter((layer: Layer) => layer.active);
+
+    if (!layers || 0 === layers.length) {
+      return [];
+    }
+
+    const register: string[] = [];
+    const skip: string[] = ['Windows Registry Editor Version 5.00', 'REGEDIT4'];
+
+    for await (const layer of layers) {
+      for await (const path of await layer.getRegistryFiles()) {
+        const plainText: string[] = (await this.fs.fileGetContents(path, true)).split('\n');
+
+        if (skip.indexOf(_.head(plainText)) !== -1) {
+          plainText.shift();
+        }
+
+        register.push(...plainText);
+      }
+    }
+
+    return register;
   }
 }

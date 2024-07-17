@@ -384,12 +384,6 @@ export default class Menu extends EventListener {
       ]),
     },
     {
-      id: 'updates',
-      icon: 'updates',
-      title: 'Updates',
-      items: this.fetchUpdates,
-    },
-    {
       id: 'layers',
       icon: 'layers',
       title: 'Layers',
@@ -412,6 +406,12 @@ export default class Menu extends EventListener {
           },
         },
       ]),
+    },
+    {
+      id: 'updates',
+      icon: 'updates',
+      title: 'Updates',
+      items: this.fetchUpdates,
     },
     /*{
       id: 'build',
@@ -469,12 +469,12 @@ export default class Menu extends EventListener {
     this.items?.[1]?.items?.[2]?.clear?.();
   }
 
-  public clearUpdates(): void {
-    this.items?.[2]?.clear?.();
+  public clearLayers(): void {
+    this.items?.[2]?.items?.[0]?.clear?.();
   }
 
-  public clearLayers(): void {
-    this.items?.[3]?.items?.[0]?.clear?.();
+  public clearUpdates(): void {
+    this.items?.[3]?.clear?.();
   }
 
   public getPluginsKeys(): string[] {

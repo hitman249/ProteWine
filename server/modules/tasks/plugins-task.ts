@@ -24,14 +24,14 @@ export default class PluginsTask extends AbstractTask {
     this.onExit = this.onExit.bind(this);
   }
 
-  public async install(): Promise<WatchProcess> {
+  public async install(registry: string[] = []): Promise<WatchProcess> {
     this.unbindEvents();
     this.plugins = this.app.getPlugins();
     this.bindEvents();
 
     this.finish = false;
 
-    this.plugins.install().then(() => {
+    this.plugins.install(registry).then(() => {
       this.unbindEvents();
       this.finish = true;
       this.task.resolve('');

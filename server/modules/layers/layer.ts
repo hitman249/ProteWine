@@ -56,6 +56,10 @@ export default class Layer extends AbstractModule {
     return this.config?.created;
   }
 
+  public get active(): boolean {
+    return this.config?.active;
+  }
+
   public get createdAt(): number {
     return this.config?.createdAt;
   }
@@ -74,6 +78,14 @@ export default class Layer extends AbstractModule {
 
   public getFolder(): string {
     return this.folder;
+  }
+
+  public async getFilesArchive(): Promise<string> {
+    return `${this.folder}/files.tar.gz`;
+  }
+
+  public async getRegistryFiles(): Promise<string[]> {
+    return Utils.natsort(await this.fs.glob(`${this.folder}/*.reg`));
   }
 
   private async getDefaultLayer(): Promise<LayerType> {

@@ -207,12 +207,12 @@ export default class Tasks extends AbstractModule {
     return this.current.install(url);
   }
 
-  public async installPlugins(): Promise<WatchProcess> {
+  public async installPlugins(registry: string[] = []): Promise<WatchProcess> {
     this.before();
     this.current = new PluginsTask(this.command, this.kernels, this.fs, this.app);
     this.after();
 
-    return this.current.install();
+    return this.current.install(registry);
   }
 
   public async updateSelf(): Promise<WatchProcess> {

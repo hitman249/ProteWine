@@ -79,13 +79,13 @@ export class App {
     this.LINK_INFO = new LinkInfo(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS);
     this.TASKS = new Tasks(this.COMMAND, this.KERNELS, this.FILE_SYSTEM, this);
     this.GAMES = new Games(this.APP_FOLDERS, this.FILE_SYSTEM, this.SETTINGS, this.NETWORK, this.TASKS, this.MONITOR, this);
-    this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.SETTINGS, this.SYSTEM);
     this.WINETRICKS = new WineTricks(this.APP_FOLDERS, this.FILE_SYSTEM, this.UPDATE);
     this.REPOSITORIES = new Repositories(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this);
     this.PLUGINS = new Plugins(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this, this.SETTINGS);
     this.REPLACES = new Replaces(this.APP_FOLDERS, this.SYSTEM, this.FILE_SYSTEM, this.MONITOR, this.KERNELS);
     this.SNAPSHOT = new Snapshot(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.REPLACES, this.COMMAND);
-    this.LAYERS = new Layers(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.SNAPSHOT);
+    this.LAYERS = new Layers(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.SNAPSHOT, this.COMMAND);
+    this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.LAYERS);
 
     this.initOrder = [
       this.COMMAND,

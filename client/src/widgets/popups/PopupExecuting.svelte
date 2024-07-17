@@ -150,6 +150,10 @@
         progress = false;
       }
     } else {
+      if (data?.progress.name !== progressData?.name) {
+        pushLine(data.progress.name);
+      }
+
       progressData = data.progress;
 
       if (!progress) {
