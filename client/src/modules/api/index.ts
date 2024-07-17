@@ -14,6 +14,7 @@ import Plugins from './modules/plugins';
 import System from './modules/system';
 import Update from './modules/update';
 import NativeKeyboard from './modules/native-keyboard';
+import Layers from './modules/layers';
 
 export default class Api extends AbstractModule {
   private readonly FILE_SYSTEM: FileSystem = new FileSystem();
@@ -30,6 +31,7 @@ export default class Api extends AbstractModule {
   private readonly PLUGINS: Plugins = new Plugins();
   private readonly SYSTEM: System = new System();
   private readonly UPDATE: Update = new Update();
+  private readonly LAYERS: Layers = new Layers();
   private readonly NATIVE_KEYBOARD: NativeKeyboard = new NativeKeyboard();
 
   private readonly modules: AbstractModule[] = [
@@ -47,6 +49,7 @@ export default class Api extends AbstractModule {
     this.PLUGINS,
     this.SYSTEM,
     this.UPDATE,
+    this.LAYERS,
     this.NATIVE_KEYBOARD,
   ];
 
@@ -106,6 +109,10 @@ export default class Api extends AbstractModule {
 
   public getUpdate(): Update {
     return this.UPDATE;
+  }
+
+  public getLayers(): Layers {
+    return this.LAYERS;
   }
 
   public getNativeKeyboard(): NativeKeyboard {

@@ -65,6 +65,17 @@ export enum RoutesUpdate {
   UPDATE = 'update:update',
 }
 
+export enum RoutesLayers {
+  BEFORE = 'layers:before',
+  AFTER = 'layers:after',
+  LIST = 'layers:list',
+  IS_PROCESSED = 'layers:is-processed',
+  CHANGE_TITLE = 'layers:change-title',
+  CHANGE_ACTIVE = 'layers:change-active',
+  REMOVE = 'layers:remove',
+  CANCEL = 'layers:cancel',
+}
+
 export enum RoutesSettings {
   LIST = 'settings:list',
   SAVE = 'settings:save',
@@ -173,6 +184,14 @@ export default {
     RoutesUpdate.UPDATE,
     RoutesNativeKeyboard.OPEN,
     RoutesNativeKeyboard.CLOSE,
+    RoutesLayers.BEFORE,
+    RoutesLayers.AFTER,
+    RoutesLayers.LIST,
+    RoutesLayers.IS_PROCESSED,
+    RoutesLayers.CHANGE_TITLE,
+    RoutesLayers.CHANGE_ACTIVE,
+    RoutesLayers.REMOVE,
+    RoutesLayers.CANCEL,
   ] as string[],
   send: [] as string[],
   receive: [

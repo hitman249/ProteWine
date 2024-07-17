@@ -254,6 +254,7 @@ export default class Snapshot extends AbstractModule {
       '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\Class',
       '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\DeviceClasses',
       '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\Video',
+      '[HKEY_LOCAL_MACHINE\\Hardware\\Description\\System\\CentralProcessor',
     ];
 
     const isSkip = (section: string): boolean => {
@@ -331,6 +332,10 @@ export default class Snapshot extends AbstractModule {
     const inserted: string[] = [];
 
     _.forEach(compare[DiffChange.INSERTED], (line: string): void => {
+      if (-1 !== diff.getFile1Data().indexOf(line)) {
+        return;
+      }
+
       let [path, type, size]: string[] = line.split(';');
 
       if ('file' === type) {

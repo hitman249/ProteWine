@@ -7,6 +7,7 @@ export enum TaskType {
   REPOSITORIES = 'repositories',
   PLUGINS = 'plugins',
   UPDATES = 'updates',
+  LAYERS = 'layers',
 }
 
 export type BodyBus = {

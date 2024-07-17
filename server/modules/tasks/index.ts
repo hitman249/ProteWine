@@ -16,6 +16,7 @@ import FileSystemTask from './fs-task';
 import RepositoriesTask from './repositories-task';
 import PluginsTask from './plugins-task';
 import UpdatesTask from './updates-task';
+import LayersTask from './layers-task';
 
 export default class Tasks extends AbstractModule {
   private readonly command: Command;
@@ -23,7 +24,7 @@ export default class Tasks extends AbstractModule {
   private readonly fs: FileSystem;
   private readonly app: App;
 
-  private current: KernelTask | ArchiverTask | WatchProcessTask | CallbackTask | FileSystemTask | RepositoriesTask | PluginsTask | UpdatesTask;
+  private current: KernelTask | ArchiverTask | WatchProcessTask | CallbackTask | FileSystemTask | RepositoriesTask | PluginsTask | UpdatesTask | LayersTask;
 
   constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
     super();
@@ -220,5 +221,21 @@ export default class Tasks extends AbstractModule {
     this.after();
 
     return this.current.updateSelf();
+  }
+
+  public async layerBefore(): Promise<WatchProcess> {
+    this.before();
+    this.current = new LayersTask(this.command, this.kernels, this.fs, this.app);
+    this.after();
+
+    return this.current.create();
+  }
+
+  public async layerAfter(): Promise<WatchProcess> {
+    this.before();
+    this.current = new LayersTask(this.command, this.kernels, this.fs, this.app);
+    this.after();
+
+    return this.current.makeLayer();
   }
 }

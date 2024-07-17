@@ -1,10 +1,11 @@
 import {AbstractModule} from '../abstract-module';
+import _ from 'lodash';
+import Layer from './layer';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Kernels from '../kernels';
 import type Snapshot from '../snapshot';
-import Layer from './layer';
-import _ from 'lodash';
+import {RoutesTaskEvent} from '../../routes/routes';
 
 export default class Layers extends AbstractModule {
   private index: number = 0;
@@ -40,6 +41,9 @@ export default class Layers extends AbstractModule {
   }
 
   public async create(): Promise<void> {
+    this.fireEvent(RoutesTaskEvent.RUN, 'Start creating snapshot prefix.');
+    this.fireEvent(RoutesTaskEvent.LOG, 'Creating snapshot prefix. Step: before prefix changes.');
+
     await this.snapshot.createBefore();
 
     if (!await this.isProcessed()) {
@@ -48,21 +52,34 @@ export default class Layers extends AbstractModule {
       await layer.init();
       await layer.save();
     }
+
+    this.fireEvent(RoutesTaskEvent.LOG, 'Snapshot "before" created successfully.');
+    this.fireEvent(RoutesTaskEvent.EXIT);
   }
 
-  public async save(): Promise<void> {
+  public async makeLayer(): Promise<void> {
+    this.fireEvent(RoutesTaskEvent.RUN, 'Start creating layer.');
+
     const layer: Layer = await this.getTmpLayer();
 
     if (!layer) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'Error. Session not started.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
       return;
     }
+
+    this.fireEvent(RoutesTaskEvent.LOG, 'Creating snapshot prefix. Step: after prefix changes.');
 
     await this.snapshot.createAfter();
     const layerDir: string = await this.snapshot.getLayerDir();
 
     if (!await this.fs.exists(layerDir)) {
+      this.fireEvent(RoutesTaskEvent.LOG, 'The snapshot creation failed.');
+      this.fireEvent(RoutesTaskEvent.EXIT);
       return;
     }
+
+    this.fireEvent(RoutesTaskEvent.LOG, 'Snapshot "after" created successfully.');
 
     if (await this.fs.exists(layer.getFolder())) {
       await this.fs.rm(layer.getFolder());
@@ -71,8 +88,22 @@ export default class Layers extends AbstractModule {
     await this.fs.mv(layerDir, layer.getFolder());
 
     layer.set('created', true);
+    layer.set('size', await this.fs.size(layer.getFolder()));
+
     await layer.save();
     await this.snapshot.clear();
+
+    this.fireEvent(RoutesTaskEvent.LOG, 'Layer created successfully.');
+    this.fireEvent(RoutesTaskEvent.EXIT);
+  }
+
+  public async cancel(): Promise<void> {
+    await this.snapshot.clear();
+    const layer: Layer = await this.getTmpLayer();
+
+    if (layer) {
+      await layer.remove();
+    }
   }
 
   public async isProcessed(): Promise<boolean> {
@@ -109,8 +140,7 @@ export default class Layers extends AbstractModule {
     );
   }
 
-  public async getById(id: string | number): Promise<Layer> {
-    id = String(id);
+  public async getById(id: string): Promise<Layer> {
     return (await this.getList()).find((item: Layer): boolean => id === item.id);
   }
 

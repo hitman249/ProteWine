@@ -115,7 +115,7 @@
       pushLine(data.cmd);
     }
 
-    if (TaskType.REPOSITORIES === data.type) {
+    if (TaskType.REPOSITORIES === data.type || TaskType.UPDATES === data.type || TaskType.LAYERS === data.type) {
       running = true;
       blockExit = true;
       pushLine(data.cmd);
@@ -123,7 +123,7 @@
   }
 
   function onLog(event: RoutesTaskEvent.LOG, data: {type: TaskType, line: string}): void {
-    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type || TaskType.PLUGINS === data.type) {
+    if (TaskType.KERNEL === data.type || TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type || TaskType.UPDATES === data.type || TaskType.PLUGINS === data.type || TaskType.LAYERS === data.type) {
       pushLine(data.line);
     }
   }
@@ -172,7 +172,7 @@
       }
     }
 
-    if ((TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) && GameOperation.PREFIX !== operation) {
+    if ((TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type || TaskType.UPDATES === data.type || TaskType.LAYERS === data.type) && GameOperation.PREFIX !== operation) {
       pushLine('Complete.');
 
       running = false;

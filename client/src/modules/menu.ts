@@ -2,6 +2,7 @@ import EventListener from '../../../server/helpers/event-listener';
 import Value, {ValueLabels, type ValueParams, ValueTypes} from './value';
 import {PopupNames} from './popup';
 import type Config from '../models/config';
+import type {LayerType} from '../../../server/modules/layers/layer';
 import {GameOperation} from '../models/form-data';
 
 export type MenuItemType = {
@@ -257,6 +258,10 @@ export default class Menu extends EventListener {
     return window.$app.getApi().getUpdate().getList();
   }
 
+  private async fetchLayers(): Promise<MenuItemType[]> {
+    return window.$app.getApi().getLayers().getList();
+  }
+
   public readonly items: MenuItem[] = ([
     {
       id: 'games',
@@ -384,7 +389,7 @@ export default class Menu extends EventListener {
       title: 'Updates',
       items: this.fetchUpdates,
     },
-    /*{
+    {
       id: 'layers',
       icon: 'layers',
       title: 'Layers',
@@ -393,18 +398,7 @@ export default class Menu extends EventListener {
           id: 'layers-list',
           icon: 'layers-list',
           title: 'Layers',
-          items: () => Promise.resolve([
-            {
-              id: 'layers-1',
-              icon: 'layers-list',
-              title: 'Layer 1',
-            },
-            {
-              id: 'layers-2',
-              icon: 'layers-list',
-              title: 'Layer 2',
-            },
-          ]),
+          items: this.fetchLayers,
         },
         {
           id: 'layers-add',
@@ -418,7 +412,7 @@ export default class Menu extends EventListener {
           },
         },
       ]),
-    },*/
+    },
     /*{
       id: 'build',
       icon: 'build',
@@ -477,6 +471,10 @@ export default class Menu extends EventListener {
 
   public clearUpdates(): void {
     this.items?.[2]?.clear?.();
+  }
+
+  public clearLayers(): void {
+    this.items?.[3]?.items?.[0]?.clear?.();
   }
 
   public getPluginsKeys(): string[] {

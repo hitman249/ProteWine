@@ -11,15 +11,17 @@ export type LayerType = {
   created: boolean,
   createdAt: number,
   active: boolean,
-  name: string,
+  title: string,
   sort: number,
   size: number,
+  sizeFormatted?: string,
+  id?: string,
 };
 
 export default class Layer extends AbstractModule {
   private readonly layers: Layers;
-  private readonly folder: string;
-  private readonly file: string;
+  private folder: string;
+  private file: string;
   private config: LayerType;
 
   constructor(path: string, layers: Layers) {
@@ -63,7 +65,7 @@ export default class Layer extends AbstractModule {
   }
 
   public get id(): string {
-    return String(this.createdAt);
+    return `layer-${this.createdAt}`;
   }
 
   public set(path: keyof LayerType, value: any): void {
@@ -79,7 +81,7 @@ export default class Layer extends AbstractModule {
       created: false,
       createdAt: new Date().getTime(),
       active: true,
-      name: this.fs.basename(this.folder),
+      title: this.fs.basename(this.folder),
       sort: 500,
       size: 0,
     };
@@ -107,5 +109,38 @@ export default class Layer extends AbstractModule {
     }
 
     return this.fs.filePutContents(this.file, Utils.jsonEncode(this.config));
+  }
+
+  public async remove(): Promise<void> {
+    if (await this.fs.exists(this.folder)) {
+      await this.fs.rm(this.folder);
+    }
+  }
+
+  public async setTitle(title: string): Promise<void> {
+    this.set('title', title);
+    await this.save();
+
+    const folder: string = _.kebabCase(title);
+
+    if (!folder) {
+      return;
+    }
+
+    const oldPath: string = this.folder;
+    const newPath: string = `${this.fs.dirname(this.folder)}/${folder}`;
+
+    if (await this.fs.exists(newPath)) {
+      return;
+    }
+
+    this.folder = newPath;
+    this.file = `${newPath}/layer.json`;
+
+    await this.fs.mv(oldPath, newPath);
+  }
+
+  public toObject(): LayerType {
+    return Object.assign({}, this.config, {sizeFormatted: Utils.convertBytes(this.config.size), id: this.id});
   }
 }

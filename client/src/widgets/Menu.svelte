@@ -142,15 +142,42 @@
       });
     } else if ('update' === item.item?.type) {
       selectListItems = item.value.getList().filter((value: ValueType) => 'install' === value.value);
+    } else if ('layers' === item.item?.type) {
+      selectListItems = item.value.getList().filter((value: ValueType) => {
+        switch (value.value) {
+          case 'enable':
+            return !Boolean(item.item?.active);
+          case 'disable':
+            return Boolean(item.item?.active);
+          default:
+            return true;
+        }
+      });
     } else if ('layers-add' === item.id) {
-      selectListItems = item.value.getList().filter((value: ValueType) => 'create' === value.value);
+      const isProcessed: boolean = await window.$app.getApi().getLayers().isProcessed();
+
+      selectListItems = item.value.getList().filter((value: ValueType) => {
+        switch (value.value) {
+          case 'create':
+            return !isProcessed;
+          case 'save':
+            return isProcessed;
+          case 'cancel':
+            return isProcessed;
+        }
+      });
     } else {
       selectListItems = item.value.getList();
     }
 
     tick().then(() => {
-      const index: number = item.value.getIndexValue();
-      selectList.changeIndex(index);
+      if ('layers-add' === item.id) {
+        selectList.changeIndex(0);
+      } else {
+        const index: number = item.value.getIndexValue();
+        selectList.changeIndex(index);
+      }
+
       isSelectList = true;
     });
   }
@@ -330,6 +357,84 @@
 
                 break;
             }
+          }
+
+          if ('layers-add' === item.id) {
+            switch (value.value) {
+              case 'create':
+                popup.open(PopupNames.EXECUTING, formData);
+                window.$app.getApi().getLayers().layerBefore().then(() => {});
+
+                break;
+
+              case 'save':
+                popup.open(PopupNames.EXECUTING, formData);
+                window.$app.getApi().getLayers().layerAfter().then(async () => {
+                  menu.clearLayers();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+
+                break;
+              case 'cancel':
+                await window.$app.getApi().getLayers().cancel();
+                break;
+            }
+
+            closeSelect();
+
+            return;
+          }
+
+          if ('layers' === item.item?.type) {
+            switch (value.value) {
+              case 'title':
+                formData.setCallback(async (text: string) => {
+                  await window.$app.getApi().getLayers().updateTitle(item.id, text);
+                  menu.clearLayers();
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+
+                popup.open(PopupNames.INPUT, formData, {
+                  title: 'Title',
+                  value: item.title,
+                });
+                break;
+
+              case 'enable':
+                await window.$app.getApi().getLayers().updateActive(item.id, true);
+                menu.clearLayers();
+                await innerListItem.reload();
+                innerListItem = innerListItem;
+
+                break;
+              case 'disable':
+                await window.$app.getApi().getLayers().updateActive(item.id, false);
+                menu.clearLayers();
+                await innerListItem.reload();
+                innerListItem = innerListItem;
+
+                break;
+
+              case 'remove':
+                formData.setCallback(async () => {
+                  await window.$app.getApi().getLayers().remove(item.id);
+                  menu.clearLayers();
+                  innerListItem.setCurrentIndex(0);
+                  await innerListItem.reload();
+                  innerListItem = innerListItem;
+                });
+                popup.open(PopupNames.YES_NO, formData, {
+                  title: `Remove "${item.title}"?`,
+                  description: `To delete "${item.title}" press the confirmation button.`,
+                });
+                break;
+            }
+
+            closeSelect();
+
+            return;
           }
 
           if ('update' === item.item?.type) {

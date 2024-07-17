@@ -29,6 +29,7 @@ import Steam from './modules/steam';
 import NativeKeyboard from './modules/native-keyboard';
 import Replaces from './modules/replaces';
 import Snapshot from './modules/snapshot';
+import Layers from './modules/layers';
 
 export class App {
   private readonly initOrder: AbstractModule[];
@@ -56,6 +57,7 @@ export class App {
   private readonly NATIVE_KEYBOARD: NativeKeyboard;
   private readonly REPLACES: Replaces;
   private readonly SNAPSHOT: Snapshot;
+  private readonly LAYERS: Layers;
   private MOUNT_WINE: Mount;
   private MOUNT_DATA: Mount;
 
@@ -83,6 +85,7 @@ export class App {
     this.PLUGINS = new Plugins(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this, this.SETTINGS);
     this.REPLACES = new Replaces(this.APP_FOLDERS, this.SYSTEM, this.FILE_SYSTEM, this.MONITOR, this.KERNELS);
     this.SNAPSHOT = new Snapshot(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.REPLACES, this.COMMAND);
+    this.LAYERS = new Layers(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.SNAPSHOT);
 
     this.initOrder = [
       this.COMMAND,
@@ -106,6 +109,7 @@ export class App {
       this.NATIVE_KEYBOARD,
       this.REPLACES,
       this.SNAPSHOT,
+      this.LAYERS,
     ];
   }
 
@@ -272,6 +276,10 @@ export class App {
 
   public getSnapshot(): Snapshot {
     return this.SNAPSHOT;
+  }
+
+  public getLayers(): Layers {
+    return this.LAYERS;
   }
 
   public getServer(): Server {

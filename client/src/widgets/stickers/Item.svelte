@@ -23,6 +23,14 @@
   </div>
   <div class="footer" style:opacity={Math.max(percent / 100, 0.3)}>
     <div class="title" style:transform="translate(0px, {descriptionExist ? (20 - (20 * percent / 100)) + 10 : 32}px)">
+      {#if 'layers' === item?.item?.type}
+        {#if item?.item?.active}
+          <svg class="svg-icon" style="width: 26px;height: 26px;vertical-align: middle;fill: #fff;overflow: hidden;top: -2px;position: relative;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M810.666 128H213.334C166.396 128 128 166.396 128 213.334v597.332C128 857.604 166.396 896 213.334 896h597.332C857.604 896 896 857.604 896 810.666V213.334C896 166.396 857.604 128 810.666 128z m-384 597.334L213.334 512l59.728-59.728 153.604 153.604 324.272-324.272 59.728 59.73-384 384z"  /></svg>
+        {:else}
+          <svg class="svg-icon" style="width: 26px;height: 26px;vertical-align: middle;fill: #fff;overflow: hidden;top: -2px;position: relative;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M810.666667 128H213.333333c-47.36 0-85.333333 37.973333-85.333333 85.333333v597.333334a85.333333 85.333333 0 0 0 85.333333 85.333333h597.333334a85.333333 85.333333 0 0 0 85.333333-85.333333V213.333333a85.333333 85.333333 0 0 0-85.333333-85.333333z" fill="" /></svg>
+        {/if}
+      {/if}
+
       {item?.title || ''}
 
       <div

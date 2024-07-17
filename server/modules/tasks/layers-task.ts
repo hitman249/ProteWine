@@ -7,12 +7,12 @@ import type {App} from '../../app';
 import {RoutesTaskEvent} from '../../routes/routes';
 import {TaskType} from './types';
 import type {Progress} from '../archiver';
-import type Update from '../update';
+import type Layers from '../layers';
 
-export default class UpdatesTask extends AbstractTask {
-  protected type: TaskType = TaskType.UPDATES;
+export default class LayersTask extends AbstractTask {
+  protected type: TaskType = TaskType.LAYERS;
   private finish: boolean = false;
-  private update: Update;
+  private layers: Layers;
 
   constructor(command: Command, kernels: Kernels, fs: FileSystem, app: App) {
     super(command, kernels, fs, app);
@@ -24,16 +24,7 @@ export default class UpdatesTask extends AbstractTask {
     this.onExit = this.onExit.bind(this);
   }
 
-  public async updateSelf(): Promise<WatchProcess> {
-    this.unbindEvents();
-    this.update = this.app.getUpdate();
-    this.bindEvents();
-
-    this.update.updateSelf().then(() => {
-      this.onExit();
-      this.unbindEvents();
-    });
-
+  private makeDummyProcess(): WatchProcess {
     let resolve: (text: string) => void;
 
     const promise: Promise<void> = new Promise((success: () => void) => (resolve = success));
@@ -48,30 +39,56 @@ export default class UpdatesTask extends AbstractTask {
     return this.task;
   }
 
+  public async create(): Promise<WatchProcess> {
+    this.unbindEvents();
+    this.layers = this.app.getLayers();
+    this.bindEvents();
+
+
+    this.layers.create().then(() => {
+      this.unbindEvents();
+    });
+
+    return this.makeDummyProcess();
+  }
+
+  public async makeLayer(): Promise<WatchProcess> {
+    this.unbindEvents();
+    this.layers = this.app.getLayers();
+    this.bindEvents();
+
+
+    this.layers.makeLayer().then(() => {
+      this.unbindEvents();
+    });
+
+    return this.makeDummyProcess();
+  }
+
   private unbindEvents(): void {
-    if (!this.update) {
+    if (!this.layers) {
       return;
     }
 
-    this.update.off(RoutesTaskEvent.RUN, this.onRun);
-    this.update.off(RoutesTaskEvent.LOG, this.onLog);
-    this.update.off(RoutesTaskEvent.PROGRESS, this.onProgress);
-    this.update.off(RoutesTaskEvent.ERROR, this.onError);
-    this.update.off(RoutesTaskEvent.EXIT, this.onExit);
+    this.layers.off(RoutesTaskEvent.RUN, this.onRun);
+    this.layers.off(RoutesTaskEvent.LOG, this.onLog);
+    this.layers.off(RoutesTaskEvent.PROGRESS, this.onProgress);
+    this.layers.off(RoutesTaskEvent.ERROR, this.onError);
+    this.layers.off(RoutesTaskEvent.EXIT, this.onExit);
   }
 
   private bindEvents(): void {
     this.unbindEvents();
 
-    if (!this.update) {
+    if (!this.layers) {
       return;
     }
 
-    this.update.on(RoutesTaskEvent.RUN, this.onRun);
-    this.update.on(RoutesTaskEvent.LOG, this.onLog);
-    this.update.on(RoutesTaskEvent.PROGRESS, this.onProgress);
-    this.update.on(RoutesTaskEvent.ERROR, this.onError);
-    this.update.on(RoutesTaskEvent.EXIT, this.onExit);
+    this.layers.on(RoutesTaskEvent.RUN, this.onRun);
+    this.layers.on(RoutesTaskEvent.LOG, this.onLog);
+    this.layers.on(RoutesTaskEvent.PROGRESS, this.onProgress);
+    this.layers.on(RoutesTaskEvent.ERROR, this.onError);
+    this.layers.on(RoutesTaskEvent.EXIT, this.onExit);
   }
 
   private onRun(event: RoutesTaskEvent.RUN, cmd: string): void {

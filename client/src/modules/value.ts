@@ -20,6 +20,7 @@ export enum ValueLabels {
   WINVER = 'winver',
   YESNO = 'yesno',
   LAYOUTS = 'layouts',
+  LAYOUT = 'layout',
   GAME = 'game',
   MANAGE = 'manage',
   OPERATION = 'operation',
@@ -152,15 +153,33 @@ export default class Value {
     [ValueLabels.LAYOUTS]: [
       {
         value: 'create',
-        title: 'Create snapshot',
+        title: 'Start session',
       },
       {
         value: 'save',
-        title: 'Save layer',
+        title: 'Save session',
       },
       {
         value: 'cancel',
         title: 'Cancel',
+      },
+    ],
+    [ValueLabels.LAYOUT]: [
+      {
+        value: 'title',
+        title: 'Change title',
+      },
+      {
+        value: 'enable',
+        title: 'Enable',
+      },
+      {
+        value: 'disable',
+        title: 'Disable',
+      },
+      {
+        value: 'remove',
+        title: 'Remove',
       },
     ],
     [ValueLabels.FSR_MODE]: [
