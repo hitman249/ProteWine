@@ -19,6 +19,7 @@ export enum ValueLabels {
   INSTALL = 'install',
   WINVER = 'winver',
   YESNO = 'yesno',
+  LAYOUTS = 'layouts',
   GAME = 'game',
   MANAGE = 'manage',
   OPERATION = 'operation',
@@ -146,6 +147,20 @@ export default class Value {
       {
         value: true,
         title: 'Yes',
+      },
+    ],
+    [ValueLabels.LAYOUTS]: [
+      {
+        value: 'create',
+        title: 'Create snapshot',
+      },
+      {
+        value: 'save',
+        title: 'Save layer',
+      },
+      {
+        value: 'cancel',
+        title: 'Cancel',
       },
     ],
     [ValueLabels.FSR_MODE]: [

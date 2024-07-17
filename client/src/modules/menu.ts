@@ -384,7 +384,7 @@ export default class Menu extends EventListener {
       title: 'Updates',
       items: this.fetchUpdates,
     },
-/*    {
+    /*{
       id: 'layers',
       icon: 'layers',
       title: 'Layers',
@@ -393,11 +393,29 @@ export default class Menu extends EventListener {
           id: 'layers-list',
           icon: 'layers-list',
           title: 'Layers',
+          items: () => Promise.resolve([
+            {
+              id: 'layers-1',
+              icon: 'layers-list',
+              title: 'Layer 1',
+            },
+            {
+              id: 'layers-2',
+              icon: 'layers-list',
+              title: 'Layer 2',
+            },
+          ]),
         },
         {
           id: 'layers-add',
           icon: 'layers-add',
-          title: 'New layer',
+          title: 'Add layer',
+          value: {
+            hidden: true,
+            value: false,
+            labels: ValueLabels.LAYOUTS,
+            type: ValueTypes.SELECT,
+          },
         },
       ]),
     },*/
@@ -453,8 +471,8 @@ export default class Menu extends EventListener {
   }
 
   public clearPrefixPlugins(): void {
+    this.items?.[1]?.items?.[1]?.clear?.();
     this.items?.[1]?.items?.[2]?.clear?.();
-    this.items?.[1]?.items?.[3]?.clear?.();
   }
 
   public clearUpdates(): void {
@@ -464,8 +482,8 @@ export default class Menu extends EventListener {
   public getPluginsKeys(): string[] {
     const result: string[] = [];
 
-    const plugins: MenuItem = this.items?.[1]?.items?.[2];
-    const settings: MenuItem = this.items?.[1]?.items?.[3];
+    const plugins: MenuItem = this.items?.[1]?.items?.[1];
+    const settings: MenuItem = this.items?.[1]?.items?.[2];
 
     for (const group of [plugins, settings]) {
       if ((group?.getItems?.()?.length || 0) > 0) {

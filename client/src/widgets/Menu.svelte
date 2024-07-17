@@ -90,7 +90,7 @@
     }
   }
 
-  function openSelect(item: MenuItem): void {
+  async function openSelect(item: MenuItem): Promise<void> {
     if (ValueLabels.MANAGE === item.template) {
       const config: Config = item.item;
 
@@ -142,6 +142,8 @@
       });
     } else if ('update' === item.item?.type) {
       selectListItems = item.value.getList().filter((value: ValueType) => 'install' === value.value);
+    } else if ('layers-add' === item.id) {
+      selectListItems = item.value.getList().filter((value: ValueType) => 'create' === value.value);
     } else {
       selectListItems = item.value.getList();
     }
@@ -225,7 +227,7 @@
               return;
             }
 
-            openSelect(item);
+            await openSelect(item);
           }
 
           return;
@@ -541,7 +543,7 @@
             }
           }
         } else {
-          openSelect(item);
+          await openSelect(item);
         }
       } else {
         if (ValueLabels.OPERATION === item.template) {

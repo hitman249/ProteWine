@@ -40,7 +40,7 @@ export default class AppFolders extends AbstractModule {
   private logFileConfig: string = '/data/logs/config.log';
   private logFileProton: string = '/data/logs/proton.log';
   private logFileVkBasalt: string = '/data/logs/vkBasalt.log';
-  private layoutsDir: string = '/data/layouts';
+  private layersDir: string = '/data/layers';
   private buildDir: string = '/build';
   private prefixDir: string = '/prefix';
   private wineDir: string = '/wine';
@@ -69,7 +69,7 @@ export default class AppFolders extends AbstractModule {
         await this.getConfigsGamesDir(),
         await this.getShareDir(),
         await this.getGamesDir(),
-        await this.getLayoutsDir(),
+        await this.getLayersDir(),
       ];
     }
 
@@ -208,8 +208,8 @@ export default class AppFolders extends AbstractModule {
     return await this.getRootDir() + this.logFileConfig;
   }
 
-  public async getLayoutsDir(): Promise<string> {
-    return await this.getRootDir() + this.layoutsDir;
+  public async getLayersDir(): Promise<string> {
+    return await this.getRootDir() + this.layersDir;
   }
 
   public async getDxvkConfFile(): Promise<string> {

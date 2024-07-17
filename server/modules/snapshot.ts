@@ -59,8 +59,21 @@ export default class Snapshot extends AbstractModule {
     return `${await this.getSnapshotDir(type)}/regedit.reg`;
   }
 
-  private async getLayoutDir(): Promise<string> {
-    return `${await this.appFolders.getCacheDir()}${this.snapshotDir}/layout`;
+  public async getLayerDir(): Promise<string> {
+    return `${await this.appFolders.getCacheDir()}${this.snapshotDir}/layer`;
+  }
+
+  public async clear(): Promise<void> {
+    const before: string = await this.getSnapshotDir(Step.BEFORE);
+    const after: string = await this.getSnapshotDir(Step.AFTER);
+
+    if (await this.fs.exists(before)) {
+      await this.fs.rm(before);
+    }
+
+    if (await this.fs.exists(after)) {
+      await this.fs.rm(after);
+    }
   }
 
   private async create(type: Step = Step.BEFORE): Promise<void> {
@@ -136,13 +149,13 @@ export default class Snapshot extends AbstractModule {
 
     const driveC: string = await kernel.getDriveCDir();
     const username: string = await kernel.getUserName();
-    const layout: string = await this.getLayoutDir();
+    const layer: string = await this.getLayerDir();
 
-    if (await this.fs.exists(layout)) {
-      await this.fs.rm(layout);
+    if (await this.fs.exists(layer)) {
+      await this.fs.rm(layer);
     }
 
-    await this.fs.mkdir(layout);
+    await this.fs.mkdir(layer);
 
     const reg: string = await this.getRegeditChanges(
       await this.getSnapshotRegeditFile(Step.BEFORE),
@@ -150,7 +163,7 @@ export default class Snapshot extends AbstractModule {
     );
 
     if (reg) {
-      await this.fs.filePutContents(`${layout}/changes.reg`, reg);
+      await this.fs.filePutContents(`${layer}/changes.reg`, reg);
     }
 
     const files: string[] = await this.getFilesChanges(
@@ -164,8 +177,8 @@ export default class Snapshot extends AbstractModule {
     for await (const path of files) {
       const fileIn: string = `${driveC}/${path}`;
       const fileOut: string = _.startsWith(path, userFolder)
-        ? `${layout}/files/${path.replace(userFolder, userFolderReplace)}`
-        : `${layout}/files/${path}`;
+        ? `${layer}/files/${path.replace(userFolder, userFolderReplace)}`
+        : `${layer}/files/${path}`;
 
       const dirOut: string = this.fs.dirname(fileOut);
 
@@ -177,8 +190,8 @@ export default class Snapshot extends AbstractModule {
     }
 
     if (files.length > 0) {
-      const win32: string = `${layout}/files/windows/system32`;
-      const win64: string = `${layout}/files/windows/syswow64`;
+      const win32: string = `${layer}/files/windows/system32`;
+      const win64: string = `${layer}/files/windows/syswow64`;
       const extensions: string[] = ['dll', 'ocx', 'exe'];
       const libs: string[] = [];
 
@@ -215,10 +228,10 @@ export default class Snapshot extends AbstractModule {
           reg.push(`"${file}"="native"`);
         });
 
-        await this.fs.filePutContents(`${layout}/override-dll.reg`, reg.join('\n'));
+        await this.fs.filePutContents(`${layer}/override-dll.reg`, reg.join('\n'));
       }
 
-      const pathFiles: string = `${layout}/files`;
+      const pathFiles: string = `${layer}/files`;
 
       if ((await this.fs.exists(pathFiles)) && (await this.fs.pack(pathFiles))) {
         await this.fs.rm(pathFiles);
@@ -226,7 +239,7 @@ export default class Snapshot extends AbstractModule {
     }
   }
 
-  public async getRegeditChanges(before: string, after: string): Promise<string> {
+  private async getRegeditChanges(before: string, after: string): Promise<string> {
     if (!(await this.fs.exists(before)) || !(await this.fs.exists(after))) {
       return '';
     }
@@ -308,7 +321,7 @@ export default class Snapshot extends AbstractModule {
     return this.replaces.replaceToTemplateByString(text);
   }
 
-  public async getFilesChanges(before: string, after: string): Promise<string[]> {
+  private async getFilesChanges(before: string, after: string): Promise<string[]> {
     if (!(await this.fs.exists(before)) || !(await this.fs.exists(after))) {
       return [];
     }
@@ -327,11 +340,4 @@ export default class Snapshot extends AbstractModule {
 
     return inserted;
   }
-
-  /**
-   * @param {Patch} patch
-   */
-  // moveToLayout(patch) {
-  //   return this.fs.mv(this.getLayoutDir(), patch.getPath());
-  // }
 }

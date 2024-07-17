@@ -172,7 +172,7 @@
       }
     }
 
-    if (TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) {
+    if ((TaskType.FILE_SYSTEM === data.type || TaskType.REPOSITORIES === data.type) && GameOperation.PREFIX !== operation) {
       pushLine('Complete.');
 
       running = false;
