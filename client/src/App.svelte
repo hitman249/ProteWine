@@ -17,6 +17,7 @@
   import PopupConfig from './widgets/popups/PopupConfig.svelte';
   import Config from './models/config';
   import {MenuItem} from './modules/menu';
+  import PopupDatabase from './widgets/popups/PopupDatabase.svelte';
 
   let menu: Menu;
   let popup: Popup = window.$app.getPopup();
@@ -101,6 +102,8 @@
       <PopupConfig bind:this={popup.ref}/>
     {:else if namePopup === PopupNames.RUNNER}
       <PopupRunners bind:this={popup.ref}/>
+    {:else if namePopup === PopupNames.DATABASE}
+      <PopupDatabase bind:this={popup.ref}/>
     {/if}
   {/if}
 </main>

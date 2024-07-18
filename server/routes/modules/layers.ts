@@ -15,6 +15,13 @@ export default class LayersRoutes extends AbstractRouteModule {
     this.bindChangeActive();
     this.bindCancel();
     this.bindRemove();
+    this.bindExist();
+    this.bindDbList();
+    this.bindDbAdd();
+    this.bindDbRemove();
+    this.bindDbExist();
+    this.bindLayerAdd();
+    this.bindLayerRemove();
   }
 
   private bindLayerBefore(): void {
@@ -93,6 +100,95 @@ export default class LayersRoutes extends AbstractRouteModule {
         if (layer) {
           layer.set('active', value);
           await layer.save();
+        }
+      },
+    );
+  }
+
+  private bindExist(): void {
+    this.ipc.handle(
+      RoutesLayers.EXIST,
+      async (event: IpcMainInvokeEvent, id: string): Promise<boolean> => {
+        const layer: Layer = await this.app.getLayers().database.getById(id);
+
+        if (layer) {
+          return await this.app.getLayers().exist(layer);
+        }
+
+        return false;
+      },
+    );
+  }
+
+  private bindDbList(): void {
+    this.ipc.handle(
+      RoutesLayers.DB_LIST,
+      async (event: IpcMainInvokeEvent): Promise<LayerType[]> => (await this.app.getLayers().database.getList()).map((layer: Layer) => layer.toObject()),
+    );
+  }
+
+  private bindDbAdd(): void {
+    this.ipc.handle(
+      RoutesLayers.DB_ADD,
+      async (event: IpcMainInvokeEvent, id: string): Promise<void> => {
+        const layer: Layer = await this.app.getLayers().getById(id);
+
+        if (layer) {
+          await this.app.getLayers().database.addLayer(layer);
+        }
+      },
+    );
+  }
+
+  private bindDbRemove(): void {
+    this.ipc.handle(
+      RoutesLayers.DB_REMOVE,
+      async (event: IpcMainInvokeEvent, id: string): Promise<void> => {
+        const layer: Layer = await this.app.getLayers().getById(id);
+
+        if (layer) {
+          await this.app.getLayers().database.removeLayer(layer);
+        }
+      },
+    );
+  }
+
+  private bindDbExist(): void {
+    this.ipc.handle(
+      RoutesLayers.DB_EXIST,
+      async (event: IpcMainInvokeEvent, id: string): Promise<boolean> => {
+        const layer: Layer = await this.app.getLayers().getById(id);
+
+        if (layer) {
+          return await this.app.getLayers().database.exist(layer);
+        }
+
+        return false;
+      },
+    );
+  }
+
+  private bindLayerAdd(): void {
+    this.ipc.handle(
+      RoutesLayers.LAYER_ADD,
+      async (event: IpcMainInvokeEvent, id: string): Promise<void> => {
+        const layer: Layer = await this.app.getLayers().database.getById(id);
+
+        if (layer) {
+          await this.app.getLayers().addLayer(layer);
+        }
+      },
+    );
+  }
+
+  private bindLayerRemove(): void {
+    this.ipc.handle(
+      RoutesLayers.LAYER_REMOVE,
+      async (event: IpcMainInvokeEvent, id: string): Promise<void> => {
+        const layer: Layer = await this.app.getLayers().database.getById(id);
+
+        if (layer) {
+          await this.app.getLayers().removeLayer(layer);
         }
       },
     );

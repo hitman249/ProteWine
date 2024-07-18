@@ -19,8 +19,9 @@ export enum ValueLabels {
   INSTALL = 'install',
   WINVER = 'winver',
   YESNO = 'yesno',
-  LAYOUTS = 'layouts',
-  LAYOUT = 'layout',
+  LAYERS = 'layers',
+  LAYER = 'layer',
+  DB_LAYERS = 'dbLayers',
   GAME = 'game',
   MANAGE = 'manage',
   OPERATION = 'operation',
@@ -150,7 +151,7 @@ export default class Value {
         title: 'Yes',
       },
     ],
-    [ValueLabels.LAYOUTS]: [
+    [ValueLabels.LAYERS]: [
       {
         value: 'create',
         title: 'Start session',
@@ -164,7 +165,21 @@ export default class Value {
         title: 'Cancel',
       },
     ],
-    [ValueLabels.LAYOUT]: [
+    [ValueLabels.DB_LAYERS]: [
+      {
+        value: 'add-layers',
+        title: 'Add to layers',
+      },
+      {
+        value: 'remove-layers',
+        title: 'Remove from layers',
+      },
+      {
+        value: 'db-remove',
+        title: 'Remove',
+      },
+    ],
+    [ValueLabels.LAYER]: [
       {
         value: 'title',
         title: 'Change title',
@@ -176,6 +191,14 @@ export default class Value {
       {
         value: 'disable',
         title: 'Disable',
+      },
+      {
+        value: 'add-db',
+        title: 'Add to database',
+      },
+      {
+        value: 'remove-db',
+        title: 'Remove from database',
       },
       {
         value: 'remove',

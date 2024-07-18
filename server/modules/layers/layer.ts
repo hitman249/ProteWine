@@ -80,6 +80,10 @@ export default class Layer extends AbstractModule {
     return this.folder;
   }
 
+  public getDirname(): string {
+    return this.fs.basename(this.folder);
+  }
+
   public async getFilesArchive(): Promise<string> {
     return `${this.folder}/files.tar.gz`;
   }

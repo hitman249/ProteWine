@@ -74,6 +74,14 @@ export enum RoutesLayers {
   CHANGE_ACTIVE = 'layers:change-active',
   REMOVE = 'layers:remove',
   CANCEL = 'layers:cancel',
+  EXIST = 'layers:exist',
+
+  DB_LIST = 'layers:db-list',
+  DB_EXIST = 'layers:db-exist',
+  DB_ADD = 'layers:db-add',
+  DB_REMOVE = 'layers:db-remove',
+  LAYER_ADD = 'layers:layer-add',
+  LAYER_REMOVE = 'layers:layer-remove',
 }
 
 export enum RoutesSettings {
@@ -185,6 +193,7 @@ export default {
     RoutesNativeKeyboard.OPEN,
     RoutesNativeKeyboard.CLOSE,
     RoutesLayers.BEFORE,
+    RoutesLayers.EXIST,
     RoutesLayers.AFTER,
     RoutesLayers.LIST,
     RoutesLayers.IS_PROCESSED,
@@ -192,6 +201,12 @@ export default {
     RoutesLayers.CHANGE_ACTIVE,
     RoutesLayers.REMOVE,
     RoutesLayers.CANCEL,
+    RoutesLayers.DB_LIST,
+    RoutesLayers.DB_ADD,
+    RoutesLayers.DB_REMOVE,
+    RoutesLayers.DB_EXIST,
+    RoutesLayers.LAYER_ADD,
+    RoutesLayers.LAYER_REMOVE,
   ] as string[],
   send: [] as string[],
   receive: [

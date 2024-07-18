@@ -4,6 +4,7 @@ import {PopupNames} from './popup';
 import type Config from '../models/config';
 import type {LayerType} from '../../../server/modules/layers/layer';
 import {GameOperation} from '../models/form-data';
+import _ from 'lodash';
 
 export type MenuItemType = {
   id: string,
@@ -123,6 +124,10 @@ export class MenuItem {
 
   public getIcon(): string {
     return this.icon;
+  }
+
+  public getCount(): number {
+    return this.item?.count || 0;
   }
 
   public getTitle(): string {
@@ -401,9 +406,15 @@ export default class Menu extends EventListener {
           value: {
             hidden: true,
             value: false,
-            labels: ValueLabels.LAYOUTS,
+            labels: ValueLabels.LAYERS,
             type: ValueTypes.SELECT,
           },
+        },
+        {
+          id: 'database',
+          icon: 'database',
+          title: 'Database',
+          popup: PopupNames.DATABASE,
         },
       ]),
     },
@@ -475,6 +486,14 @@ export default class Menu extends EventListener {
 
   public clearUpdates(): void {
     this.items?.[3]?.clear?.();
+  }
+
+  public async updateLayerCount(): Promise<void> {
+    const items: MenuItemType[] = await window.$app.getApi().getLayers().getList();
+
+    if (this.items?.[2]) {
+      _.set(this.items, '[2].item.count', (items && items.length > 0) ? items.length : 0);
+    }
   }
 
   public getPluginsKeys(): string[] {

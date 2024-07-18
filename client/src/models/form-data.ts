@@ -32,6 +32,7 @@ export default class FormData<T> {
   public fileManagerMountImage: boolean = false;
   public extension: string;
   public callback: (result?: any) => void;
+  public rejectCallback: (result?: any) => void;
 
   constructor(data?: T) {
     this.data = data;
@@ -53,8 +54,16 @@ export default class FormData<T> {
     this.callback = func;
   }
 
+  public setRejectCallback(func: (result?: any) => void): any {
+    this.rejectCallback = func;
+  }
+
   public runCallback(result?: any): void {
     this.callback?.(result);
+  }
+
+  public runRejectCallback(result?: any): void {
+    this.rejectCallback?.(result);
   }
 
   public setOperation(operation: GameOperation): this {

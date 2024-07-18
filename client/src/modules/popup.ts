@@ -12,6 +12,7 @@ export enum PopupNames {
   WINETRICKS = 'winetricks',
   RUNNER = 'runner',
   CONFIG = 'config',
+  DATABASE = 'database',
 }
 
 export enum PopupEvents {

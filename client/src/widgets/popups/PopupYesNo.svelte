@@ -26,6 +26,7 @@
     if (KeyboardKey.ESC === key || KeyboardKey.BACKSPACE === key || KeyboardKey.LEFT === key) {
       unbindEvents();
       window.$app.getPopup().back();
+      formData.runRejectCallback();
     }
   };
 
@@ -108,6 +109,7 @@
 
     .description {
       filter: drop-shadow(rgba(0, 0, 0, 0.5) 3px 3px 3px);
+      font-size: 18px;
     }
   }
 </style>

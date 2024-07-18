@@ -32,7 +32,12 @@
 <div aria-hidden="true" class="item {itemClass}" on:click={item?.click} {style} style:opacity={dummy ? 0 : 1}>
   <div class="icon">
     {#if item}
-      <Icon icon={item?.getIcon()} status={active ? 'active' : 'normal'} style={iconStyle}/>
+      <Icon
+        icon={item?.getIcon()}
+        value={item?.getCount()}
+        status={active ? 'active' : 'normal'}
+        style={iconStyle}
+      />
     {/if}
   </div>
   <div class="title" style:opacity={percent / 100}>

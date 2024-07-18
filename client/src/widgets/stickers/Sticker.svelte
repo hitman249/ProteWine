@@ -113,6 +113,14 @@
     return StickerType.RUNTIME === type;
   }
 
+  function isLayer(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.LAYER === type;
+  }
+
   function isImage(type: StickerType): boolean {
     if (!type) {
       return false;
@@ -135,6 +143,7 @@
   import Image from './Image.svelte';
   import Winetricks from './Winetricks.svelte';
   import Runtime from './Runtime.svelte';
+  import Layer from './Layer.svelte';
 
   export let active: boolean;
   export let dummy: boolean;
@@ -246,6 +255,15 @@
   />
 {:else if isRuntime(type)}
   <Runtime
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {style}
+  />
+{:else if isLayer(type)}
+  <Layer
     {active}
     {dummy}
     {itemClass}

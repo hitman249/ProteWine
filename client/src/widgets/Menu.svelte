@@ -90,6 +90,11 @@
     }
   }
 
+  export async function updateLayerCount(): Promise<void> {
+    await menu.updateLayerCount();
+    items = items;
+  }
+
   async function openSelect(item: MenuItem): Promise<void> {
     if (ValueLabels.MANAGE === item.template) {
       const config: Config = item.item;
@@ -143,12 +148,18 @@
     } else if ('update' === item.item?.type) {
       selectListItems = item.value.getList().filter((value: ValueType) => 'install' === value.value);
     } else if ('layers' === item.item?.type) {
+      const isDbExist: boolean = await window.$app.getApi().getLayers().dbExist(item.id);
+
       selectListItems = item.value.getList().filter((value: ValueType) => {
         switch (value.value) {
           case 'enable':
             return !Boolean(item.item?.active);
           case 'disable':
             return Boolean(item.item?.active);
+          case 'add-db':
+            return !isDbExist;
+          case 'remove-db':
+            return isDbExist;
           default:
             return true;
         }
@@ -171,7 +182,7 @@
     }
 
     tick().then(() => {
-      if ('layers-add' === item.id) {
+      if ('layers-add' === item.id || 'layers' === item.item?.type) {
         selectList.changeIndex(0);
       } else {
         const index: number = item.value.getIndexValue();
@@ -277,8 +288,15 @@
       if (item?.popup) {
         const blockExit: boolean = 'config' === item.id;
 
-        formData.setCallback(() => updateWineVersion());
-        popup.open(item?.popup, formData, {blockExit});
+
+
+        if (PopupNames.DATABASE === item?.popup) {
+          formData.setCallback(() => updateLayerCount());
+        } else {
+          formData.setCallback(() => updateWineVersion());
+        }
+
+        popup.open(item?.popup, formData, {blockExit, menu});
 
         if ('config' === item.id) {
           await window.$app.getApi().getKernel().config();
@@ -371,8 +389,7 @@
                 popup.open(PopupNames.EXECUTING, formData);
                 window.$app.getApi().getLayers().layerAfter().then(async () => {
                   menu.clearLayers();
-                  await innerListItem.reload();
-                  innerListItem = innerListItem;
+                  await updateLayerCount();
                 });
 
                 break;
@@ -402,6 +419,22 @@
                 });
                 break;
 
+              case 'add-db':
+                await window.$app.getApi().getLayers().dbAdd(item.id);
+                menu.clearLayers();
+                await innerListItem.reload();
+                innerListItem = innerListItem;
+
+                break;
+
+              case 'remove-db':
+                await window.$app.getApi().getLayers().dbRemove(item.id);
+                menu.clearLayers();
+                await innerListItem.reload();
+                innerListItem = innerListItem;
+
+                break;
+
               case 'enable':
                 await window.$app.getApi().getLayers().updateActive(item.id, true);
                 menu.clearLayers();
@@ -424,6 +457,7 @@
                   innerListItem.setCurrentIndex(0);
                   await innerListItem.reload();
                   innerListItem = innerListItem;
+                  await updateLayerCount();
                 });
                 popup.open(PopupNames.YES_NO, formData, {
                   title: `Remove "${item.title}"?`,
@@ -720,6 +754,7 @@
     bindEvents();
     updateWineVersion();
     horizontalListPosition = -1;
+    updateLayerCount();
   });
 
   onDestroy(() => {
@@ -770,7 +805,7 @@
     {@const isGames = (ValueLabels.GAME === innerListItem.template || ValueLabels.MANAGE === innerListItem.template)}
     {@const isOperation = (ValueLabels.OPERATION === innerListItem.template)}
 
-    <div class="inner-list" class:list-only-active={isSelectList}>
+    <div class="inner-list" class:list-only-active={isSelectList} class:animate-items-opacity={selectListItems}>
       <ListPreloader
         bind:this={innerList}
         current={isInnerList}

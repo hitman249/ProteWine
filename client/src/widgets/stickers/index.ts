@@ -11,4 +11,5 @@ export enum StickerType {
   WINETRICKS = 'winetricks',
   IMAGE = 'image',
   RUNTIME = 'runtime',
+  LAYER = 'layer',
 }

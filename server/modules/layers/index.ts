@@ -9,18 +9,22 @@ import type {Kernel} from '../kernels';
 import type Snapshot from '../snapshot';
 import type Command from '../command';
 import type {Options} from '../../helpers/copy-dir';
+import type System from '../system';
+import Database from './database';
 
 export default class Layers extends AbstractModule {
   private index: number = 0;
   private layersDir: string;
 
+  public readonly database: Database;
   public readonly appFolders: AppFolders;
   public readonly fs: FileSystem;
   public readonly kernels: Kernels;
   public readonly snapshot: Snapshot;
   public readonly command: Command;
+  public readonly system: System;
 
-  constructor(appFolders: AppFolders, fs: FileSystem, kernels: Kernels, snapshot: Snapshot, command: Command) {
+  constructor(appFolders: AppFolders, fs: FileSystem, kernels: Kernels, snapshot: Snapshot, command: Command, system: System) {
     super();
 
     this.appFolders = appFolders;
@@ -28,10 +32,13 @@ export default class Layers extends AbstractModule {
     this.kernels = kernels;
     this.snapshot = snapshot;
     this.command = command;
+    this.system = system;
+    this.database = new Database(fs, system, this);
   }
 
   public async init(): Promise<void> {
     this.layersDir = await this.appFolders.getLayersDir();
+    await this.database.init();
   }
 
   private async createLayerPath(): Promise<string> {
@@ -227,5 +234,35 @@ export default class Layers extends AbstractModule {
     }
 
     return register;
+  }
+
+  public async exist(layer: Layer): Promise<boolean> {
+    const layers: Layer[] = await this.getList();
+
+    for (const item of layers) {
+      if (item.getDirname() === layer.getDirname()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public async addLayer(layer: Layer): Promise<void> {
+    if (await this.exist(layer)) {
+      return;
+    }
+
+    await this.fs.cp(layer.getFolder(), `${this.layersDir}/${layer.getDirname()}`);
+  }
+
+  public async removeLayer(layer: Layer): Promise<void> {
+    const layers: Layer[] = await this.getList();
+
+    for await (const item of layers) {
+      if (item.getDirname() === layer.getDirname()) {
+        return await item.remove();
+      }
+    }
   }
 }
