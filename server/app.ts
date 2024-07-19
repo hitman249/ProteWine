@@ -84,7 +84,7 @@ export class App {
     this.PLUGINS = new Plugins(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK, this.SYSTEM, this.TASKS, this.KERNELS, this, this.SETTINGS);
     this.REPLACES = new Replaces(this.APP_FOLDERS, this.SYSTEM, this.FILE_SYSTEM, this.MONITOR, this.KERNELS);
     this.SNAPSHOT = new Snapshot(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.REPLACES, this.COMMAND);
-    this.LAYERS = new Layers(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.SNAPSHOT, this.COMMAND, this.SYSTEM);
+    this.LAYERS = new Layers(this.APP_FOLDERS, this.FILE_SYSTEM, this.KERNELS, this.SNAPSHOT, this.COMMAND, this.SYSTEM, this.REPLACES);
     this.PREFIX = new Prefix(this.APP_FOLDERS, this.COMMAND, this.FILE_SYSTEM, this.KERNELS, this.TASKS, this.LAYERS);
 
     this.initOrder = [

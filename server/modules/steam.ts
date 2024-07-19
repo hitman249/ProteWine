@@ -156,7 +156,7 @@ export default class Steam extends AbstractModule {
       appid: await this.getAppId(),
       AppName: this.config.title,
       Exe: `"${await this.appFolders.getStartFile()}"`,
-      StartDir: `"${await this.appFolders.getRootDir()}"`,
+      StartDir: `${await this.appFolders.getRootDir()}`,
       icon: (await this.config.getIcon()) || '',
       ShortcutPath: '',
       LaunchOptions: `headless game=${this.config.id}`,

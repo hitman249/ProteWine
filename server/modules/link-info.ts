@@ -440,7 +440,7 @@ export default class LinkInfo extends AbstractModule {
 
   private isExistLink(link: LinkInfoData, links: LinkInfoData[]): boolean {
     for (const item of links) {
-      if (item.filename === link.filename && item.arguments === link.arguments) {
+      if (item.title === link.title && item.filename === link.filename && item.arguments === link.arguments) {
         return true;
       }
     }
@@ -468,7 +468,7 @@ export default class LinkInfo extends AbstractModule {
         if (link) {
           link.path = await this.findGamePath(link.path);
 
-          if (link.path) {
+          if (link.path && !this.isExistLink(link, links)) {
             links.push(link);
           }
         }

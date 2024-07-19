@@ -255,6 +255,11 @@ export default class Snapshot extends AbstractModule {
       '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\DeviceClasses',
       '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\Video',
       '[HKEY_LOCAL_MACHINE\\Hardware\\Description\\System\\CentralProcessor',
+      '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Print',
+      '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Devices',
+      '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Software\\Microsoft\\Windows NT\\CurrentVersion\\PrinterPorts',
+      '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows',
+      '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Console',
     ];
 
     const isSkip = (section: string): boolean => {

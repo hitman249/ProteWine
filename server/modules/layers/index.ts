@@ -11,6 +11,7 @@ import type Command from '../command';
 import type {Options} from '../../helpers/copy-dir';
 import type System from '../system';
 import Database from './database';
+import Replaces from '../replaces';
 
 export default class Layers extends AbstractModule {
   private index: number = 0;
@@ -23,8 +24,9 @@ export default class Layers extends AbstractModule {
   public readonly snapshot: Snapshot;
   public readonly command: Command;
   public readonly system: System;
+  public readonly replaces: Replaces;
 
-  constructor(appFolders: AppFolders, fs: FileSystem, kernels: Kernels, snapshot: Snapshot, command: Command, system: System) {
+  constructor(appFolders: AppFolders, fs: FileSystem, kernels: Kernels, snapshot: Snapshot, command: Command, system: System, replaces: Replaces) {
     super();
 
     this.appFolders = appFolders;
@@ -33,6 +35,7 @@ export default class Layers extends AbstractModule {
     this.snapshot = snapshot;
     this.command = command;
     this.system = system;
+    this.replaces = replaces;
     this.database = new Database(fs, system, this);
   }
 
@@ -223,13 +226,14 @@ export default class Layers extends AbstractModule {
 
     for await (const layer of layers) {
       for await (const path of await layer.getRegistryFiles()) {
-        const plainText: string[] = (await this.fs.fileGetContents(path, true)).split('\n');
+        const plainText: string = await this.fs.fileGetContents(path, true);
+        const lines: string[] = (await this.replaces.replaceByString(plainText)).split('\n');
 
-        if (skip.indexOf(_.head(plainText)) !== -1) {
-          plainText.shift();
+        if (skip.indexOf(_.head(lines)) !== -1) {
+          lines.shift();
         }
 
-        register.push(...plainText);
+        register.push(...lines);
       }
     }
 
