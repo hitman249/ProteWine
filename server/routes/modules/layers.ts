@@ -144,7 +144,7 @@ export default class LayersRoutes extends AbstractRouteModule {
     this.ipc.handle(
       RoutesLayers.DB_REMOVE,
       async (event: IpcMainInvokeEvent, id: string): Promise<void> => {
-        const layer: Layer = await this.app.getLayers().getById(id);
+        const layer: Layer = await this.app.getLayers().database.getById(id);
 
         if (layer) {
           await this.app.getLayers().database.removeLayer(layer);

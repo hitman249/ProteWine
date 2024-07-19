@@ -49,7 +49,7 @@ export default class Wine extends AbstractKernel {
     return this.run('sc', SessionType.RUN, {WINEDEBUG: 'fixme-all'});
   }
 
-  public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {
+  public async getCmd(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<string> {
     const wineFile: string = await this.getWineFile();
 
     if (!wineFile) {
@@ -57,9 +57,11 @@ export default class Wine extends AbstractKernel {
       return Promise.reject('Wine not found.');
     }
 
-    const container: string = await this.container.getCmd(this.envToCmd(`"${wineFile}" ${cmd}`, Object.assign({}, this.env.toObject(), env)));
+    return await this.container.getCmd(this.envToCmd(`"${wineFile}" ${cmd}`, Object.assign({}, this.env.toObject(), env)));
+  }
 
-    return this.commandHandler(container);
+  public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {
+    return this.commandHandler(await this.getCmd(cmd, session, env));
   }
 
   public async winetricks(cmd: string): Promise<WatchProcess> {

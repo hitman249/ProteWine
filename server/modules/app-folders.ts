@@ -110,6 +110,10 @@ export default class AppFolders extends AbstractModule {
 
     if (!startFile && _.endsWith(path.resolve(__dirname), 'cache/server')) {
       startFile = path.resolve(__dirname, '../..');
+
+      if ('app.asar' === path.basename(startFile)) {
+        startFile = path.resolve(startFile, '../../..');
+      }
     } else if (!startFile) {
       startFile = path.resolve(__dirname);
     }

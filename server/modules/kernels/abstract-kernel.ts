@@ -106,6 +106,10 @@ export default abstract class AbstractKernel extends EventListener {
     return this.container.init();
   }
 
+  public getContainer(): Container {
+    return this.container;
+  }
+
   protected async commandHandler(cmd: string): Promise<WatchProcess> {
     this.fireEvent(KernelEvent.RUN, cmd);
 

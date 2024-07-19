@@ -56,6 +56,8 @@ export default class Steam extends AbstractModule {
   }
 
   private async createByPath(shortcutsPath: string): Promise<void> {
+    await this.config.updateSteam();
+
     const appId: number = await this.getAppId();
 
     const template: any = await this.getTemplate();
@@ -155,11 +157,11 @@ export default class Steam extends AbstractModule {
     return {
       appid: await this.getAppId(),
       AppName: this.config.title,
-      Exe: `"${await this.appFolders.getStartFile()}"`,
+      Exe: `"${this.config.getSteamPath()}"`,
       StartDir: `${await this.appFolders.getRootDir()}`,
       icon: (await this.config.getIcon()) || '',
       ShortcutPath: '',
-      LaunchOptions: `headless game=${this.config.id}`,
+      LaunchOptions: '',
       IsHidden: 0,
       AllowDesktopConfig: 1,
       AllowOverlay: 1,

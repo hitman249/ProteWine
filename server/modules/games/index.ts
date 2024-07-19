@@ -59,7 +59,7 @@ export default class Games extends AbstractModule {
     const configs: Config[] = [];
 
     for await (const file of files) {
-      const config: Config = new Config(file, this.appFolders, this.fs, this.settings);
+      const config: Config = new Config(file, this.appFolders, this.fs, this.settings, this.app);
       await config.init();
       configs.push(config);
     }
@@ -146,7 +146,7 @@ export default class Games extends AbstractModule {
       fileName = `${configsGamesDir}/${data.name}-${createAt}/link.json`;
     }
 
-    const config: Config = new Config(fileName, this.appFolders, this.fs, this.settings);
+    const config: Config = new Config(fileName, this.appFolders, this.fs, this.settings, this.app);
     await config.init();
 
     config.set('createAt', createAt);

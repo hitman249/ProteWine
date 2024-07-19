@@ -1,12 +1,16 @@
 import _ from 'lodash';
 import dotenv from 'dotenv';
 import {AbstractModule} from '../abstract-module';
+import Utils from '../../helpers/utils';
+import {SessionType} from '../kernels/abstract-kernel';
 import type AppFolders from '../app-folders';
 import type FileSystem from '../file-system';
 import type Settings from '../settings';
-import Utils from '../../helpers/utils';
 import type {BiasModes, FsrModes, FsrSharpening} from '../plugins/types';
-import {EnvType} from '../kernels/environment';
+import type {EnvType} from '../kernels/environment';
+import type {App} from '../../app';
+import type Plugins from '../plugins';
+import type {Kernel} from '../kernels';
 
 export type ConfigType = {
   createAt: number,
@@ -43,20 +47,24 @@ export type ConfigType = {
 export default class Config extends AbstractModule {
   private readonly path: string;
   private readonly envPath: string;
+  private readonly steamPath: string;
   private env: EnvType;
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly settings: Settings;
+  private readonly app: App;
 
   private config: ConfigType;
 
-  constructor(path: string, appFolders: AppFolders, fs: FileSystem, settings: Settings) {
+  constructor(path: string, appFolders: AppFolders, fs: FileSystem, settings: Settings, app: App) {
     super();
     this.path = path;
     this.envPath = `${fs.dirname(path)}/.env`;
+    this.steamPath = `${fs.dirname(path)}/steam.sh`;
     this.appFolders = appFolders;
     this.fs = fs;
     this.settings = settings;
+    this.app = app;
 
     this.appendTime = this.appendTime.bind(this);
   }
@@ -104,7 +112,32 @@ export default class Config extends AbstractModule {
       await this.fs.rm(path);
     }
 
+    await this.updateSteam();
+
     return this.fs.filePutContents(path, Utils.jsonEncode(Object.assign({}, this.config, {size: undefined})));
+  }
+
+  public async updateSteam(): Promise<void> {
+    const kernel: Kernel = this.app.getKernels().getKernel();
+    const plugins: Plugins = this.app.getPlugins();
+
+    if (!kernel || !plugins) {
+      return;
+    }
+
+    const env: EnvType = Object.assign({}, await plugins.getEnv(), this.getEnv());
+    const container: string = await kernel.getCmd(this.getCmd(), SessionType.RUN, env);
+
+    const script: string = `#!/usr/bin/env bash
+
+${container}`;
+
+    await this.fs.filePutContents(this.steamPath, script);
+    await this.fs.chmod(this.steamPath);
+  }
+
+  public getSteamPath(): string {
+    return this.steamPath;
   }
 
   public get sort(): number {
