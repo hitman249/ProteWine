@@ -15,6 +15,7 @@ import BottlesDevs from './bottles-devs';
 import Steam from './steam';
 import Archiver, {ArchiverEvent, Progress} from '../archiver';
 import {RepositoriesEvent} from './types';
+import WineLG from './wine-lg';
 
 export type ItemType = {
   name: string,
@@ -31,6 +32,7 @@ export default class Repositories extends AbstractModule {
   private readonly WINE_GE: WineGE;
   private readonly BOTTLES_DEVS: BottlesDevs;
   private readonly STEAM: Steam;
+  private readonly WINE_LG: WineLG;
 
   private readonly modules: AbstractRepository[] = [];
 
@@ -59,6 +61,7 @@ export default class Repositories extends AbstractModule {
     this.WINE_GE = new WineGE(appFolders, fs, network, system);
     this.BOTTLES_DEVS = new BottlesDevs(appFolders, fs, network, system);
     this.STEAM = new Steam(appFolders, fs, network, system);
+    this.WINE_LG = new WineLG(appFolders, fs, network, system);
 
     this.modules.push(
       this.KRON4EK,
@@ -67,6 +70,7 @@ export default class Repositories extends AbstractModule {
       this.WINE_GE,
       this.BOTTLES_DEVS,
       this.STEAM,
+      this.WINE_LG,
     );
   }
 

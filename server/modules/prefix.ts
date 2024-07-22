@@ -21,7 +21,7 @@ export default class Prefix extends AbstractModule {
 
   private processed: boolean = false;
   private itemsComplete: number = 0;
-  private itemsCount: number = 6;
+  private itemsCount: number = 8;
   private lastProgress: Progress;
   private registry: string[] = [];
 

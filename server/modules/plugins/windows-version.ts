@@ -50,7 +50,7 @@ export default class WindowsVersion extends AbstractPlugin {
     switch (windowsVersion) {
       case 'win2k':
         registry.push(
-          "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+          "\n\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"=-\n',
 
           '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
@@ -65,7 +65,7 @@ export default class WindowsVersion extends AbstractPlugin {
 
       case 'winxp':
         registry.push(
-          "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+          "\n\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"=-\n',
 
           '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
@@ -80,7 +80,7 @@ export default class WindowsVersion extends AbstractPlugin {
 
       case 'win10':
         registry.push(
-          "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+          "\n\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"="WinNT"\n',
 
           '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
@@ -96,7 +96,7 @@ export default class WindowsVersion extends AbstractPlugin {
       case 'win7':
       default:
         registry.push(
-          "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
+          "\n\n[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\ProductOptions]\n",
           '"ProductType"="WinNT"\n',
 
           '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n',
