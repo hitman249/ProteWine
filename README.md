@@ -30,14 +30,14 @@ curl -L https://github.com/hitman249/ProteWine/releases/latest/download/start --
 ### Troubleshooting
 
 1) When this error occurs:
-```
-pressure-vessel-wrap[278991]: E: Child process exited with code 1: bwrap: setting up uid map: Permission denied
-```
-
-Run the command:
-```bash
-sudo chmod u+s /usr/bin/bwrap
-```
+   ```
+   pressure-vessel-wrap[278991]: E: Child process exited with code 1: bwrap: setting up uid map: Permission denied
+   ```
+   
+   Run the command:
+   ```bash
+   sudo chmod u+s /usr/bin/bwrap
+   ```
 
 ### Environment
 
