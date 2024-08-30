@@ -49,6 +49,13 @@ WINE_FULLSCREEN_INTEGER_SCALING=1
 PROTON_USE_WINED3D=0
 ```
 
+### Arguments
+
+Run in full screen mode
+```bash
+./start fullscreen
+```
+
 # For developers
 
 ### Debugging
