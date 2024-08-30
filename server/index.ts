@@ -81,6 +81,7 @@ export default class Server {
       title: 'ProteWine',
       minWidth: 800,
       minHeight: 600,
+      fullscreen: this.arguments.isFullscreen(),
       width: fullscreen ? monitor?.width || 1280 : 1280,
       height: fullscreen ? monitor?.height || 720 : 720,
       icon: path.join(__dirname, 'icons/512.png'),

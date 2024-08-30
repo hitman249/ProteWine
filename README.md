@@ -27,6 +27,18 @@ https://github.com/hitman249/ProteWine/assets/1325326/066bb40c-5192-4c03-b5c6-2c
 curl -L https://github.com/hitman249/ProteWine/releases/latest/download/start --output start; chmod +x ./start; ./start
 ```
 
+### Troubleshooting
+
+1) When this error occurs:
+```
+pressure-vessel-wrap[278991]: E: Child process exited with code 1: bwrap: setting up uid map: Permission denied
+```
+
+Run the command:
+```bash
+sudo chmod u+s /usr/bin/bwrap
+```
+
 ### Environment
 
 Env paths: `data/configs/games/*/.env`  

@@ -51,6 +51,10 @@ export default  class Arguments {
     return this.isEnable(this.params['headless']);
   }
 
+  public isFullscreen(): boolean {
+    return this.isEnable(this.params['fullscreen']);
+  }
+
   public getGameId(): string {
     return this.params['game'] as string;
   }

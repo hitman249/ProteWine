@@ -1,6 +1,6 @@
 {
   "name": "protewine",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "main": "cache/server/server.js",
   "repository": "https://github.com/hitman249/protewine",
   "author": "hitman249",
@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "server": "yarn",
-    "server-start": "electron .",
+    "server-start": "electron . --no-sandbox",
     "server-build": "rm -rf ./cache/server ./dist/start && yarn webpack --mode production --config webpack.config.js && yarn run electron-builder && mv ./dist/protewine-*.AppImage ./dist/start",
     "client": "cd client && yarn",
     "client-build": "rm -rf ./cache/client && cd client && yarn build",
@@ -24,7 +24,9 @@
       "package.json"
     ],
     "publish": null,
+    "afterPack": "./appimage-fix.js",
     "linux": {
+      "executableName": "protewine",
       "executableArgs": [
         "--no-sandbox"
       ],
