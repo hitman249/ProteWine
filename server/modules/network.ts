@@ -1,6 +1,6 @@
 import Utils from '../helpers/utils';
 import _ from 'lodash';
-import cookieParser from 'cookie';
+import * as cookieParser from 'cookie';
 import dns from 'dns';
 import fetch, {type RequestInit, type Response} from 'node-fetch';
 import fs from 'fs';
@@ -18,6 +18,8 @@ type KeyValueAny = {[key: string]: any};
 export default class Network extends AbstractModule {
   private readonly repository: string = 'https://raw.githubusercontent.com/hitman249/ProteWine/main';
   private connected: boolean;
+  private torify: boolean;
+  private blockedRegion: boolean;
 
   private readonly fileSettings: KeyValueAny = {
     flags: 'w',
@@ -87,6 +89,29 @@ export default class Network extends AbstractModule {
     return this.isConnected()
       .then(() => fetch(url, this.options))
       .then((response: Response) => response.json());
+  }
+
+  public async isBlockedRegion(): Promise<boolean> {
+    if (undefined !== this.blockedRegion) {
+      const ip: string = await this.get('https://ipinfo.io/ip');
+
+      if (!ip) {
+        this.blockedRegion = false;
+      } else {
+        const info: any = this.getJSON(`https://ipinfo.io/${ip}`);
+        this.blockedRegion = (info?.country || '').toLowerCase() === 'ru';
+      }
+    }
+
+    return this.blockedRegion;
+  }
+
+  public async isTorify(): Promise<boolean> {
+    if (undefined !== this.torify) {
+      this.torify = Boolean(await this.exec('command -v torify'));
+    }
+
+    return this.torify;
   }
 
   public async download(url: string, filepath: string, progress?: (value: Progress) => void): Promise<void> {

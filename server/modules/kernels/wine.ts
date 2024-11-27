@@ -3,6 +3,7 @@ import type System from '../system';
 import type WatchProcess from '../../helpers/watch-process';
 import type {App} from '../../app';
 import type Environment from './environment';
+import Network from '../network';
 
 export default class Wine extends AbstractKernel {
   private env: Environment;
@@ -68,12 +69,16 @@ export default class Wine extends AbstractKernel {
     const wineDir: string = await this.findWineDir();
     const wineTricks: string = await this.appFolders.getWineTricksFile();
 
+    const network: Network = this.app.getNetwork();
+    const isBlockedRegion: boolean = await network.isBlockedRegion();
+    const torify: string = (isBlockedRegion && await network.isTorify()) ? '--torify' : '';
+
     const env: Environment = await this.app.createEnv();
     env.addPath(`${wineDir}/bin`);
     env.set('WINESERVER', `${wineDir}/bin/wineserver`);
     await this.env.fixDriver();
 
-    const container: string = await this.container.getCmd(this.envToCmd(`"${wineTricks}" ${cmd}`, env.toObject()));
+    const container: string = await this.container.getCmd(this.envToCmd(`"${wineTricks}" ${torify} ${cmd}`, env.toObject()));
 
     return this.commandHandler(container);
   }

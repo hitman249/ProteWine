@@ -17,11 +17,9 @@ async function afterPack({targets, appOutDir}) {
   const scriptPath = path.join(appOutDir, appName);
   const script     = '#!/bin/bash\n"${BASH_SOURCE%/*}"/' + appName + '.bin "$@" --no-sandbox';
 
-  new Promise((resolve) => {
+  return new Promise((resolve) => {
     const child = child_process.exec(`mv ${appName} ${appName}.bin`, {cwd: appOutDir});
-    child.on('exit', () => {
-      resolve();
-    });
+    child.on('exit', resolve);
   }).then(() => {
     fs.writeFileSync(scriptPath, script);
     child_process.exec(`chmod +x ${appName}`, {cwd: appOutDir});

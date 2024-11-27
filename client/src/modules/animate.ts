@@ -1,5 +1,6 @@
-import {tweened, type Subscriber, type Tweened, type Unsubscriber} from 'svelte/motion';
+import {tweened, type Tweened} from 'svelte/motion';
 import {sineInOut} from 'svelte/easing';
+import type {Subscriber, Unsubscriber} from 'svelte/store';
 
 export default class Animate {
   private offset: number = 0;
