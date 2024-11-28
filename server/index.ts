@@ -51,6 +51,15 @@ export default class Server {
       'local',
       (request: Request) => net.fetch('file://' + request.url.slice('local://'.length).split('?')[0]),
     );
+
+    protocol.handle(
+      'gallery',
+      async (request: Request): Promise<Response> => {
+        const url: string = request.url.slice('gallery://'.length).split('?')[0];
+        const path: string = await $app.getGallery().getLocalPathByUrl(`https://${url}`);
+        return net.fetch('file://' + path);
+      },
+    );
   }
 
   public quit(): void {

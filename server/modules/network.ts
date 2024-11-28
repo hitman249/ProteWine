@@ -136,15 +136,25 @@ export default class Network extends AbstractModule {
         });
 
         return new Promise((resolve: () => void, reject: () => void) => {
+          let success: number = 0;
+          const onSuccess: () => void = () => {
+            success++;
+
+            if (success > 1) {
+              resolve();
+            }
+          };
+
           const fileStream: fs.WriteStream = fs.createWriteStream(
             filepath, {mode: this.fileSettings.mode, autoClose: true},
           );
           fileStream.on('error', reject);
+          fileStream.on('finish', onSuccess);
 
           response.body.pipe(fileStream);
           response.body.on('end', () => {
             progress?.(Utils.getFullProgress('download'));
-            resolve();
+            onSuccess();
           });
           response.body.on('error', () => {
             progress?.(Utils.getFullProgress('download'));

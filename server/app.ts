@@ -66,8 +66,8 @@ export class App {
     this.COMMAND = new Command();
     this.NETWORK = new Network();
     this.APP_FOLDERS = new AppFolders();
-    this.GALLERY = new Gallery();
     this.FILE_SYSTEM = new FileSystem(this.APP_FOLDERS);
+    this.GALLERY = new Gallery(this.APP_FOLDERS, this.FILE_SYSTEM, this.NETWORK);
     this.CACHE = new GlobalCache(this.APP_FOLDERS);
     this.SYSTEM = new System(this.APP_FOLDERS, this.CACHE, this);
     this.DRIVER = new Driver(this.COMMAND, this.SYSTEM, this.FILE_SYSTEM);

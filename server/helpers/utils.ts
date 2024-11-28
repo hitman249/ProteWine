@@ -8,6 +8,7 @@ import type {Progress} from '../modules/archiver';
 
 type CounterType = {count: number, codepage: string, str: string};
 
+// @ts-ignore
 const regexp: RegExp = /[\0\1\2\3\4\5\6\7\8\9abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]/gm;
 
 const CODEPAGES: string[] = ['utf-8', 'cp1251', 'cp866', 'koi8-r'];
