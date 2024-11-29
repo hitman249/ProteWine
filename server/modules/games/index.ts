@@ -269,7 +269,7 @@ export default class Games extends AbstractModule {
     }
 
     const basename: string = this.fs.basename(url);
-    const cache: string = `${await this.appFolders.getCacheDir()}/${basename}`;
+    let cache: string = `${await this.appFolders.getCacheDir()}/${basename}`;
     const dest: string = `${config.getFolder()}/${type}.png`;
 
     if (await this.fs.exists(cache)) {
@@ -283,7 +283,9 @@ export default class Games extends AbstractModule {
 
       await this.fs.cp(url, cache);
     } else {
-      await this.network.download(url, cache, () => undefined);
+      cache = await this.app.getGallery().getLocalPathByUrl(
+        `https://${url.slice('gallery://'.length).split('?')[0]}`
+      );
     }
 
     if (!(await this.fs.exists(cache)) || 0 === (await this.fs.size(cache))) {
