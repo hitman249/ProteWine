@@ -3,6 +3,8 @@ import AppFolders from './app-folders';
 import FileSystem from './file-system';
 import Update from './update';
 import Utils from '../helpers/utils';
+import Network from './network';
+import type {Progress} from './archiver';
 
 const SKIP: string[] = [
   // apps
@@ -201,15 +203,20 @@ export default class WineTricks extends AbstractModule {
   private readonly appFolders: AppFolders;
   private readonly fs: FileSystem;
   private readonly update: Update;
+  private readonly network: Network;
+
+  protected readonly url: string = 'https://api.github.com/repos/Winetricks/winetricks';
+  protected readonly blobUrl: string = 'https://raw.githubusercontent.com/Winetricks/winetricks';
 
   private list: WineTrickItemType[];
 
-  constructor(appFolders: AppFolders, fs: FileSystem, update: Update) {
+  constructor(appFolders: AppFolders, fs: FileSystem, update: Update, network: Network) {
     super();
 
     this.appFolders = appFolders;
     this.fs = fs;
     this.update = update;
+    this.network = network;
   }
 
   public async init(): Promise<any> {
@@ -217,7 +224,37 @@ export default class WineTricks extends AbstractModule {
 
   public async download(): Promise<void> {
     await this.update.downloadCabExtract();
-    await this.update.downloadWineTricks();
+    await this.downloadWineTricks();
+  }
+
+  public async getLatestTag(): Promise<string> {
+    const result: any[] = await this.network.getJSON(`${this.url}/git/refs/tags`);
+    const last: any = result[result.length - 1];
+    return last?.ref || 'refs/heads/master';
+  }
+
+  public async downloadWineTricks(progress?: (value: Progress) => void): Promise<void> {
+    const url: string = `${this.blobUrl}/${await this.getLatestTag()}/src/winetricks`;
+    const path: string = await this.appFolders.getWineTricksFile();
+
+    if (await this.fs.exists(path)) {
+      const createAt: Date = await this.fs.getCreateDate(path);
+      const currentAt: Date = new Date();
+
+      if (createAt && ((currentAt.getTime() - createAt.getTime()) / 1000) > 86400) {
+        await this.network.download(url, path, progress);
+
+        if (await this.fs.exists(path)) {
+          await this.fs.chmod(path);
+        }
+      }
+    } else {
+      await this.network.download(url, path, progress);
+
+      if (await this.fs.exists(path)) {
+        await this.fs.chmod(path);
+      }
+    }
   }
 
   public async getList(): Promise<WineTrickItemType[]> {

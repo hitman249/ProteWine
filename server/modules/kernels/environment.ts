@@ -34,7 +34,7 @@ export default class Environment {
     this.set('LC_ALL', await this.command.getLocale());
     this.set('XDG_CACHE_HOME', await this.appFolders.getCacheDir());
     this.set('VK_LAYER_PATH', `$VK_LAYER_PATH:${await this.appFolders.getCacheImplicitLayerDir()}`);
-    this.set('LD_LIBRARY_PATH', `$LD_LIBRARY_PATH:${await this.appFolders.getLib64Dir()}`);
+    // this.set('LD_LIBRARY_PATH', `$LD_LIBRARY_PATH:${await this.appFolders.getLib64Dir()}`);
   }
 
   public set(field: string, value: string | number): void {

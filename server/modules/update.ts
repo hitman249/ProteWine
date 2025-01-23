@@ -67,30 +67,6 @@ export default class Update extends AbstractModule {
     }
   }
 
-  public async downloadWineTricks(progress?: (value: Progress) => void): Promise<void> {
-    const url: string = 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks';
-    const path: string = await this.appFolders.getWineTricksFile();
-
-    if (await this.fs.exists(path)) {
-      const createAt: Date = await this.fs.getCreateDate(path);
-      const currentAt: Date = new Date();
-
-      if (createAt && ((currentAt.getTime() - createAt.getTime()) / 1000) > 86400) {
-        await this.network.download(url, path, progress);
-
-        if (await this.fs.exists(path)) {
-          await this.fs.chmod(path);
-        }
-      }
-    } else {
-      await this.network.download(url, path, progress);
-
-      if (await this.fs.exists(path)) {
-        await this.fs.chmod(path);
-      }
-    }
-  }
-
   public async downloadSquashFuse(progress: (value: Progress) => void): Promise<void> {
     const url: string = this.network.getRepo('/bin/squashfuse');
     const path: string = await this.appFolders.getSquashFuseFile();
