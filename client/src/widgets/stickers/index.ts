@@ -1,6 +1,7 @@
 export enum StickerType {
   GAME = 'game',
   SELECT = 'select',
+  CONTAINER = 'container',
   SELECT_CENTER = 'select-center',
   MENU = 'menu',
   ITEM = 'item',

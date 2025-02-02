@@ -38,6 +38,10 @@
   import Dice from './Dice.svelte';
   import Exit from './Exit.svelte';
   import Config from './Config.svelte';
+  import Container from './Container.svelte';
+  import Containers from './Containers.svelte';
+  import Storages from './Storages.svelte';
+  import Nodes from './Nodes.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -87,6 +91,8 @@
   <Compile {status} {style} />
 {:else if 'storage' === icon}
   <Storage {status} {style} />
+{:else if 'storages' === icon}
+  <Storages {status} {style} />
 {:else if 'manage' === icon}
   <Manage {status} {style} />
 {:else if 'root' === icon}
@@ -125,4 +131,10 @@
   <Exit {status} {style} />
 {:else if 'config' === icon}
   <Config {status} {style} />
+{:else if 'container' === icon}
+  <Container {status} {style} />
+{:else if 'containers' === icon}
+  <Containers {status} {style} />
+{:else if 'nodes' === icon}
+  <Nodes {status} {style} />
 {/if}

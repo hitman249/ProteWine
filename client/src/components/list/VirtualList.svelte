@@ -195,5 +195,6 @@
     {percent}
     position={fixPosition}
     {type}
+    {direction}
   />
 {/each}

@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
   import {StickerType} from './index';
 
-  function styleToString(style: {}, active: boolean, percent: number, dummy: boolean): string {
+  export function styleToString(style: {}, active: boolean, percent: number, dummy: boolean): string {
     const opacity: string = `opacity: ${dummy ? 0 : 1}`;
 
     if (dummy) {
@@ -128,6 +128,14 @@
 
     return StickerType.IMAGE === type;
   }
+
+  function isCategory(type: StickerType): boolean {
+    if (!type) {
+      return false;
+    }
+
+    return StickerType.CONTAINER === type;
+  }
 </script>
 <script lang="ts">
   import type {MenuItem} from '../../modules/menu';
@@ -144,10 +152,13 @@
   import Winetricks from './Winetricks.svelte';
   import Runtime from './Runtime.svelte';
   import Layer from './Layer.svelte';
+  import Triangle from './Triangle.svelte';
 
   export let active: boolean;
   export let dummy: boolean;
   export let percent: number;
+  export let position: number;
+  export let direction: boolean = true;
   export let type: StickerType;
   export let item: MenuItem | any;
   export let itemClass: string = '';
@@ -278,6 +289,16 @@
     {itemClass}
     {item}
     {percent}
+    {style}
+  />
+{:else if isCategory(type)}
+  <Triangle
+    {active}
+    {dummy}
+    {itemClass}
+    {item}
+    {percent}
+    {direction}
     {style}
   />
 {/if}

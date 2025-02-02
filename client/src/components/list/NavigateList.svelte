@@ -197,6 +197,7 @@
       let:item
       let:position
       let:type
+      let:direction
     >
       <slot
         name="navigate-list-item"
@@ -207,6 +208,7 @@
         {indexTag}
         {item}
         {position}
+        {direction}
         {scrollIndent}
         {type}
         itemClass={`list-item ${active ? 'active' : ''}`}
@@ -222,7 +224,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: visible;
     will-change: auto;
     transform: translateZ(0);
   }

@@ -12,6 +12,7 @@
   export let itemSize: number;
   export let headersDummy: number = 0;
   export let paddingIndent: number = 0;
+  export let marginIndent: number = 0;
   export let itemSpace: number = 0;
   export let itemCenter: boolean = false;
   export let horizontal: boolean = true;
@@ -140,6 +141,7 @@
     {itemSize}
     {headersDummy}
     {paddingIndent}
+    {marginIndent}
     {itemSpace}
     {itemCenter}
     {extendItemClass}

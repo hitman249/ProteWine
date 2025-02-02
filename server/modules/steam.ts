@@ -175,6 +175,11 @@ export default class Steam extends AbstractModule {
     };
   }
 
+  public async readVdf(shortcutsPath: string): Promise<any> {
+    const buffer: Buffer = await this.readFile(shortcutsPath);
+    return readVdf(buffer);
+  }
+
   private async readFile(filepath: string): Promise<Buffer> {
     return await new Promise((resolve: (value: Buffer) => void, reject: (err: any) => void) => {
       fs.readFile(filepath, (err: NodeJS.ErrnoException, buffer: Buffer) => {

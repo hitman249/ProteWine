@@ -118,6 +118,8 @@
     let:itemClass
     let:itemStyle
     let:percent
+    let:position
+    let:direction
     let:type
 
     {active}
@@ -125,6 +127,8 @@
     {itemStyle}
     {item}
     {percent}
+    {position}
+    {direction}
     {type}
     itemClass="{extendItemClass} {itemClass}"
   />

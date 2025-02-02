@@ -24,6 +24,7 @@ export enum ValueLabels {
   DB_LAYERS = 'dbLayers',
   GAME = 'game',
   MANAGE = 'manage',
+  CONTAINER = 'container',
   OPERATION = 'operation',
   FILE_MANAGER = 'fileManager',
   FSR_MODE = 'fsrMode',
@@ -324,6 +325,16 @@ export default class Value {
       },
     ],
     [ValueLabels.OPERATION]: [],
+    [ValueLabels.CONTAINER]: [
+      {
+        value: 'default',
+        title: 'Set default',
+      },
+      {
+        value: 'remove',
+        title: 'Remove',
+      },
+    ],
   };
 
   private value: ValueData;

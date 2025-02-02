@@ -33,4 +33,24 @@ export default class Helpers {
 
     return arr;
   }
+
+  public static parseStyles(styles: string): {[field: string]: string} {
+    const result: {[field: string]: string} = {};
+
+    for (const chunk of styles.split(';')) {
+      const prepareChunk: string = _.trim(chunk);
+
+      if (prepareChunk) {
+        const [field, ...value]: string[] = prepareChunk.split(':');
+        result[field] = value.join(':');
+      }
+    }
+
+    return result;
+  }
+
+  public static parseTransformTranslate(value: string): number[] {
+    const result: string[] = value.match(/translate\(([0-9\-\.]{1,})px,( |)([0-9\-\.]{1,})px\)/);
+    return [parseFloat(result?.[1] ?? '0'), parseFloat(result?.[3] ?? '0')];
+  }
 }

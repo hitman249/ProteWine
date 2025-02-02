@@ -24,9 +24,7 @@ export default class Server {
     const gameId: string = this.arguments.getGameId();
 
     if (gameId) {
-      $app.getGames().on(GamesEvent.EXIT, () => {
-        this.quit();
-      });
+      $app.getGames().on(GamesEvent.EXIT, () => this.quit());
 
       if (!await $app.getGames().runById(gameId)) {
         this.quit();
