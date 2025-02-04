@@ -48,6 +48,7 @@ export default class SteamRuntimeSniper {
   }
 
   public async getCmd(cmd: string): Promise<string> {
-    return `env STEAM_COMPAT_MOUNTS="${await this.appFolders.getLib64Dir()}" "${await this.getPath()}/run" -- ${cmd}`;
+    // return `env STEAM_COMPAT_MOUNTS="${await this.appFolders.getLib64Dir()}" "${await this.getPath()}/run" -- ${cmd}`;
+    return `"${await this.getPath()}/run" -- ${cmd}`;
   }
 }

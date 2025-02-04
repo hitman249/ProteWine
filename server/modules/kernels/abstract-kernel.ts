@@ -157,6 +157,22 @@ export default abstract class AbstractKernel extends EventListener {
     }
   }
 
+  public getLaunchMethod(cmd: string): string {
+    let type: FileType;
+
+    const lowerCmd: string = String(cmd).toLowerCase();
+
+    if (lowerCmd.indexOf('.exe') !== -1) {
+      type = FileType.EXE;
+    } else if (lowerCmd.indexOf('.bat') !== -1) {
+      type = FileType.BAT;
+    } else if (lowerCmd.indexOf('.msi') !== -1) {
+      type = FileType.MSI;
+    }
+
+    return this.getLauncherByFileType(type);
+  }
+
   public abstract createPrefix(): Promise<WatchProcess>;
 
   public async deletePrefix(): Promise<void> {

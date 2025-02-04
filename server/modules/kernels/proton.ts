@@ -54,7 +54,7 @@ export default class Proton extends AbstractKernel {
 
   public async getCmd(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<string> {
     const proton: string = await this.appFolders.getProtonFile();
-    return await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${cmd}`, Object.assign({}, this.env.toObject(), env)));
+    return await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${this.getLaunchMethod(cmd)} ${cmd}`, Object.assign({}, this.env.toObject(), env)));
   }
 
   public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {

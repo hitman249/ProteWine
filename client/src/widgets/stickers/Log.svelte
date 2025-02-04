@@ -67,6 +67,7 @@
   style:color="{color.color}"
   style:text-shadow="{color.textShadow}"
   {style}
+  title={item || ''}
 >
   {item || ''}
 </div>

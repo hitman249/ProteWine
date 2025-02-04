@@ -27,11 +27,15 @@ export default class Environment {
       this.PATH.push(path);
     }
 
+    const locale: string = await this.command.getLocale();
+
+    this.set('LC_ALL', locale);
+    this.set('HOST_LC_ALL', locale);
+
     this.set('WINEDEBUG', '-all');
     this.set('WINEPREFIX', prefix);
     this.set('WINEARCH', 'win64');
     this.set('STEAM_COMPAT_DATA_PATH', prefix);
-    this.set('LC_ALL', await this.command.getLocale());
     this.set('XDG_CACHE_HOME', await this.appFolders.getCacheDir());
     this.set('VK_LAYER_PATH', `$VK_LAYER_PATH:${await this.appFolders.getCacheImplicitLayerDir()}`);
     // this.set('LD_LIBRARY_PATH', `$LD_LIBRARY_PATH:${await this.appFolders.getLib64Dir()}`);
