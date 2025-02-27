@@ -223,7 +223,7 @@
        */
 
       const kernel: Kernel = window.$app.getApi().getKernel();
-      await kernel.install(formData.getPath());
+      await kernel.install(`"${formData.getPath()}"`);
 
     } else if (GameOperation.DEBUG === operation) {
       /**
