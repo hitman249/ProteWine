@@ -286,9 +286,7 @@
       const formData: FormData<MenuItem> = new FormData(item);
 
       if (item?.popup) {
-        const blockExit: boolean = 'config' === item.id;
-
-
+        const blockExit: boolean = ['config', 'registry'].includes(item.id);
 
         if (PopupNames.DATABASE === item?.popup) {
           formData.setCallback(() => updateLayerCount());
@@ -300,6 +298,8 @@
 
         if ('config' === item.id) {
           await window.$app.getApi().getKernel().config();
+        } else if ('registry' === item.id) {
+          await window.$app.getApi().getKernel().registry();
         }
 
         return;

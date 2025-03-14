@@ -29,4 +29,8 @@ export default class Kernel extends AbstractModule {
   public async config(): Promise<any> {
     return (await window.electronAPI.invoke(RoutesKernel.CONFIG));
   }
+
+  public async registry(): Promise<any> {
+    return (await window.electronAPI.invoke(RoutesKernel.REGISTRY));
+  }
 }

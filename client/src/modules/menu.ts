@@ -338,7 +338,7 @@ export default class Menu extends EventListener {
           description: `Version ${await window.$app.getApi().getUpdate().appVersion()}`,
           value: {
             hidden: true,
-            value: false,
+            value: true,
             labels: ValueLabels.YESNO,
             type: ValueTypes.SELECT,
           },
@@ -373,6 +373,12 @@ export default class Menu extends EventListener {
           id: 'config',
           icon: 'config',
           title: 'Config',
+          popup: PopupNames.EXECUTING,
+        },
+        {
+          id: 'registry',
+          icon: 'registry',
+          title: 'Registry',
           popup: PopupNames.EXECUTING,
         },
         {

@@ -14,6 +14,7 @@ export default class KernelRoutes extends AbstractRouteModule {
     this.bindWinetricks();
     this.bindCreatePrefix();
     this.bindConfig();
+    this.bindRegistry();
   }
 
   private bindVersion(): void {
@@ -29,7 +30,7 @@ export default class KernelRoutes extends AbstractRouteModule {
       async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
         this.app.getTasks()
           .kernel(cmd, KernelOperation.RUN)
-          .then(() => undefined),
+          .then((): void => undefined),
     );
   }
 
@@ -39,7 +40,7 @@ export default class KernelRoutes extends AbstractRouteModule {
       async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
         this.app.getTasks()
           .kernel(cmd, KernelOperation.INSTALL)
-          .then(() => undefined),
+          .then((): void => undefined),
     );
   }
 
@@ -49,7 +50,7 @@ export default class KernelRoutes extends AbstractRouteModule {
       async (event: IpcMainInvokeEvent, cmd: string): Promise<any> =>
         this.app.getTasks()
           .kernel(cmd, KernelOperation.WINETRICKS)
-          .then(() => undefined),
+          .then((): void => undefined),
     );
   }
 
@@ -59,7 +60,7 @@ export default class KernelRoutes extends AbstractRouteModule {
       async (event: IpcMainInvokeEvent): Promise<any> =>
         this.app.getTasks()
           .kernel('', KernelOperation.CREATE_PREFIX)
-          .then(() => undefined),
+          .then((): void => undefined),
     );
   }
 
@@ -75,7 +76,16 @@ export default class KernelRoutes extends AbstractRouteModule {
       RoutesKernel.CONFIG,
       async (event: IpcMainInvokeEvent): Promise<void> => this.app.getTasks()
         .kernel('winecfg', KernelOperation.RUN, SessionType.RUN_IN_PREFIX)
-        .then(() => undefined),
+        .then((): void => undefined),
+    );
+  }
+
+  private bindRegistry(): void {
+    this.ipc.handle(
+      RoutesKernel.REGISTRY,
+      async (event: IpcMainInvokeEvent): Promise<void> => this.app.getTasks()
+        .kernel('regedit', KernelOperation.RUN, SessionType.RUN_IN_PREFIX)
+        .then((): void => undefined),
     );
   }
 }

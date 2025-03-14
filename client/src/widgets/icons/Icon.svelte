@@ -38,6 +38,7 @@
   import Dice from './Dice.svelte';
   import Exit from './Exit.svelte';
   import Config from './Config.svelte';
+  import Registry from './Registry.svelte';
 
   export let status: string = 'normal';
   export let icon: string = '';
@@ -125,4 +126,6 @@
   <Exit {status} {style} />
 {:else if 'config' === icon}
   <Config {status} {style} />
+{:else if 'registry' === icon}
+  <Registry {status} {style} />
 {/if}
