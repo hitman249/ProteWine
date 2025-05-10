@@ -7,7 +7,7 @@ import type FileSystem from './file-system';
 import type System from './system';
 
 export type SettingsType = {
-  windowsVersion: 'winxp' | 'win7' | 'win10',
+  windowsVersion: 'winxp' | 'win7' | 'win10'| 'win11',
   plugins: {
     dxvk: boolean,
     vkd3dProton: boolean,
@@ -85,7 +85,7 @@ export default class Settings extends AbstractModule {
   }
 
   public getWindowsVersion(): string {
-    return this.get('windowsVersion', 'win7') as string;
+    return this.get('windowsVersion', 'win10') as string;
   }
 
   public isPulse(): boolean {
@@ -138,7 +138,7 @@ export default class Settings extends AbstractModule {
 
   public getDefaultConfig(): SettingsType {
     return {
-      windowsVersion: 'win7',  // Windows version (win11, win10, win7, winxp, win2k),
+      windowsVersion: 'win10',  // Windows version (win11, win10, win7, winxp, win2k),
       plugins: {
         dxvk: true,
         vkd3dProton: true,

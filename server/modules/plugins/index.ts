@@ -42,6 +42,8 @@ import FsrMode from './fsr-mode';
 import FsrStrength from './fsr-strength';
 import type Config from '../games/config';
 import BiasMode from './bias-mode';
+import Window from './window';
+import Ntsync from './ntsync';
 
 export default class Plugins extends AbstractModule {
   private readonly DXVK: Dxvk;
@@ -54,11 +56,13 @@ export default class Plugins extends AbstractModule {
   private readonly NO_CRASH_DIALOG: NoCrashDialog;
   private readonly FOCUS: Focus;
   private readonly MOUSE_WARP_OVERRIDE: MouseWarpOverride;
+  private readonly WINDOW: Window;
   private readonly D3D8: D3d8;
   private readonly D3D9: D3d9;
   private readonly D3D10: D3d10;
   private readonly D3D11: D3d11;
   private readonly D3D12: D3d12;
+  private readonly NTSYNC: Ntsync;
   private readonly ESYNC: Esync;
   private readonly FSYNC: Fsync;
   private readonly GECKO: Gecko;
@@ -104,11 +108,13 @@ export default class Plugins extends AbstractModule {
     this.NO_CRASH_DIALOG = new NoCrashDialog(this);
     this.FOCUS = new Focus(this);
     this.MOUSE_WARP_OVERRIDE = new MouseWarpOverride(this);
+    this.WINDOW = new Window(this);
     this.D3D8 = new D3d8(this);
     this.D3D9 = new D3d9(this);
     this.D3D10 = new D3d10(this);
     this.D3D11 = new D3d11(this);
     this.D3D12 = new D3d12(this);
+    this.NTSYNC = new Ntsync(this);
     this.ESYNC = new Esync(this);
     this.FSYNC = new Fsync(this);
     this.GECKO = new Gecko(this);
@@ -138,9 +144,11 @@ export default class Plugins extends AbstractModule {
       this.GSTREAMER,
 
       // config
+      this.WINDOW,
       this.FSR_MODE,
       this.FSR_STRENGTH,
       this.BIAS_MODE,
+      this.NTSYNC,
       this.ESYNC,
       this.FSYNC,
       this.NVAPI,

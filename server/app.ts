@@ -147,7 +147,7 @@ export class App {
 
         if (!await this.PREFIX.isExist()) {
           this.PREFIX.setProcessed(true);
-          this.PREFIX.create().then(() => undefined);
+          this.PREFIX.create().then((): any => void 0);
         }
       };
 
@@ -157,7 +157,7 @@ export class App {
     } else {
       if (!await this.PREFIX.isExist()) {
         this.PREFIX.setProcessed(true);
-        this.PREFIX.create().then(() => undefined);
+        this.PREFIX.create().then((): any => void 0);
       }
     }
   }

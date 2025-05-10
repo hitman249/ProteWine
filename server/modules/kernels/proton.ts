@@ -3,7 +3,8 @@ import type System from '../system';
 import type WatchProcess from '../../helpers/watch-process';
 import type {App} from '../../app';
 import type Environment from './environment';
-import Network from '../network';
+import type Network from '../network';
+import type Config from '../games/config';
 
 export default class Proton extends AbstractKernel {
   protected innerPrefix: string = '/pfx';
@@ -54,7 +55,10 @@ export default class Proton extends AbstractKernel {
 
   public async getCmd(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<string> {
     const proton: string = await this.appFolders.getProtonFile();
-    return await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${this.getLaunchMethod(cmd)} ${cmd}`, Object.assign({}, this.env.toObject(), env)));
+    const config: Config = this.app.getGames().getRunningGame();
+    const desktop: string = config ? await config.getDesktop() : '';
+
+    return await this.container.getCmd(this.envToCmd(`"${proton}" ${session} ${desktop} ${this.getLaunchMethod(cmd)} ${cmd}`, Object.assign({}, this.env.toObject(), env)));
   }
 
   public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {

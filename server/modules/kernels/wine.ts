@@ -3,7 +3,8 @@ import type System from '../system';
 import type WatchProcess from '../../helpers/watch-process';
 import type {App} from '../../app';
 import type Environment from './environment';
-import Network from '../network';
+import type Network from '../network';
+import type Config from '../games/config';
 
 export default class Wine extends AbstractKernel {
   private env: Environment;
@@ -58,7 +59,10 @@ export default class Wine extends AbstractKernel {
       return Promise.reject('Wine not found.');
     }
 
-    return await this.container.getCmd(this.envToCmd(`"${wineFile}" ${this.getLaunchMethod(cmd)} ${cmd}`, Object.assign({}, this.env.toObject(), env)));
+    const config: Config = this.app.getGames().getRunningGame();
+    const desktop: string = config ? await config.getDesktop() : '';
+
+    return await this.container.getCmd(this.envToCmd(`"${wineFile}" ${desktop} ${this.getLaunchMethod(cmd)} ${cmd}`, Object.assign({}, this.env.toObject(), env)));
   }
 
   public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {

@@ -11,6 +11,7 @@ import type {EnvType} from '../kernels/environment';
 import type {App} from '../../app';
 import type Plugins from '../plugins';
 import type {Kernel} from '../kernels';
+import type {Resolution} from '../monitor';
 
 export type ConfigType = {
   createAt: number,
@@ -30,12 +31,14 @@ export type ConfigType = {
     timeFormatted?: string,
   },
   kernel: {
+    window: boolean,
     d3d12: boolean,
     d3d11: boolean,
     d3d10: boolean,
     d3d9: boolean,
     d3d8: boolean,
     nvapi: boolean,
+    ntsync: boolean,
     esync: boolean,
     fsync: boolean,
     fsrMode: FsrModes,
@@ -252,6 +255,18 @@ ${container}`;
     return `"C:${this.config.game.path}" ${this.config.game.arguments}`;
   }
 
+  public async getDesktop(): Promise<string> {
+    if (!this.isWindow()) {
+      return '';
+    }
+
+    const title: string = `${this.config.game.name}`;
+    const {width, height}: Resolution = await this.app.getMonitor().getResolution();
+    const resolution: string = `${width}x${height}`;
+
+    return `explorer "/desktop=${title},${resolution}"`;
+  }
+
   public getDefaultConfig(): any {
     return {
       createAt: 0,
@@ -263,12 +278,14 @@ ${container}`;
         time: 0,
       },
       kernel: {
+        window: false,
         d3d12: true,
         d3d11: true,
         d3d10: true,
         d3d9: true,
         d3d8: true,
         nvapi: true,
+        ntsync: true,
         esync: true,
         fsync: false,
         fsrMode: '',
@@ -285,6 +302,10 @@ ${container}`;
 
   public isEsync(): boolean {
     return _.get(this.config, 'kernel.esync', true);
+  }
+
+  public isNtsync(): boolean {
+    return _.get(this.config, 'kernel.ntsync', true);
   }
 
   public isFsync(): boolean {
@@ -313,6 +334,10 @@ ${container}`;
 
   public isD3d8(): boolean {
     return _.get(this.config, 'kernel.d3d8', true);
+  }
+
+  public isWindow(): boolean {
+    return _.get(this.config, 'kernel.window', false);
   }
 
   public getFrsMode(): string {

@@ -14,6 +14,7 @@ export default class Server {
   private window: BrowserWindow;
   private quitProcessing: boolean = false;
   public noQuit: boolean = false;
+  public visibleWindow: boolean = false;
 
   public async init(): Promise<void> {
     await this.registerHandlers();
@@ -81,6 +82,12 @@ export default class Server {
   }
 
   public async createWindow(): Promise<void> {
+    if (this.visibleWindow) {
+      return;
+    }
+
+    this.visibleWindow = true;
+
     const monitor: Resolution = await $app.getMonitor().getResolution();
     const fullscreen: boolean = $app.getNativeKeyboard().isFullscreen();
 
@@ -124,6 +131,8 @@ export default class Server {
       e.preventDefault();
       return false;
     });
+
+    this.window.on('closed', () => this.visibleWindow = false);
 
     await this.createRoutes();
   }
