@@ -382,6 +382,12 @@ export default class Menu extends EventListener {
           popup: PopupNames.EXECUTING,
         },
         {
+          id: 'gamepad',
+          icon: 'gamepad',
+          title: 'Gamepad',
+          popup: PopupNames.EXECUTING,
+        },
+        {
           id: 'reset',
           icon: 'reset',
           title: 'Prefix reset',

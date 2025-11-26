@@ -7,6 +7,7 @@ export enum RoutesKernel {
   LAUNCHER = 'kernel:launcher',
   CONFIG = 'kernel:config',
   REGISTRY = 'kernel:registry',
+  GAMEPAD = 'kernel:gamepad',
 }
 
 export enum RoutesFileSystem {
@@ -142,6 +143,7 @@ export default {
     RoutesKernel.WINETRICKS,
     RoutesKernel.CONFIG,
     RoutesKernel.REGISTRY,
+    RoutesKernel.GAMEPAD,
     RoutesFileSystem.LS,
     RoutesFileSystem.STORAGES,
     RoutesFileSystem.COPY,

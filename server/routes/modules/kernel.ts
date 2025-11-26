@@ -15,6 +15,7 @@ export default class KernelRoutes extends AbstractRouteModule {
     this.bindCreatePrefix();
     this.bindConfig();
     this.bindRegistry();
+    this.bindGamepad();
   }
 
   private bindVersion(): void {
@@ -85,6 +86,15 @@ export default class KernelRoutes extends AbstractRouteModule {
       RoutesKernel.REGISTRY,
       async (event: IpcMainInvokeEvent): Promise<void> => this.app.getTasks()
         .kernel('regedit', KernelOperation.RUN, SessionType.RUN_IN_PREFIX)
+        .then((): void => undefined),
+    );
+  }
+
+  private bindGamepad(): void {
+    this.ipc.handle(
+      RoutesKernel.GAMEPAD,
+      async (event: IpcMainInvokeEvent): Promise<void> => this.app.getTasks()
+        .kernel('control joy.cpl', KernelOperation.RUN, SessionType.RUN_IN_PREFIX)
         .then((): void => undefined),
     );
   }

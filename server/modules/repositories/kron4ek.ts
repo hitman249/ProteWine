@@ -57,10 +57,10 @@ export default class Kron4ek extends AbstractRepository {
           file.name = _.trim(file.name.replace('proton', '').replace('--', '-'), '-');
           items.proton[arch].push(file);
         } else if (item.name.includes('-tkg-')) {
-          file.name = _.trim(file.name.replace('staging-tkg', '').replace('tkg-staging', '').replace('-staging', ''), '-');
+          file.name = _.trim(file.name.replace('staging-tkg', '').replace('tkg-staging', '').replace('-staging', '').replace('--', '-'), '-');
           items.tkg[arch].push(file);
         } else if (item.name.includes('-staging-')) {
-          file.name = _.trim(file.name.replace('-staging', ''), '-');
+          file.name = _.trim(file.name.replace('-staging', '').replace('--', '-'), '-');
           items.staging[arch].push(file);
         } else {
           items.wine[arch].push(file);

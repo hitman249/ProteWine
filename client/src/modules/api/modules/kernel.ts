@@ -33,4 +33,8 @@ export default class Kernel extends AbstractModule {
   public async registry(): Promise<any> {
     return (await window.electronAPI.invoke(RoutesKernel.REGISTRY));
   }
+
+  public async gamepad(): Promise<any> {
+    return (await window.electronAPI.invoke(RoutesKernel.GAMEPAD));
+  }
 }
