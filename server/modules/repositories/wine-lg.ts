@@ -24,6 +24,11 @@ export default class WineLG extends AbstractRepository {
 
     for (const item of data) {
       const asset: any = Utils.findAssetArchive(item.assets);
+
+      if (!asset) {
+        continue;
+      }
+
       const url: string = asset.browser_download_url;
       const name: string = _.trim(String(item.name || item.tag_name));
 

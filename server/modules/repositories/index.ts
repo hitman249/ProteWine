@@ -16,6 +16,9 @@ import Steam from './steam';
 import Archiver, {ArchiverEvent, Progress} from '../archiver';
 import {RepositoriesEvent} from './types';
 import WineLG from './wine-lg';
+import ProtonEM from './proton-em';
+import ProtonGeRtsp from './proton-ge-rtsp';
+import ProtonCachyOS from './proton-cachyos';
 
 export type ItemType = {
   name: string,
@@ -28,6 +31,9 @@ export type ItemType = {
 export default class Repositories extends AbstractModule {
   private readonly KRON4EK: Kron4ek;
   private readonly PROTON_GE: ProtonGE;
+  private readonly PROTON_GE_RTSP: ProtonGeRtsp;
+  private readonly PROTON_EM: ProtonEM;
+  private readonly PROTON_CACHY_OS: ProtonCachyOS;
   private readonly LUTRIS: Lutris;
   private readonly WINE_GE: WineGE;
   private readonly BOTTLES_DEVS: BottlesDevs;
@@ -57,6 +63,9 @@ export default class Repositories extends AbstractModule {
 
     this.KRON4EK = new Kron4ek(appFolders, fs, network, system);
     this.PROTON_GE = new ProtonGE(appFolders, fs, network, system);
+    this.PROTON_GE_RTSP = new ProtonGeRtsp(appFolders, fs, network, system);
+    this.PROTON_CACHY_OS = new ProtonCachyOS(appFolders, fs, network, system);
+    this.PROTON_EM = new ProtonEM(appFolders, fs, network, system);
     this.LUTRIS = new Lutris(appFolders, fs, network, system);
     this.WINE_GE = new WineGE(appFolders, fs, network, system);
     this.BOTTLES_DEVS = new BottlesDevs(appFolders, fs, network, system);
@@ -66,6 +75,9 @@ export default class Repositories extends AbstractModule {
     this.modules.push(
       this.KRON4EK,
       this.PROTON_GE,
+      this.PROTON_GE_RTSP,
+      this.PROTON_CACHY_OS,
+      this.PROTON_EM,
       this.LUTRIS,
       this.WINE_GE,
       this.BOTTLES_DEVS,

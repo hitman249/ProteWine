@@ -262,9 +262,21 @@ export default class Utils {
     return false;
   }
 
+  public static includes(str: string, tags: any[] = []): boolean {
+    for (const tag of tags) {
+      if (-1 !== str.indexOf(tag)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public static findAssetArchive(assets: any[] = []): any {
+    const skip: string[] = ['arm64', 'aarch64', 'x86_64_v2', 'x86_64_v3', 'x86_64_v4', 'x86_64_v5'];
+
     assets = _.sortBy(assets, 'size')
-      .filter((item: any) => Utils.endsWith(item.name, ['.tar.gz', '.tar.xz', '.zip', '.tgz']));
+      .filter((item: any) => Utils.endsWith(item.name, ['.tar.gz', '.tar.xz', '.zip', '.tgz']) && !Utils.includes(item.name, skip));
 
     return _.last(assets);
   }

@@ -246,6 +246,7 @@ export default class Snapshot extends AbstractModule {
 
     const skip: string[] = [
       '[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\MMDevices',
+      '[HKEY_USERS\\S-1-5-21-0-0-0-1000\\Software\\Microsoft\\Windows\\CurrentVersion',
       '[HKEY_USERS\\S-1-5-21-0-0-0-1000\\Software\\Microsoft\\ActiveMovie\\devenum',
       '[HKEY_USERS\\S-1-5-21-0-0-0-1000\\Software\\Wine\\Drivers\\winepulse.drv\\devices',
       '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Class',
@@ -260,6 +261,9 @@ export default class Snapshot extends AbstractModule {
       '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Software\\Microsoft\\Windows NT\\CurrentVersion\\PrinterPorts',
       '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows',
       '[HKEY_USERS\\S-1-5-21-394961726-503532387-1000-1000\\Console',
+      '[HKEY_LOCAL_MACHINE\\System\\ControlSet001\\Enum',
+      '[HKEY_LOCAL_MACHINE\\System\\ControlSet002\\Enum',
+      '[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Enum',
     ];
 
     const isSkip = (section: string): boolean => {

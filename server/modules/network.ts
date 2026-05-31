@@ -31,7 +31,10 @@ export default class Network extends AbstractModule {
 
   private readonly options: RequestInit = {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/71.0.3578.80 Chrome/71.0.3578.80 Safari/537.36',
+      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/octet-stream, */*',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Connection': 'keep-alive'
     },
   };
 
