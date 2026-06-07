@@ -66,7 +66,15 @@ export default class Wine extends AbstractKernel {
   }
 
   public async run(cmd: string = '', session: SessionType = SessionType.RUN, env: {[field: string]: string} = {}): Promise<WatchProcess> {
-    return this.commandHandler(await this.getCmd(cmd, session, env));
+    const regex: RegExp = /["']?C:[/\\]Games[/\\]([^/\\]+)/i;
+    const match: RegExpMatchArray = cmd.match(regex);
+    let gameDir: string = '';
+
+    if (match && SessionType.RUN === session) {
+      gameDir = `cd "${await this.getGamesDir()}/${match[1]}" && `
+    }
+
+    return this.commandHandler(gameDir + await this.getCmd(cmd, session, env));
   }
 
   public async winetricks(cmd: string): Promise<WatchProcess> {
